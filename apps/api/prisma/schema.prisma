@@ -1,0 +1,736 @@
+// =============================================================================
+// Prisma Schema – Seeding Strategy Tool
+// T07 + T08: Database nền tảng + schema đầy đủ cho toàn bộ MVP
+// =============================================================================
+
+// Prisma version: 6.19.3  (pinned via ~6.19.3 trong package.json)
+// Chạy sau khi thay đổi schema:
+//   pnpm --filter @seeding/api run prisma:generate   ← tạo Prisma Client
+//   pnpm --filter @seeding/api run db:migrate        ← tạo migration + apply (cần DB chạy)
+
+generator client {
+  provider   = "prisma-client-js"
+  // "library" (Node-API) nhanh hơn "binary" và là default từ Prisma v5.
+  // Giữ tường minh để không bị thay đổi ngầm khi upgrade.
+  engineType = "library"
+}
+
+datasource db {
+  // Prisma v6 vẫn hỗ trợ url trong datasource (breaking change chỉ có ở v7+).
+  // DATABASE_URL được đọc từ .env hoặc biến môi trường của process.
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum OrgRole {
+  ORG_ADMIN
+  ANALYST
+  INSIGHT_REVIEWER
+  STRATEGY_MANAGER
+  VIEWER
+}
+
+enum SourceType {
+  MANUAL
+  EXCEL
+  CSV
+  SERPAPI
+}
+
+enum BusinessLocationSource {
+  MANUAL
+  SERPAPI
+}
+
+enum SerpApiLinkStatus {
+  LINKED
+  DISCONNECTED
+}
+
+enum DataSourceStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ImportBatchStatus {
+  UPLOADING
+  MAPPING
+  VALIDATING
+  IMPORTING
+  COMPLETED
+  FAILED
+}
+
+enum FeedbackProcessingStatus {
+  RAW // vừa nhập, chưa chuẩn hóa
+  NORMALIZED // đã chuẩn hóa
+  DUPLICATE // bị đánh dấu trùng
+  EXCLUDED // bị loại khỏi phân tích
+}
+
+enum Sentiment {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+  MIXED
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  NEEDS_RETRY
+}
+
+enum InsightStatus {
+  DRAFT
+  WAITING_REVIEW
+  APPROVED
+  REJECTED
+  NEEDS_REANALYSIS
+  ARCHIVED
+}
+
+enum InsightOrigin {
+  OBSERVED // thấy trực tiếp từ dữ liệu
+  INFERRED // AI suy luận từ pattern
+  ASSUMED // dựa trên giả định nghiệp vụ
+}
+
+enum InsightReviewAction {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  EDITED
+  REANALYSIS_REQUESTED
+  MERGED
+  SPLIT
+  ARCHIVED
+}
+
+enum StrategyVersionStatus {
+  AI_DRAFT // AI vừa tạo, chưa Manager xem
+  DRAFT // Manager đang chỉnh sửa
+  WAITING_APPROVAL
+  NEEDS_REVISION
+  APPROVED
+  LOCKED // đã duyệt và khóa, không sửa trực tiếp
+  SUPERSEDED // bị thay bởi version mới hơn
+  ARCHIVED
+}
+
+enum AnalysisSessionStatus {
+  DRAFT
+  DATA_COLLECTION
+  PROCESSING
+  ANALYZING
+  INSIGHT_REVIEW
+  STRATEGY_BUILDING
+  COMPLETED
+  ARCHIVED
+}
+
+enum JobType {
+  DATA_NORMALIZATION
+  DEDUPLICATION
+  AI_FEEDBACK_ANALYSIS
+  INSIGHT_GENERATION
+  STRATEGY_GENERATION
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// =============================================================================
+// NHÓM 1: IDENTITY
+// =============================================================================
+
+/// Tài khoản người dùng hệ thống
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  fullName     String
+  avatarUrl    String?
+  isSuperAdmin Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  memberships   OrganizationMember[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+/// Tenant – đơn vị kinh doanh (công ty, agency, ...)
+model Organization {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  logoUrl   String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  members          OrganizationMember[]
+  businesses       Business[]
+  analysisSessions AnalysisSession[]
+
+  @@map("organizations")
+}
+
+/// Liên kết User ↔ Organization + Role của người dùng trong org đó
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrgRole
+  joinedAt       DateTime @default(now())
+  isActive       Boolean  @default(true)
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+  @@map("organization_members")
+}
+
+/// Refresh token – lưu để có thể revoke khi logout
+model RefreshToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique // hash sha256 của token gốc
+  deviceInfo String? // user-agent hoặc tên thiết bị
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+// =============================================================================
+// NHÓM 2: BUSINESS
+// =============================================================================
+
+/// Doanh nghiệp cụ thể cần phân tích seeding
+model Business {
+  id             String    @id @default(cuid())
+  organizationId String
+  name           String
+  industry       String?
+  description    String?
+  website        String?
+  address        String?
+  phone          String?
+  email          String?
+  products       Json      @default("[]") // [{name, description}]
+  services       Json      @default("[]")
+  targetAudience Json      @default("[]") // [{segment, characteristics}]
+  competitors    Json      @default("[]") // [{name, notes}]
+  strengths      Json      @default("[]") // string[]
+  brandVoice     String?
+  allowedTopics  Json      @default("[]")
+  bannedTopics   Json      @default("[]")
+  extraNotes     String?
+  isActive       Boolean   @default(true)
+  createdBy      String?   @default("SYSTEM")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  // Relations
+  organization     Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  locations        BusinessLocation[]
+  analysisSessions AnalysisSession[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId])
+  @@map("businesses")
+}
+
+/// Địa điểm/chi nhánh của doanh nghiệp, có thể ánh xạ tới một Google Business Location
+model BusinessLocation {
+  id                       String                 @id @default(cuid())
+  organizationId           String
+  businessId               String
+  name                     String
+  address                  String?
+  phone                    String?
+  website                  String?
+  primaryType              String?
+  serpapiPlaceId           String?                @unique
+  serpapiLocationId        String?                @unique
+  serpapiPlaceLinkStatus   SerpApiLinkStatus?
+  mapsUrl                  String?
+  rating                   Float?
+  userRatingCount          Int?
+  source                   BusinessLocationSource @default(MANUAL)
+  isActive                 Boolean                @default(true)
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+
+  // Relations
+  business    Business     @relation(fields: [businessId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  dataSources DataSource[]
+
+  @@unique([id, businessId])
+  @@index([organizationId])
+  @@index([businessId])
+  @@index([source])
+  @@map("business_locations")
+}
+
+/// Bộ đếm quota nội bộ theo tháng. scopeKey = GLOBAL hoặc ORG:<organizationId>.
+model ExternalApiUsage {
+  id           String   @id @default(cuid())
+  scopeKey     String
+  provider     String
+  sku          String
+  period       String
+  requestCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([scopeKey, provider, sku, period])
+  @@index([provider, sku, period])
+  @@map("external_api_usage")
+}
+
+// =============================================================================
+// NHÓM 3: ANALYSIS SESSION
+// =============================================================================
+
+/// Một đợt phân tích – trung tâm kết nối dữ liệu, insight và chiến lược
+model AnalysisSession {
+  id                 String                @id @default(cuid())
+  organizationId     String
+  businessId         String
+  name               String
+  objective          String? // mục tiêu của đợt phân tích
+  focusProduct       String? // sản phẩm/dịch vụ/địa điểm tập trung
+  dateFrom           DateTime? // khoảng thời gian dữ liệu
+  dateTo             DateTime?
+  status             AnalysisSessionStatus @default(DRAFT)
+  businessSnapshot   Json? // đóng băng hồ sơ Business khi DRAFT -> DATA_COLLECTION
+  businessSnapshotAt DateTime?
+  createdBy          String?               @default("SYSTEM")
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  completedAt        DateTime?
+  archivedAt         DateTime?
+
+  // Relations
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  business       Business           @relation(fields: [businessId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  dataSources    DataSource[]
+  feedbacks      CustomerFeedback[]
+  processingJobs ProcessingJob[]
+  insights       Insight[]
+  strategies     Strategy[]
+
+  @@unique([id, businessId])
+  @@index([organizationId])
+  @@index([businessId])
+  @@index([status])
+  @@map("analysis_sessions")
+}
+
+// =============================================================================
+// NHÓM 4: DATA SOURCE & FEEDBACK
+// =============================================================================
+
+/// Nguồn dữ liệu trong một session (manual, file, API)
+model DataSource {
+  id                 String           @id @default(cuid())
+  analysisSessionId  String
+  businessId         String
+  businessLocationId String?
+  name               String
+  sourceType         SourceType
+  status             DataSourceStatus @default(PENDING)
+  totalRecords       Int?
+  validRecords       Int?
+  errorRecords       Int?
+  createdBy          String?          @default("SYSTEM")
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  // Relations
+  analysisSession  AnalysisSession    @relation(fields: [analysisSessionId, businessId], references: [id, businessId], onDelete: Restrict)
+  businessLocation BusinessLocation?  @relation(fields: [businessLocationId, businessId], references: [id, businessId], onDelete: Restrict)
+  feedbacks        CustomerFeedback[]
+  importBatches    ImportBatch[]
+  processingJobs   ProcessingJob[]
+
+  @@unique([id, analysisSessionId])
+  @@index([analysisSessionId])
+  @@index([businessId])
+  @@index([businessLocationId])
+  @@map("data_sources")
+}
+
+/// Phản hồi khách hàng – nguyên liệu thô của toàn bộ hệ thống
+model CustomerFeedback {
+  id                String                   @id @default(cuid())
+  analysisSessionId String
+  dataSourceId      String
+  externalId        String? // ID từ nguồn gốc (Google Maps review ID, ...)
+  contentHash       String? // tạo candidate dedup; không phải bằng chứng trùng tuyệt đối
+  rawContent        String // nội dung gốc – không bao giờ bị sửa
+  normalizedContent String? // sau chuẩn hóa Unicode, trim, ...
+  reviewerName      String?
+  rating            Int? // 1 – 5 sao
+  language          String? // mã ngôn ngữ (vi, en, ...)
+  sourceUrl         String?
+  publishedAt       DateTime? // thời điểm đánh giá được đăng
+  notes             String?
+  processingStatus  FeedbackProcessingStatus @default(RAW)
+  duplicateOfId     String? // FK tự tham chiếu khi phát hiện trùng
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  // Relations
+  analysisSession AnalysisSession    @relation(fields: [analysisSessionId], references: [id], onDelete: Restrict)
+  dataSource      DataSource         @relation(fields: [dataSourceId, analysisSessionId], references: [id, analysisSessionId], onDelete: Restrict)
+  analyses        FeedbackAnalysis[]
+  evidences       InsightEvidence[]
+  duplicateOf     CustomerFeedback?  @relation("FeedbackDuplicates", fields: [duplicateOfId, analysisSessionId], references: [id, analysisSessionId], onDelete: Restrict)
+  duplicates      CustomerFeedback[] @relation("FeedbackDuplicates")
+
+  @@unique([dataSourceId, externalId]) // tránh import trùng cùng nguồn
+  @@unique([id, analysisSessionId])
+  @@index([analysisSessionId])
+  @@index([analysisSessionId, contentHash])
+  @@index([dataSourceId])
+  @@index([duplicateOfId])
+  @@index([processingStatus])
+  @@index([publishedAt])
+  @@map("customer_feedbacks")
+}
+
+/// Một lần chạy AI phân tích feedback; giữ lịch sử để so sánh model/prompt và kết quả re-analysis
+model FeedbackAnalysis {
+  id             String         @id @default(cuid())
+  feedbackId     String
+  runNo          Int
+  status         AnalysisStatus @default(PENDING)
+  sentiment      Sentiment?
+  sentimentScore Float? // -1.0 → 1.0
+  topics         Json           @default("[]") // string[]
+  painPoints     Json           @default("[]") // string[]
+  questions      Json           @default("[]") // string[]
+  priority       Int? // 1 (thấp) – 5 (cao)
+  confidence     Float? // 0.0 – 1.0
+  evidence       Json           @default("[]") // [{text, relevance}]
+  aiModel        String? // tên model đã dùng
+  promptVersion  String? // version prompt để tái hiện
+  rawResponse    Json? // raw JSON response từ AI
+  errorMessage   String?
+  analyzedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  feedback CustomerFeedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  @@unique([feedbackId, runNo])
+  @@index([feedbackId, createdAt])
+  @@index([status])
+  @@map("feedback_analyses")
+}
+
+/// Tác vụ nền (BullMQ job) – frontend poll để theo dõi tiến độ
+model ProcessingJob {
+  id                String    @id @default(cuid())
+  analysisSessionId String
+  dataSourceId      String?
+  importBatchId     String?
+  jobType           JobType
+  bullmqJobId       String? // ID trong BullMQ queue
+  status            JobStatus @default(PENDING)
+  progress          Int       @default(0) // 0 – 100
+  totalItems        Int?
+  processedItems    Int?
+  failedItems       Int?
+  payload           Json? // input data của job
+  errorMessage      String?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdBy         String?   @default("SYSTEM")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  analysisSession AnalysisSession @relation(fields: [analysisSessionId], references: [id], onDelete: Restrict)
+  dataSource      DataSource?     @relation(fields: [dataSourceId, analysisSessionId], references: [id, analysisSessionId], onDelete: Restrict)
+  importBatch     ImportBatch?    @relation(fields: [importBatchId, dataSourceId], references: [id, dataSourceId], onDelete: Restrict)
+
+  @@index([analysisSessionId])
+  @@index([dataSourceId, status])
+  @@index([importBatchId, status])
+  @@index([status])
+  @@index([jobType])
+  @@map("processing_jobs")
+}
+
+// =============================================================================
+// NHÓM 5: IMPORT
+// =============================================================================
+
+/// Một lần upload file Excel/CSV
+model ImportBatch {
+  id                String            @id @default(cuid())
+  dataSourceId      String
+  fileName          String
+  fileSize          Int // bytes
+  fileStorageKey    String // đường dẫn file trên storage
+  fileChecksum      String?
+  mimeType          String?
+  columnMapping     Json? // {"Nội dung": "content", "Sao": "rating", ...}
+  status            ImportBatchStatus @default(UPLOADING)
+  totalRows         Int               @default(0)
+  validRows         Int               @default(0)
+  errorRows         Int               @default(0)
+  importedRows      Int               @default(0)
+  errorFileKey      String? // file CSV lỗi để download
+  validationSummary Json? // tổng hợp số lỗi theo errorCode
+  createdBy         String?           @default("SYSTEM")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  dataSource     DataSource      @relation(fields: [dataSourceId], references: [id], onDelete: Restrict)
+  processingJobs ProcessingJob[]
+
+  @@unique([id, dataSourceId])
+  @@index([dataSourceId])
+  @@index([dataSourceId, fileChecksum])
+  @@map("import_batches")
+}
+
+// =============================================================================
+// NHÓM 6: INSIGHT
+// =============================================================================
+
+/// Nhận định tổng hợp từ nhiều feedback – sản phẩm cốt lõi của module
+model Insight {
+  id                String        @id @default(cuid())
+  analysisSessionId String
+  title             String
+  description       String
+  origin            InsightOrigin @default(INFERRED)
+  priority          Int           @default(3) // 1 (thấp) – 5 (cao)
+  confidence        Float         @default(0) // 0.0 – 1.0
+  frequencyCount    Int           @default(0) // số feedback liên quan
+  frequencyPct      Float         @default(0) // tỷ lệ % trên tổng feedback
+  status            InsightStatus @default(DRAFT)
+  isFlagged         Boolean       @default(false) // insight quan trọng
+  parentInsightId   String? // dùng khi merge/split
+  reviewedBy        String? // SYSTEM | AI | DEVELOPER | TEST_REVIEWER | user id sau này
+  reviewedAt        DateTime? // snapshot thời điểm của quyết định hiện tại
+  reviewComment     String?
+  createdBy         String?       @default("SYSTEM")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  archivedAt        DateTime?
+
+  // Relations
+  analysisSession AnalysisSession    @relation(fields: [analysisSessionId], references: [id], onDelete: Restrict)
+  parent          Insight?           @relation("InsightMerge", fields: [parentInsightId], references: [id], onDelete: SetNull)
+  children        Insight[]          @relation("InsightMerge")
+  evidences       InsightEvidence[]
+  reviewLogs      InsightReviewLog[]
+  strategyLinks   StrategyInsight[]
+
+  @@unique([id, analysisSessionId])
+  @@index([analysisSessionId])
+  @@index([status])
+  @@map("insights")
+}
+
+/// Bằng chứng – liên kết Insight ↔ CustomerFeedback
+model InsightEvidence {
+  id                String   @id @default(cuid())
+  analysisSessionId String
+  insightId         String
+  feedbackId        String
+  excerpt           String? // đoạn trích dẫn cụ thể từ feedback
+  relevance         Float? // 0.0 – 1.0
+  createdAt         DateTime @default(now())
+
+  // Relations
+  insight  Insight          @relation(fields: [insightId, analysisSessionId], references: [id, analysisSessionId], onDelete: Cascade)
+  feedback CustomerFeedback @relation(fields: [feedbackId, analysisSessionId], references: [id, analysisSessionId], onDelete: Restrict)
+
+  @@unique([insightId, feedbackId])
+  @@index([analysisSessionId])
+  @@index([insightId])
+  @@map("insight_evidences")
+}
+
+/// Audit append-only cho toàn bộ chu kỳ submit/review/edit/approve/reject của Insight
+model InsightReviewLog {
+  id                String              @id @default(cuid())
+  analysisSessionId String
+  insightId         String
+  action            InsightReviewAction
+  fromStatus        InsightStatus?
+  toStatus          InsightStatus?
+  actorId           String?
+  comment           String?
+  beforeData        Json?
+  afterData         Json?
+  createdAt         DateTime            @default(now())
+
+  // Relations
+  insight Insight @relation(fields: [insightId, analysisSessionId], references: [id, analysisSessionId], onDelete: Restrict)
+
+  @@index([insightId, createdAt])
+  @@index([analysisSessionId, createdAt])
+  @@map("insight_review_logs")
+}
+
+// =============================================================================
+// NHÓM 7: STRATEGY
+// =============================================================================
+
+/// Container chiến lược seeding cho một AnalysisSession
+model Strategy {
+  id                String    @id @default(cuid())
+  analysisSessionId String
+  name              String
+  currentVersionId  String?   @unique // trỏ đến version đang active
+  createdBy         String?   @default("SYSTEM")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  archivedAt        DateTime?
+
+  // Relations
+  analysisSession AnalysisSession   @relation(fields: [analysisSessionId], references: [id], onDelete: Restrict)
+  currentVersion  StrategyVersion?  @relation("CurrentStrategyVersion", fields: [currentVersionId, id], references: [id, strategyId], onDelete: Restrict)
+  versions        StrategyVersion[] @relation("StrategyVersions")
+
+  @@unique([currentVersionId, id])
+  @@unique([id, analysisSessionId])
+  @@index([analysisSessionId])
+  @@map("strategies")
+}
+
+/// Nội dung cụ thể của chiến lược tại một thời điểm
+model StrategyVersion {
+  id                 String                @id @default(cuid())
+  strategyId         String
+  analysisSessionId  String
+  versionNo          Int
+  status             StrategyVersionStatus @default(AI_DRAFT)
+  // Nội dung chiến lược – JSONB vì cấu trúc linh hoạt
+  context            String? // bối cảnh chiến lược
+  objectives         Json                  @default("[]") // string[]
+  targetSegments     Json                  @default("[]") // [{segment, description}]
+  priorityProblems   Json                  @default("[]") // string[]
+  mainMessages       Json                  @default("[]") // string[]
+  responsePrinciples Json                  @default("[]") // string[]
+  contentThemes      Json                  @default("[]") // [{theme, description, examples}]
+  risks              Json                  @default("[]") // string[]
+  kpis               Json                  @default("[]") // [{metric, target}]
+  additionalNotes    String?
+  aiModel            String?
+  promptVersion      String?
+  editedBy           String?
+  editReason         String?
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  approvedBy         String?
+  approvedAt         DateTime? // snapshot thời điểm của lần phê duyệt hiện tại
+  reviewComment      String?
+  lockedAt           DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  // Relations
+  strategy          Strategy          @relation("StrategyVersions", fields: [strategyId, analysisSessionId], references: [id, analysisSessionId], onDelete: Cascade)
+  activeForStrategy Strategy?         @relation("CurrentStrategyVersion")
+  insights          StrategyInsight[]
+
+  @@unique([strategyId, versionNo])
+  @@unique([id, strategyId])
+  @@unique([id, analysisSessionId])
+  @@index([analysisSessionId])
+  @@index([strategyId, status])
+  @@map("strategy_versions")
+}
+
+/// Liên kết StrategyVersion ↔ Insight (truy vết nguồn gốc chiến lược)
+model StrategyInsight {
+  id                String   @id @default(cuid())
+  analysisSessionId String
+  strategyVersionId String
+  insightId         String
+  insightSnapshot   Json // nội dung Insight tại thời điểm được dùng cho StrategyVersion
+  orderIndex        Int      @default(0)
+  linkedAt          DateTime @default(now())
+
+  // Relations
+  strategyVersion StrategyVersion @relation(fields: [strategyVersionId, analysisSessionId], references: [id, analysisSessionId], onDelete: Cascade)
+  insight         Insight         @relation(fields: [insightId, analysisSessionId], references: [id, analysisSessionId], onDelete: Restrict)
+
+  @@unique([strategyVersionId, insightId])
+  @@index([analysisSessionId])
+  @@index([strategyVersionId])
+  @@map("strategy_insights")
+}
+
+// =============================================================================
+// NHÓM 7: AI USAGE TRACKING
+// =============================================================================
+
+model AIUsageLog {
+  id                String    @id @default(cuid())
+  analysisSessionId String?
+  organizationId    String
+  jobType           String
+  provider          String
+  model             String
+  promptVersion     String
+  promptTokens      Int       @default(0)
+  completionTokens  Int       @default(0)
+  totalTokens       Int       @default(0)
+  estimatedCost     Float     @default(0)
+  durationMs        Int       @default(0)
+  status            String
+  errorMessage      String?
+  requestedAt       DateTime
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@index([analysisSessionId])
+  @@index([organizationId])
+  @@index([provider, model])
+  @@index([requestedAt])
+  @@map("ai_usage_logs")
+}

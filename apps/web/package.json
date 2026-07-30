@@ -1,0 +1,42 @@
+{
+  "name": "@seeding/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.2",
+    "@seeding/contracts": "workspace:*",
+    "@seeding/validation": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-query-devtools": "^5.101.4",
+    "autoprefixer": "^10.5.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.26.0",
+    "next": "^15.4.2",
+    "postcss": "^8.5.23",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.83.0",
+    "recharts": "^3.10.0",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@seeding/eslint-config": "workspace:*",
+    "@seeding/tsconfig": "workspace:*",
+    "@types/node": "^22.16.5",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.31.0",
+    "typescript": "^5.8.3"
+  }
+}

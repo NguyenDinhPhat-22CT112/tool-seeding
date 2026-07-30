@@ -1,0 +1,4 @@
+{
+  "extends": "@seeding/tsconfig/base.json",
+  "include": ["src/**/*.ts"]
+}
