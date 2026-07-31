@@ -1,6 +1,5 @@
 import {
   BusinessRuleViolationError,
-  ResourceNotFoundError,
 } from "../../../../shared/exceptions/domain.exceptions";
 import { RequestContext } from "../../../../shared/context/request-context";
 import {
@@ -54,8 +53,8 @@ function repository() {
   const restore = vi.fn<BusinessRepository["restore"]>();
   const createWithLocation = vi.fn<BusinessRepository["createWithLocation"]>();
   const createLocation = vi.fn<BusinessRepository["createLocation"]>();
-  const findLocationByGooglePlaceIdInOrg =
-    vi.fn<BusinessRepository["findLocationByGooglePlaceIdInOrg"]>();
+  const findLocationBySerpApiPlaceIdInOrg =
+    vi.fn<BusinessRepository["findLocationBySerpApiPlaceIdInOrg"]>();
   const listLocations = vi.fn<BusinessRepository["listLocations"]>();
   const findLocation = vi.fn<BusinessRepository["findLocation"]>();
   const updateLocation = vi.fn<BusinessRepository["updateLocation"]>();
@@ -69,7 +68,7 @@ function repository() {
     restore,
     createWithLocation,
     createLocation,
-    findLocationByGooglePlaceIdInOrg,
+    findLocationBySerpApiPlaceIdInOrg,
     listLocations,
     findLocation,
     updateLocation,
@@ -95,50 +94,6 @@ describe("BusinessService", () => {
 
     expect(result.items[0]?.sessionCount).toBe(3);
     expect(mocks.list).toHaveBeenCalledOnce();
-  });
-
-  it("chặn deactivate khi còn session chưa kết thúc", async () => {
-    const { repo, mocks } = repository();
-    mocks.deactivate.mockResolvedValue({
-      business: business(),
-      blockingSessionCount: 2,
-      archivedDraftCount: 0,
-      changed: false,
-    });
-    const service = new BusinessService(repo, new BusinessPolicy());
-
-    await expect(
-      service.deactivate(adminContext, "business_1"),
-    ).rejects.toBeInstanceOf(BusinessRuleViolationError);
-  });
-
-  it("deactivate chỉ trả Business inactive, không xóa entity", async () => {
-    const { repo, mocks } = repository();
-    mocks.deactivate.mockResolvedValue({
-      business: business({ isActive: false }),
-      blockingSessionCount: 0,
-      archivedDraftCount: 1,
-      changed: true,
-    });
-    const service = new BusinessService(repo, new BusinessPolicy());
-
-    const result = await service.deactivate(adminContext, "business_1");
-
-    expect(result.isActive).toBe(false);
-    expect(result.archivedDraftCount).toBe(1);
-  });
-
-  it("trả not found khi restore Business ngoài organization", async () => {
-    const { repo, mocks } = repository();
-    mocks.restore.mockResolvedValue({
-      business: null,
-      changed: false,
-    });
-    const service = new BusinessService(repo, new BusinessPolicy());
-
-    await expect(
-      service.restore(adminContext, "business_other"),
-    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
   it("không cho cập nhật Business inactive", async () => {

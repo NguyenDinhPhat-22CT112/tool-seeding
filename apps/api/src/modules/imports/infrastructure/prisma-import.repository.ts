@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "../../../database/prisma.service";
+import { Prisma } from "@seeding/database";
+import { PrismaService } from "@seeding/database";
 import {
   CreateImportBatchData,
   ImportBatchEntity,
@@ -104,11 +104,13 @@ export class PrismaImportRepository implements ImportRepository {
         | "validationSummary"
       >
     >,
+    tx?: Prisma.TransactionClient,
   ): Promise<ImportBatchEntity | null> {
+    const client = tx ?? this.prisma;
     const existing = await this.findByIdInSession(id, analysisSessionId, organizationId);
     if (!existing) return null;
 
-    const row = await this.prisma.importBatch.update({
+    const row = await client.importBatch.update({
       where: { id },
       data: {
         status,

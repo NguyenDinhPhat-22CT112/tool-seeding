@@ -10,7 +10,7 @@ import {
 } from "../domain/business.types";
 import { BusinessLocationListResponse, BusinessLocationMapper, BusinessLocationResponse } from "./business-location.mapper";
 import { BusinessPolicy } from "./business.policy";
-import { CreateBusinessLocationDto, UpdateBusinessLocationDto } from "./business-location.dto";
+import { UpdateBusinessLocationDto } from "./business-location.dto";
 
 @Injectable()
 export class BusinessLocationService {
@@ -52,38 +52,6 @@ export class BusinessLocationService {
     return BusinessLocationMapper.toResponse(location);
   }
 
-  async create(
-    ctx: RequestContext,
-    businessId: string,
-    dto: CreateBusinessLocationDto,
-  ): Promise<BusinessLocationResponse> {
-    this.policy.assertCanUpdate(ctx);
-    const business = await this.requireBusiness(ctx, businessId);
-    if (!business.isActive) {
-      throw new BusinessRuleViolationError(
-        "Không thể thêm địa điểm cho doanh nghiệp đã ngừng hoạt động",
-      );
-    }
-    const location = await this.repo.createLocation({
-      organizationId: ctx.organizationId,
-      businessId,
-      name: dto.name,
-      address: dto.address ?? null,
-      phone: dto.phone ?? null,
-      website: dto.website ?? null,
-      primaryType: null,
-
-      rating: null,
-      userRatingCount: null,
-      source: "MANUAL",
-      isActive: true,
-    });
-    if (!location) {
-      throw new BusinessRuleViolationError("Không thể tạo địa điểm doanh nghiệp");
-    }
-    return BusinessLocationMapper.toResponse(location);
-  }
-
   async update(
     ctx: RequestContext,
     businessId: string,
@@ -108,43 +76,6 @@ export class BusinessLocationService {
       ctx.organizationId,
       dto,
     );
-    if (!updated) {
-      throw new ResourceNotFoundError("địa điểm doanh nghiệp", locationId);
-    }
-    return BusinessLocationMapper.toResponse(updated);
-  }
-
-  async disconnectExternal(
-    ctx: RequestContext,
-    businessId: string,
-    locationId: string,
-  ): Promise<BusinessLocationResponse> {
-    this.policy.assertCanUpdate(ctx);
-    await this.requireBusiness(ctx, businessId);
-
-    const location = await this.repo.findLocation(
-      locationId,
-      businessId,
-      ctx.organizationId,
-    );
-    if (!location) {
-      throw new ResourceNotFoundError("địa điểm doanh nghiệp", locationId);
-    }
-    if (!location.serpapiPlaceId) {
-      throw new BusinessRuleViolationError(
-        "Địa điểm chưa được liên kết với dữ liệu từ bên ngoài (SerpApi)",
-      );
-    }
-
-    const updated = await this.repo.updateLocation(
-      locationId,
-      businessId,
-      ctx.organizationId,
-      {
-        serpapiPlaceLinkStatus: "DISCONNECTED",
-      } as any, // because UpdateBusinessLocationData doesn't explicitly expose serpapiPlaceLinkStatus unless we add it
-    );
-
     if (!updated) {
       throw new ResourceNotFoundError("địa điểm doanh nghiệp", locationId);
     }

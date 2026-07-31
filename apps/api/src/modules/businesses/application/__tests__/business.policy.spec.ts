@@ -8,18 +8,15 @@ function ctx(role: RequestContext["role"]): RequestContext {
 describe("BusinessPolicy", () => {
   const policy = new BusinessPolicy();
 
-  it("chỉ Org Admin được tạo/sửa/deactivate business (Giai đoạn 1, chưa có phân quyền chi tiết)", () => {
+  it("chỉ Org Admin được tạo/sửa business", () => {
     expect(policy.canCreate(ctx("ORG_ADMIN"))).toBe(true);
     expect(policy.canCreate(ctx("ANALYST"))).toBe(false);
 
     expect(policy.canUpdate(ctx("ORG_ADMIN"))).toBe(true);
     expect(policy.canUpdate(ctx("ANALYST"))).toBe(false);
-
-    expect(policy.canDeactivateOrRestore(ctx("ORG_ADMIN"))).toBe(true);
-    expect(policy.canDeactivateOrRestore(ctx("ANALYST"))).toBe(false);
   });
 
-  it("Viewer không được sửa/tạo/xoá nhưng vẫn xem được", () => {
+  it("Viewer không được sửa/tạo nhưng vẫn xem được", () => {
     expect(policy.canCreate(ctx("VIEWER"))).toBe(false);
     expect(policy.canUpdate(ctx("VIEWER"))).toBe(false);
     expect(policy.canView()).toBe(true);

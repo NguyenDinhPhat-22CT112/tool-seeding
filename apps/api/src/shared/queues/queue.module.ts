@@ -18,7 +18,9 @@ import { DEFAULT_JOB_OPTIONS, QUEUE_NAMES } from "./queue.constants";
         defaultJobOptions: DEFAULT_JOB_OPTIONS,
       }),
     }),
-    BullModule.registerQueue({ name: QUEUE_NAMES.DATA_PROCESSING }),
+    BullModule.registerQueue(
+      { name: QUEUE_NAMES.DATA_PROCESSING }
+    ),
   ],
   exports: [BullModule],
 })

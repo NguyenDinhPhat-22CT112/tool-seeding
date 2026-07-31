@@ -9,7 +9,7 @@ import {
   aiConfig,
   storageConfig,
 } from "./config";
-import { DatabaseModule } from "./database";
+import { PrismaModule } from "@seeding/database";
 import { HealthModule } from "./modules/health/health.module";
 import { SerpApiModule } from "./integrations/serpapi";
 import { BusinessesModule } from "./modules/businesses";
@@ -17,6 +17,10 @@ import { AnalysisSessionsModule } from "./modules/analysis-sessions";
 import { DataSourcesModule } from "./modules/data-sources";
 import { FeedbackModule } from "./modules/feedback";
 import { ImportsModule } from "./modules/imports";
+import { DataProcessingModule } from "./modules/data-processing";
+import { AiAnalysisModule } from "./modules/ai-analysis";
+import { QueueModule } from "./shared/queues/queue.module";
+import { AiModule } from "./integrations/ai/ai.module";
 import { TemporaryRequestContextMiddleware } from "./shared/context/request-context";
 import { createLoggerConfig } from "./shared/logging";
 import { AuditService } from "./shared/audit";
@@ -28,7 +32,7 @@ import { AuditService } from "./shared/audit";
       load: [appConfig, databaseConfig, redisConfig, jwtConfig, aiConfig, storageConfig],
     }),
     LoggerModule.forRoot(createLoggerConfig()),
-    DatabaseModule,
+    PrismaModule,
     HealthModule,
     SerpApiModule,
     BusinessesModule,
@@ -36,6 +40,10 @@ import { AuditService } from "./shared/audit";
     DataSourcesModule,
     FeedbackModule,
     ImportsModule,
+    DataProcessingModule,
+    AiAnalysisModule,
+    QueueModule,
+    AiModule,
     // Mỗi bounded context được import tại composition root này.
   ],
   providers: [AuditService],

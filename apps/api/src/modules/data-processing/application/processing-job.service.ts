@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../database/prisma.service";
+import { PrismaService } from "@seeding/database";
 import { RequestContext } from "../../../shared/context/request-context";
 import { DomainError } from "../../../shared/exceptions/domain.exceptions";
 import { AnalysisSessionStateMachine } from "../../analysis-sessions/domain/analysis-session-state-machine";

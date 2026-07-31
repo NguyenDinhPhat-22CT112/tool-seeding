@@ -1,3 +1,4 @@
+import type { Prisma } from "@seeding/database";
 import type { ImportBatchStatus, PaginatedResponse } from "@seeding/contracts";
 
 export type { ImportBatchStatus };
@@ -64,6 +65,7 @@ export interface ImportRepository {
         | "validationSummary"
       >
     >,
+    tx?: Prisma.TransactionClient,
   ): Promise<ImportBatchEntity | null>;
 }
 

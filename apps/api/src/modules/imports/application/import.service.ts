@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { Response } from "express";
+import { PrismaService } from "@seeding/database";
 import { RequestContext } from "../../../shared/context/request-context";
 import { DomainError } from "../../../shared/exceptions/domain.exceptions";
 import { sanitizeCell } from "../../../shared/security/content-sanitizer";
@@ -51,6 +52,7 @@ export class ImportService {
     @Inject(STORAGE_PROVIDER) private readonly storage: StorageProvider,
     private readonly fileParser: FileParserService,
     private readonly policy: ImportPolicy,
+    private readonly prisma: PrismaService,
   ) {}
 
   async upload(
@@ -197,7 +199,7 @@ export class ImportService {
 
     if (validRows.length === 0) {
       const errorFileKey = await this.writeErrorCsv(errorRows);
-      const failed = await this.repo.updateStatus(
+      await this.repo.updateStatus(
         batchId,
         sessionId,
         ctx.organizationId,
@@ -214,29 +216,32 @@ export class ImportService {
       throw new DomainError("IMPORT_ALL_ROWS_INVALID");
     }
 
-    const imported = await this.feedbackRepo.createMany(
-      validRows.map((r) => r.data!),
-    );
-
     let errorFileKey: string | null = null;
     if (errorRows.length > 0) {
       errorFileKey = await this.writeErrorCsv(errorRows);
     }
 
-    const updated = await this.repo.updateStatus(
-      batchId,
-      sessionId,
-      ctx.organizationId,
-      "COMPLETED",
-      {
-        totalRows: parsed.rows.length,
-        validRows: validRows.length,
-        errorRows: errorRows.length,
-        importedRows: imported,
-        errorFileKey,
-        validationSummary: this.summarizeErrors(errorRows),
-      },
-    );
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const imported = await this.feedbackRepo.createMany(
+        validRows.map((r) => r.data!),
+        tx,
+      );
+      return this.repo.updateStatus(
+        batchId,
+        sessionId,
+        ctx.organizationId,
+        "COMPLETED",
+        {
+          totalRows: parsed.rows.length,
+          validRows: validRows.length,
+          errorRows: errorRows.length,
+          importedRows: imported,
+          errorFileKey,
+          validationSummary: this.summarizeErrors(errorRows),
+        },
+        tx,
+      );
+    });
 
     return ImportMapper.toResponse(updated!);
   }

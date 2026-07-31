@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type { Prisma } from "@seeding/database";
 import type {
   FeedbackProcessingStatus,
   PaginatedResponse,
@@ -62,7 +63,7 @@ export function computeContentHash(rawContent: string): string {
 export interface FeedbackRepository {
   create(data: CreateFeedbackData): Promise<FeedbackEntity>;
 
-  createMany(data: CreateFeedbackData[]): Promise<number>;
+  createMany(data: CreateFeedbackData[], tx?: Prisma.TransactionClient): Promise<number>;
 
   findByIdInSession(
     id: string,

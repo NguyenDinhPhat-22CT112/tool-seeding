@@ -1,0 +1,9 @@
+{
+  "extends": "@seeding/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
+}

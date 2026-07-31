@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
@@ -24,6 +25,8 @@ import { ApiTemporaryAuth } from "../../../shared/swagger/temporary-auth.decorat
 import { ResourceIdPipe } from "../../../shared/validation/resource-id.pipe";
 import { ApiErrorResponseDto } from "../../../common";
 import { BusinessService } from "../application/business.service";
+import { BusinessSerpApiService } from "../application/business-serpapi.service";
+import { BusinessLocationService } from "../application/business-location.service";
 import {
   CreateBusinessDto,
   ListBusinessesQueryDto,
@@ -32,14 +35,31 @@ import {
 import {
   BusinessDetailResponse,
   BusinessListResponse,
-  DeactivateBusinessResponse,
 } from "../application/business.mapper";
+import {
+  BusinessLocationListResponse,
+  BusinessLocationResponse,
+  CreateBusinessFromSerpApiResponse,
+} from "../application/business-location.mapper";
+import {
+  CreateBusinessFromSerpApiDto,
+  AddBusinessLocationFromSerpApiDto,
+} from "../application/serpapi.dto";
+import { UpdateBusinessLocationDto } from "../application/business-location.dto";
 
 @ApiTags("Businesses")
 @ApiTemporaryAuth()
 @Controller("businesses")
 export class BusinessesController {
-  constructor(private readonly service: BusinessService) {}
+  constructor(
+    private readonly service: BusinessService,
+    private readonly serpapi: BusinessSerpApiService,
+    private readonly locations: BusinessLocationService,
+  ) {}
+
+  // -------------------------------------------------------------------
+  // Business CRUD
+  // -------------------------------------------------------------------
 
   @Get()
   @ApiOperation({
@@ -101,73 +121,96 @@ export class BusinessesController {
     return this.service.update(ctx, id, dto);
   }
 
-  @Post(":id/deactivate")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: "Ngừng hoạt động doanh nghiệp",
-    description:
-      "Tự động archive session DRAFT. Từ chối nếu còn session non-terminal khác.",
-  })
-  @ApiOkResponse({ type: DeactivateBusinessResponse })
-  @ApiNotFoundResponse({
-    type: ApiErrorResponseDto,
-    description: "Không tìm thấy doanh nghiệp trong organization hiện tại",
-  })
-  @ApiForbiddenResponse({
-    type: ApiErrorResponseDto,
-    description: "Chỉ Organization Admin được ngừng hoạt động",
-  })
-  @ApiBadRequestResponse({
-    type: ApiErrorResponseDto,
-    description: "Doanh nghiệp còn session chưa kết thúc",
-  })
-  deactivate(@Ctx() ctx: RequestContext, @Param("id", ResourceIdPipe) id: string) {
-    return this.service.deactivate(ctx, id);
-  }
-
-  /** Giữ tương thích với client cũ; endpoint rõ nghĩa ở trên được ưu tiên. */
   @Delete(":id")
-  @ApiOperation({
-    summary: "Ngừng hoạt động doanh nghiệp (deprecated)",
-    deprecated: true,
-  })
-  @ApiOkResponse({ type: DeactivateBusinessResponse })
-  @ApiNotFoundResponse({
-    type: ApiErrorResponseDto,
-    description: "Không tìm thấy doanh nghiệp trong organization hiện tại",
-  })
-  @ApiForbiddenResponse({
-    type: ApiErrorResponseDto,
-    description: "Chỉ Organization Admin được ngừng hoạt động",
-  })
-  @ApiBadRequestResponse({
-    type: ApiErrorResponseDto,
-    description: "ID không hợp lệ hoặc doanh nghiệp còn session chưa kết thúc",
-  })
-  deactivateLegacy(
-    @Ctx() ctx: RequestContext,
-    @Param("id", ResourceIdPipe) id: string,
-  ) {
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Xoá doanh nghiệp" })
+  @ApiOkResponse({ type: BusinessDetailResponse })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  delete(@Ctx() ctx: RequestContext, @Param("id", ResourceIdPipe) id: string) {
     return this.service.deactivate(ctx, id);
   }
 
-  @Post(":id/restore")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Khôi phục doanh nghiệp đã ngừng hoạt động" })
-  @ApiOkResponse({ type: BusinessDetailResponse })
-  @ApiNotFoundResponse({
-    type: ApiErrorResponseDto,
-    description: "Không tìm thấy doanh nghiệp trong organization hiện tại",
+  // -------------------------------------------------------------------
+  // Import từ SerpApi
+  // -------------------------------------------------------------------
+
+  @Post("from-serpapi")
+  @ApiOperation({
+    summary: "Tạo doanh nghiệp mới từ kết quả SerpAPI",
+    description:
+      "Dùng placeId lấy từ POST /serpapi/preview để tạo business. " +
+      "Nếu includeLocation=true, tự động tạo kèm location với dữ liệu từ SerpApi.",
   })
-  @ApiForbiddenResponse({
-    type: ApiErrorResponseDto,
-    description: "Chỉ Organization Admin được khôi phục",
+  @ApiCreatedResponse({ type: CreateBusinessFromSerpApiResponse })
+  @ApiConflictResponse({ type: ApiErrorResponseDto })
+  async importFromSerpApi(
+    @Ctx() ctx: RequestContext,
+    @Body() dto: CreateBusinessFromSerpApiDto,
+  ) {
+    return this.serpapi.createBusiness(ctx, dto);
+  }
+
+  // -------------------------------------------------------------------
+  // Locations
+  // -------------------------------------------------------------------
+
+  @Get(":businessId/locations")
+  @ApiOperation({ summary: "Danh sách địa điểm của doanh nghiệp" })
+  @ApiOkResponse({ type: BusinessLocationListResponse })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  listLocations(
+    @Ctx() ctx: RequestContext,
+    @Param("businessId", ResourceIdPipe) businessId: string,
+  ) {
+    return this.locations.list(ctx, businessId);
+  }
+
+  @Get(":businessId/locations/:locationId")
+  @ApiOperation({ summary: "Chi tiết địa điểm doanh nghiệp" })
+  @ApiOkResponse({ type: BusinessLocationResponse })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  getLocation(
+    @Ctx() ctx: RequestContext,
+    @Param("businessId", ResourceIdPipe) businessId: string,
+    @Param("locationId", ResourceIdPipe) locationId: string,
+  ) {
+    return this.locations.get(ctx, businessId, locationId);
+  }
+
+  @Patch(":businessId/locations/:locationId")
+  @ApiOperation({
+    summary: "Cập nhật hồ sơ hoặc trạng thái địa điểm",
   })
-  @ApiBadRequestResponse({
-    type: ApiErrorResponseDto,
-    description: "Doanh nghiệp đang hoạt động, không cần khôi phục",
+  @ApiOkResponse({ type: BusinessLocationResponse })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto })
+  updateLocation(
+    @Ctx() ctx: RequestContext,
+    @Param("businessId", ResourceIdPipe) businessId: string,
+    @Param("locationId", ResourceIdPipe) locationId: string,
+    @Body() dto: UpdateBusinessLocationDto,
+  ) {
+    return this.locations.update(ctx, businessId, locationId, dto);
+  }
+
+  @Post(":businessId/locations/from-serpapi")
+  @ApiOperation({
+    summary: "Thêm địa điểm từ SerpAPI vào doanh nghiệp hiện có",
+    description:
+      "Dùng placeId lấy từ POST /serpapi/preview để thêm location. " +
+      "Không tạo business mới — chỉ thêm vào business đã tồn tại.",
   })
-  restore(@Ctx() ctx: RequestContext, @Param("id", ResourceIdPipe) id: string) {
-    return this.service.restore(ctx, id);
+  @ApiCreatedResponse({ type: BusinessLocationResponse })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiConflictResponse({ type: ApiErrorResponseDto })
+  addLocationFromSerpApi(
+    @Ctx() ctx: RequestContext,
+    @Param("businessId", ResourceIdPipe) businessId: string,
+    @Body() dto: AddBusinessLocationFromSerpApiDto,
+  ) {
+    return this.serpapi.addLocation(ctx, businessId, dto);
   }
 }

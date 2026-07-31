@@ -2,7 +2,7 @@ import { INestApplication } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { PrismaService } from "../../src/database/prisma.service";
+import { PrismaService } from "@seeding/database";
 import { AppModule } from "../../src/app.module";
 import { configureApp } from "../../src/configure-app";
 import type {

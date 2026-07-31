@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@seeding/database/generated";
 
 const E2E_SCHEMA = "toolseeding_e2e";
 const envCandidates = [

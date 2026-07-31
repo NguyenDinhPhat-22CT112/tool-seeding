@@ -24,10 +24,6 @@ export class BusinessPolicy {
     return true;
   }
 
-  canDeactivateOrRestore(ctx: RequestContext): boolean {
-    return ctx.role === "ORG_ADMIN";
-  }
-
   assertCanCreate(ctx: RequestContext) {
     if (!this.canCreate(ctx)) {
       throw new ForbiddenActionError("Chỉ Org Admin được tạo doanh nghiệp");
@@ -37,14 +33,6 @@ export class BusinessPolicy {
   assertCanUpdate(ctx: RequestContext) {
     if (!this.canUpdate(ctx)) {
       throw new ForbiddenActionError("Bạn không có quyền sửa doanh nghiệp này");
-    }
-  }
-
-  assertCanDeactivateOrRestore(ctx: RequestContext) {
-    if (!this.canDeactivateOrRestore(ctx)) {
-      throw new ForbiddenActionError(
-        "Chỉ Org Admin được ngừng hoạt động / khôi phục doanh nghiệp",
-      );
     }
   }
 }

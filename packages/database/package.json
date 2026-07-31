@@ -1,0 +1,27 @@
+{
+  "name": "@seeding/database",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:seed": "node --import tsx prisma/seed.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.5",
+    "@prisma/client": "~6.19.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@seeding/tsconfig": "workspace:*",
+    "@types/node": "^22.16.5",
+    "prisma": "~6.19.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.3"
+  }
+}

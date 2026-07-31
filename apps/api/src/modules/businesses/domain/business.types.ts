@@ -84,6 +84,7 @@ export type UpdateBusinessLocationData = Partial<
     | "website"
     | "isActive"
     | "source"
+    | "serpapiPlaceId"
   >
 >;
 

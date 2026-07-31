@@ -6,6 +6,7 @@ import {
 } from "../../../shared/exceptions/domain.exceptions";
 import {
   BUSINESS_REPOSITORY,
+  BusinessEntity,
   BusinessRepository,
   CreateBusinessData,
   UpdateBusinessData,
@@ -19,7 +20,6 @@ import {
   BusinessDetailResponse,
   BusinessListItemResponse,
   BusinessMapper,
-  DeactivateBusinessResponse,
 } from "./business.mapper";
 import { BusinessPolicy } from "./business.policy";
 import { Paginated } from "../domain/business.types";
@@ -32,14 +32,20 @@ export class BusinessService {
   ) {}
 
   // ---------------------------------------------------------------------
-  // CreateBusiness
+  // CreateBusiness — core logic cho cả manual và SerpApi import
   // ---------------------------------------------------------------------
+  async createEntity(
+    ctx: RequestContext,
+    data: CreateBusinessData,
+  ): Promise<BusinessEntity> {
+    this.policy.assertCanCreate(ctx);
+    return this.repo.create(data);
+  }
+
   async create(
     ctx: RequestContext,
     dto: CreateBusinessDto,
   ): Promise<BusinessDetailResponse> {
-    this.policy.assertCanCreate(ctx);
-
     const data: CreateBusinessData = {
       organizationId: ctx.organizationId,
       name: dto.name,
@@ -61,7 +67,7 @@ export class BusinessService {
       createdBy: ctx.userId,
     };
 
-    const created = await this.repo.create(data);
+    const created = await this.createEntity(ctx, data);
     return BusinessMapper.toDetail(created);
   }
 
@@ -142,51 +148,21 @@ export class BusinessService {
       page: result.page,
       pageSize: result.pageSize,
     };
-  }
-
-  // ---------------------------------------------------------------------
-  // DeactivateBusiness — chỉ đổi isActive; deletedAt dành cho thao tác xóa riêng.
+  }  // ---------------------------------------------------------------------
+  // DeactivateBusiness — soft delete (isActive = false)
   // ---------------------------------------------------------------------
   async deactivate(
     ctx: RequestContext,
     id: string,
-  ): Promise<DeactivateBusinessResponse> {
-    this.policy.assertCanDeactivateOrRestore(ctx);
-
-    const result = await this.repo.deactivate(id, ctx.organizationId);
-    if (!result.business) {
-      throw new ResourceNotFoundError("doanh nghiệp", id);
-    }
-    if (!result.changed && !result.business.isActive) {
-      throw new BusinessRuleViolationError("Doanh nghiệp đã ngừng hoạt động");
-    }
-    if (result.blockingSessionCount > 0) {
-      throw new BusinessRuleViolationError(
-        `Không thể ngừng hoạt động: còn ${result.blockingSessionCount} đợt phân tích chưa kết thúc. ` +
-          "Vui lòng hoàn tất hoặc lưu trữ các session này trước.",
-      );
-    }
-    return BusinessMapper.toDeactivateResult(result.business, result.archivedDraftCount);
-  }
-
-  // ---------------------------------------------------------------------
-  // RestoreBusiness
-  // ---------------------------------------------------------------------
-  async restore(
-    ctx: RequestContext,
-    id: string,
   ): Promise<BusinessDetailResponse> {
-    this.policy.assertCanDeactivateOrRestore(ctx);
-
-    const result = await this.repo.restore(id, ctx.organizationId);
-    if (!result.business) {
+    const existing = await this.repo.findByIdInOrg(id, ctx.organizationId);
+    if (!existing) {
       throw new ResourceNotFoundError("doanh nghiệp", id);
     }
-    if (!result.changed) {
-      throw new BusinessRuleViolationError(
-        "Doanh nghiệp đang hoạt động, không cần khôi phục",
-      );
+    const updated = await this.repo.update(id, ctx.organizationId, { isActive: false } as any);
+    if (!updated) {
+      throw new BusinessRuleViolationError("Không thể xoá doanh nghiệp");
     }
-    return BusinessMapper.toDetail(result.business);
+    return BusinessMapper.toDetail(updated);
   }
 }

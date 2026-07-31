@@ -1,6 +1,16 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { PrismaModule } from "@seeding/database";
+import {
+  NormalizationProcessor,
+  DeduplicationProcessor,
+  FeedbackAnalysisProcessor,
+} from "./processors";
+import { AiAnalysisService } from "./services/ai-analysis.service";
+import { JobRepositoryService } from "./services/job-repository.service";
+
+const DATA_PROCESSING_QUEUE = "data-processing";
 
 @Module({
   imports: [
@@ -15,7 +25,15 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         },
       }),
     }),
-    // Đăng ký queue processors theo từng business module tại đây.
+    BullModule.registerQueue({ name: DATA_PROCESSING_QUEUE }),
+    PrismaModule,
+  ],
+  providers: [
+    NormalizationProcessor,
+    DeduplicationProcessor,
+    FeedbackAnalysisProcessor,
+    AiAnalysisService,
+    JobRepositoryService,
   ],
 })
 export class WorkerModule {}

@@ -8,16 +8,12 @@ import { SerpApiModule } from "../../integrations/serpapi";
 import { BusinessSerpApiService } from "./application/business-serpapi.service";
 import { BusinessLocationService } from "./application/business-location.service";
 import { SerpApiController } from "./presentation/serpapi.controller";
-import { BusinessSerpApiImportController } from "./presentation/business-serpapi-import.controller";
-import { BusinessLocationsController } from "./presentation/business-locations.controller";
 
 @Module({
   imports: [SerpApiModule],
   controllers: [
     BusinessesController,
     SerpApiController,
-    BusinessSerpApiImportController,
-    BusinessLocationsController,
   ],
   providers: [
     BusinessService,

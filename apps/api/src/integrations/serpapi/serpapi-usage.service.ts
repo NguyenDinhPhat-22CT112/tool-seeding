@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { PrismaService } from "../../database/prisma.service";
+import { PrismaService } from "@seeding/database";
 import { serpApiConfig } from "./serpapi.config";
 import { SerpApiQuotaExceededError } from "./serpapi.errors";
 import type { SerpApiStatusResponse } from "@seeding/contracts";

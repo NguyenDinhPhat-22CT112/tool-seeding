@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../database/prisma.service";
+import { Prisma, PrismaService } from "@seeding/database";
 import {
   CreateFeedbackData,
   FeedbackEntity,
@@ -58,9 +58,10 @@ export class PrismaFeedbackRepository implements FeedbackRepository {
     return toEntity(row);
   }
 
-  async createMany(data: CreateFeedbackData[]): Promise<number> {
+  async createMany(data: CreateFeedbackData[], tx?: Prisma.TransactionClient): Promise<number> {
     if (data.length === 0) return 0;
-    const result = await this.prisma.customerFeedback.createMany({
+    const client = tx ?? this.prisma;
+    const result = await client.customerFeedback.createMany({
       data: data.map((item) => ({
         analysisSessionId: item.analysisSessionId,
         dataSourceId: item.dataSourceId,

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SerpApiPreviewResponse, SerpApiAutocompleteResponse } from "../application/business-location.mapper";
 import { BusinessSerpApiService } from "../application/business-serpapi.service";
 import { SerpApiPreviewDto, SerpApiAutocompleteDto } from "../application/serpapi.dto";
@@ -14,13 +14,16 @@ export class SerpApiController {
     constructor(private readonly service: BusinessSerpApiService) {}
 
     @Get("status")
+    @ApiOperation({ summary: "Kiểm tra trạng thái kết nối SerpApi" })
     @ApiOkResponse({ type: SerpApiStatusResponseDto })
     async status(@Ctx() ctx: RequestContext) {
         return this.service.status(ctx);
     }
 
     @Post("autocomplete")
+    @ApiOperation({ summary: "Tìm kiếm địa điểm trên Google Maps qua SerpApi" })
     @ApiOkResponse({ type: SerpApiAutocompleteResponse })
+    @ApiBody({ type: SerpApiAutocompleteDto })
     async autocomplete(
         @Ctx() ctx: RequestContext,
         @Body() dto: SerpApiAutocompleteDto,
@@ -29,7 +32,9 @@ export class SerpApiController {
     }
 
     @Post("preview")
+    @ApiOperation({ summary: "Xem chi tiết địa điểm từ Google Maps qua SerpApi" })
     @ApiOkResponse({ type: SerpApiPreviewResponse })
+    @ApiBody({ type: SerpApiPreviewDto })
     async preview(
         @Ctx() ctx: RequestContext,
         @Body() dto: SerpApiPreviewDto,

@@ -3,7 +3,6 @@ import type {
   BusinessDetailResponse as BusinessDetailContract,
   BusinessListItemResponse as BusinessListItemContract,
   BusinessListResponse as BusinessListContract,
-  DeactivateBusinessResponse as DeactivateBusinessContract,
 } from "@seeding/contracts";
 import { BusinessEntity } from "../domain/business.types";
 import { NamedNoteDto, TargetAudienceItemDto, CompetitorItemDto } from "./business.dto";
@@ -112,15 +111,6 @@ export class BusinessListResponse implements BusinessListContract {
   pageSize!: number;
 }
 
-/** Response riêng cho deactivate — kèm thông tin session DRAFT đã bị auto-archive (BUS-05). */
-export class DeactivateBusinessResponse
-  extends BusinessDetailResponse
-  implements DeactivateBusinessContract
-{
-  @ApiProperty({ description: "Số session DRAFT đã tự động archive khi deactivate" })
-  archivedDraftCount!: number;
-}
-
 export class BusinessMapper {
   static toDetail(entity: BusinessEntity): BusinessDetailResponse {
     return {
@@ -160,15 +150,6 @@ export class BusinessMapper {
       isActive: entity.isActive,
       sessionCount,
       updatedAt: entity.updatedAt.toISOString(),
-    };
-  }
-  static toDeactivateResult(
-    entity: BusinessEntity,
-    archivedDraftCount: number,
-  ): DeactivateBusinessResponse {
-    return {
-      ...this.toDetail(entity),
-      archivedDraftCount,
     };
   }
 }

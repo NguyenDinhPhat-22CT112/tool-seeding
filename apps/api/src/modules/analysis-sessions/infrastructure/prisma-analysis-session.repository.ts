@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "../../../database/prisma.service";
+import { Prisma } from "@seeding/database";
+import { PrismaService } from "@seeding/database";
 import {
   AnalysisSessionEntity,
   AnalysisSessionListRecord,

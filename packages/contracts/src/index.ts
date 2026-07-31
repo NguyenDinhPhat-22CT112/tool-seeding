@@ -224,6 +224,11 @@ export interface CreateBusinessFromSerpApiRequest {
   placeId: string;
   sessionToken?: string;
   includeLocation?: boolean;
+  name?: string;
+  address?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  industry?: string | null;
 }
 
 export interface CreateBusinessFromSerpApiResponse {
