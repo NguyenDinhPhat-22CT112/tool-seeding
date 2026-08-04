@@ -5,7 +5,7 @@ import {
   NestMiddleware,
   UnauthorizedException,
 } from "@nestjs/common";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { OrgRole } from "@seeding/contracts";
 
 /**

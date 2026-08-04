@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { SERPAPI_CLIENT, type SerpApiClient } from "./serpapi.types";
 import { SerpApiUsageService } from "./serpapi-usage.service";
-import type { SerpApiPrediction, SerpApiPreview } from "@seeding/contracts";
+import type { SerpApiPrediction, SerpApiPreview, SerpApiReviewsPage } from "@seeding/contracts";
 
 @Injectable()
 export class SerpApiGatewayService {
@@ -39,6 +39,18 @@ export class SerpApiGatewayService {
         return this.client.getPlacePreview({
             placeId,
             sessionToken,
+        });
+    }
+
+    async getReviewsPage(
+        organizationId: string,
+        placeId: string,
+        nextToken?: string,
+    ): Promise<SerpApiReviewsPage> {
+        await this.usage.consume(organizationId, "REVIEWS_REQUESTS");
+        return this.client.getReviewsPage({
+            placeId,
+            nextToken,
         });
     }
 }

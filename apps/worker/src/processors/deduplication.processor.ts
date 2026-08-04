@@ -1,15 +1,14 @@
-import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
 import { Queue, Job } from "bullmq";
 import { JobRepositoryService } from "../services/job-repository.service";
+import { globalFileLogger } from "../common/file-logger";
 
 const DATA_PROCESSING_QUEUE = "data-processing";
 const CHECK_CANCELLATION_EVERY = 10;
 
 @Injectable()
-@Processor(DATA_PROCESSING_QUEUE)
-export class DeduplicationProcessor extends WorkerHost {
+export class DeduplicationProcessor {
   private readonly logger = new Logger(DeduplicationProcessor.name);
 
   constructor(
@@ -17,7 +16,7 @@ export class DeduplicationProcessor extends WorkerHost {
     private readonly queue: Queue,
     private readonly jobRepo: JobRepositoryService,
   ) {
-    super();
+    this.logger.log("DeduplicationProcessor initialized");
   }
 
   async process(job: Job): Promise<void> {
@@ -32,6 +31,14 @@ export class DeduplicationProcessor extends WorkerHost {
 
     const { processingJobId, analysisSessionId, organizationId, pipelineId } = data;
     const startedAt = Date.now();
+
+    await globalFileLogger.log("INFO", "DeduplicationProcessor.process called", {
+      processingJobId,
+      analysisSessionId,
+      organizationId,
+      jobType: data.jobType,
+      bullmqJobId: job.id,
+    });
 
     this.logger.log({ processingJobId, analysisSessionId }, "Deduplication started");
 
@@ -77,8 +84,16 @@ export class DeduplicationProcessor extends WorkerHost {
     await this.jobRepo.markCompleted(processingJobId);
     await this.enqueueNext(analysisSessionId, organizationId, pipelineId!, "AI_FEEDBACK_ANALYSIS");
 
+    const durationMs = Date.now() - startedAt;
+    await globalFileLogger.log("INFO", "DeduplicationProcessor completed", {
+      processingJobId,
+      totalGroups: total,
+      duplicatesFound,
+      durationMs,
+    });
+
     this.logger.log({
-      processingJobId, totalGroups: total, duplicatesFound, durationMs: Date.now() - startedAt,
+      processingJobId, totalGroups: total, duplicatesFound, durationMs,
     }, "Deduplication completed");
   }
 

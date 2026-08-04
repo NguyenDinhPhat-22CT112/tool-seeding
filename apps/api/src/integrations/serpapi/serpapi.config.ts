@@ -10,7 +10,22 @@ function parsePositiveInteger(value: string | undefined, fallback: number): numb
     return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-export const serpApiConfig = registerAs("serpApi", () => ({
+export interface SerpApiConfig {
+    enabled: boolean;
+    apiKey?: string;
+    baseUrl: string;
+    timeoutMs: number;
+    languageCode: string;
+    regionCode: string;
+    autocompleteMonthlyLimit: number;
+    autocompleteOrgMonthlyLimit: number;
+    placeDetailsMonthlyLimit: number;
+    placeDetailsOrgMonthlyLimit: number;
+    reviewsMonthlyLimit: number;
+    reviewsOrgMonthlyLimit: number;
+}
+
+export const serpApiConfig = registerAs("serpApi", (): SerpApiConfig => ({
     enabled: parseBoolean(process.env.SERPAPI_ENABLED, false),
     apiKey: process.env.SERPAPI_KEY,
     baseUrl: process.env.SERPAPI_BASE_URL ?? "https://serpapi.com",
@@ -21,4 +36,6 @@ export const serpApiConfig = registerAs("serpApi", () => ({
     autocompleteOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_AUTOCOMPLETE_ORG_MONTHLY_LIMIT, 200),
     placeDetailsMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_MONTHLY_LIMIT, 800),
     placeDetailsOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_ORG_MONTHLY_LIMIT, 20),
+    reviewsMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_REVIEWS_MONTHLY_LIMIT, 1000),
+    reviewsOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_REVIEWS_ORG_MONTHLY_LIMIT, 50),
 }));

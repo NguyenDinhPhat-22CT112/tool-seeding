@@ -31,6 +31,11 @@ export type CreateDataSourceData = {
   createdBy: string | null;
 };
 
+export type UpdateDataSourceData = {
+  name?: string;
+  businessLocationId?: string | null;
+};
+
 export interface DataSourceRepository {
   create(data: CreateDataSourceData): Promise<DataSourceEntity>;
 
@@ -49,6 +54,25 @@ export interface DataSourceRepository {
     analysisSessionId: string,
     organizationId: string,
   ): Promise<DataSourceEntity | null>;
+
+  update(
+    id: string,
+    analysisSessionId: string,
+    organizationId: string,
+    data: UpdateDataSourceData,
+  ): Promise<DataSourceEntity | null>;
+
+  remove(
+    id: string,
+    analysisSessionId: string,
+    organizationId: string,
+  ): Promise<DataSourceEntity | null>;
+
+  countFeedback(
+    id: string,
+    analysisSessionId: string,
+    organizationId: string,
+  ): Promise<number>;
 
   updateStatus(
     id: string,

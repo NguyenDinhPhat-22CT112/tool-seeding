@@ -26,6 +26,20 @@ export const ERROR_CODES = {
 
   // ── Data Source ──
   DATA_SOURCE_NOT_FOUND: { status: 404, message: "Nguồn dữ liệu không tồn tại" },
+  DATA_SOURCE_IN_USE: {
+    status: 409,
+    message: "Nguồn dữ liệu đang chứa feedback — không thể xóa",
+  },
+
+  // ── Review Crawl ──
+  CRAWL_LOCATION_NOT_FOUND: {
+    status: 404,
+    message: "Địa điểm kinh doanh không tồn tại",
+  },
+  CRAWL_LOCATION_NOT_LINKED: {
+    status: 409,
+    message: "Địa điểm kinh doanh chưa liên kết với Google Maps",
+  },
 
   // ── Feedback ──
   FEEDBACK_NOT_FOUND: { status: 404, message: "Feedback không tồn tại" },
@@ -97,14 +111,34 @@ export const ERROR_CODES = {
     status: 409,
     message: "Insight không ở trạng thái cho phép thao tác này",
   },
+  INSIGHT_CONTENT_EMPTY: {
+    status: 400,
+    message: "Tiêu đề và mô tả insight không được trống",
+  },
+  INSIGHT_INVALID_PRIORITY: {
+    status: 400,
+    message: "Priority phải từ 1 đến 5",
+  },
+  INSIGHT_INVALID_CONFIDENCE: {
+    status: 400,
+    message: "Confidence phải từ 0 đến 1",
+  },
   INSIGHT_REJECT_NEEDS_COMMENT: {
     status: 400,
     message: "Từ chối insight phải có lý do",
+  },
+  INSIGHT_REANALYSIS_NEEDS_COMMENT: {
+    status: 400,
+    message: "Yêu cầu phân tích lại phải có lý do",
   },
   INSIGHT_MERGE_MIN_TWO: { status: 400, message: "Cần ít nhất 2 insight để gộp" },
   INSIGHT_MERGE_DIFF_SESSION: {
     status: 400,
     message: "Chỉ gộp insight cùng session",
+  },
+  INSIGHT_SPLIT_MIN_TWO: {
+    status: 400,
+    message: "Cần ít nhất 2 insight khi tách",
   },
   INSIGHT_SPLIT_NEEDS_EVIDENCE: {
     status: 400,

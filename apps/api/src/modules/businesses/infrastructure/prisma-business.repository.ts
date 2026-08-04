@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@seeding/database";
 import { PrismaService } from "@seeding/database";
+import type { AnalysisSessionStatus } from "@seeding/contracts";
 import {
   BusinessEntity,
   BusinessLocationEntity,
@@ -8,27 +9,12 @@ import {
   BusinessRepository,
   CreateBusinessData,
   CreateBusinessLocationData,
-  DeactivateBusinessResult,
   ListBusinessesFilter,
   Paginated,
-  RestoreBusinessResult,
   UpdateBusinessData,
   UpdateBusinessLocationData,
   BusinessWithLocation,
 } from "../domain/business.types";
-
-/** DRAFT được auto-archive; các session non-terminal còn lại chặn deactivate. */
-const TERMINAL_SESSION_STATUSES = ["COMPLETED", "ARCHIVED"] as const;
-
-/** Internal error — dùng để rollback transaction khi deactivate bị chặn bởi session non-terminal. */
-class DeactivateBlockedError extends Error {
-  constructor(
-    public readonly business: BusinessEntity,
-    public readonly blockingCount: number,
-  ) {
-    super("Deactivate blocked");
-  }
-}
 
 function toEntity(row: {
   id: string;
@@ -203,107 +189,66 @@ export class PrismaBusinessRepository implements BusinessRepository {
     };
   }
 
-  async deactivate(
+  async findByIdWithLock(
     id: string,
     organizationId: string,
-  ): Promise<DeactivateBusinessResult> {
-    return this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw(
-        Prisma.sql`SELECT "id" FROM "businesses"
-          WHERE "id" = ${id} AND "organizationId" = ${organizationId}
-          FOR UPDATE`,
-      );
-      const existing = await tx.business.findFirst({
-        where: { id, organizationId, deletedAt: null },
-      });
-      if (!existing) {
-        return { business: null, blockingSessionCount: 0, archivedDraftCount: 0, changed: false };
-      }
-      if (!existing.isActive) {
-        return {
-          business: toEntity(existing),
-          blockingSessionCount: 0,
-          archivedDraftCount: 0,
-          changed: false,
-        };
-      }
+    tx?: Prisma.TransactionClient,
+  ): Promise<BusinessEntity | null> {
+    const client = tx ?? this.prisma;
+    await client.$queryRaw(
+      Prisma.sql`SELECT "id" FROM "businesses"
+        WHERE "id" = ${id} AND "organizationId" = ${organizationId}
+        FOR UPDATE`,
+    );
+    const row = await client.business.findFirst({
+      where: { id, organizationId, deletedAt: null },
+    });
+    return row ? toEntity(row) : null;
+  }
 
-      // BUS-05: Tự động archive tất cả session DRAFT — chúng chưa có data thực sự,
-      // an toàn để archive. Điều này ngăn DRAFT chặn deactivate vô lý.
-      const { count: archivedDraftCount } = await tx.analysisSession.updateMany({
-        where: {
-          businessId: id,
-          organizationId,
-          status: "DRAFT",
-        },
-        data: {
-          status: "ARCHIVED",
-          archivedAt: new Date(),
-        },
-      });
+  async archiveDraftSessions(
+    businessId: string,
+    organizationId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<number> {
+    const client = tx ?? this.prisma;
+    const { count } = await client.analysisSession.updateMany({
+      where: { businessId, organizationId, status: "DRAFT" },
+      data: { status: "ARCHIVED", archivedAt: new Date() },
+    });
+    return count;
+  }
 
-      // Đếm session non-terminal còn lại (DATA_COLLECTION, PROCESSING, ...) — chặn deactivate.
-      const blockingSessionCount = await tx.analysisSession.count({
-        where: {
-          businessId: id,
-          organizationId,
-          status: { notIn: [...TERMINAL_SESSION_STATUSES] },
-        },
-      });
-      if (blockingSessionCount > 0) {
-        // Rollback toàn bộ transaction (bao gồm archive DRAFT ở trên).
-        throw new DeactivateBlockedError(toEntity(existing), blockingSessionCount);
-      }
-
-      const updated = await tx.business.update({
-        where: { id },
-        data: { isActive: false },
-      });
-      return {
-        business: toEntity(updated),
-        blockingSessionCount: 0,
-        archivedDraftCount,
-        changed: true,
-      };
-    }).catch((err) => {
-      if (err instanceof DeactivateBlockedError) {
-        return {
-          business: err.business,
-          blockingSessionCount: err.blockingCount,
-          archivedDraftCount: 0,
-          changed: false,
-        };
-      }
-      throw err;
+  async countSessionsNotInStatuses(
+    businessId: string,
+    organizationId: string,
+    statuses: AnalysisSessionStatus[],
+    tx?: Prisma.TransactionClient,
+  ): Promise<number> {
+    const client = tx ?? this.prisma;
+    return client.analysisSession.count({
+      where: {
+        businessId,
+        organizationId,
+        status: { notIn: statuses },
+      },
     });
   }
 
-  async restore(
+  async updateIsActive(
     id: string,
     organizationId: string,
-  ): Promise<RestoreBusinessResult> {
-    return this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw(
-        Prisma.sql`SELECT "id" FROM "businesses"
-          WHERE "id" = ${id} AND "organizationId" = ${organizationId}
-          FOR UPDATE`,
-      );
-      const existing = await tx.business.findFirst({
-        where: { id, organizationId, deletedAt: null },
-      });
-      if (!existing) {
-        return { business: null, changed: false };
-      }
-      if (existing.isActive) {
-        return { business: toEntity(existing), changed: false };
-      }
-
-      const updated = await tx.business.update({
-        where: { id },
-        data: { isActive: true },
-      });
-      return { business: toEntity(updated), changed: true };
+    isActive: boolean,
+    tx?: Prisma.TransactionClient,
+  ): Promise<BusinessEntity | null> {
+    const client = tx ?? this.prisma;
+    const { count } = await client.business.updateMany({
+      where: { id, organizationId, deletedAt: null },
+      data: { isActive },
     });
+    if (count === 0) return null;
+    const row = await client.business.findUniqueOrThrow({ where: { id } });
+    return toEntity(row);
   }
 
   async createWithLocation(
@@ -397,6 +342,22 @@ export class PrismaBusinessRepository implements BusinessRepository {
     const updated = await this.prisma.businessLocation.updateMany({
       where: { id, businessId, organizationId },
       data,
+    });
+    if (updated.count === 0) return null;
+    const row = await this.prisma.businessLocation.findUniqueOrThrow({
+      where: { id },
+    });
+    return toLocationEntity(row);
+  }
+
+  async deleteLocation(
+    id: string,
+    businessId: string,
+    organizationId: string,
+  ): Promise<BusinessLocationEntity | null> {
+    const updated = await this.prisma.businessLocation.updateMany({
+      where: { id, businessId, organizationId, isActive: true },
+      data: { isActive: false },
     });
     if (updated.count === 0) return null;
     const row = await this.prisma.businessLocation.findUniqueOrThrow({

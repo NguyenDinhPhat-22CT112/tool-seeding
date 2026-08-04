@@ -9,6 +9,7 @@ export interface ProcessingQueuePayload {
   jobType: JobName;
   pipelineId?: string | null;
   triggeredBy?: string | null;
+  sampleLimit?: number | null;
 }
 
 export interface EnqueueJobInput {
@@ -18,4 +19,5 @@ export interface EnqueueJobInput {
   jobType: JobName;
   pipelineId?: string | null;
   triggeredBy?: string | null;
+  sampleLimit?: number | null;
 }

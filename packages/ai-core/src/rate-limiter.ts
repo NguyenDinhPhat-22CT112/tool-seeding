@@ -2,7 +2,6 @@ export class TokenBucketLimiter {
   private tokens: number;
   private lastRefill: number;
   private concurrent = 0;
-  private waitQueue: Array<() => void> = [];
 
   constructor(
     private readonly maxTokens: number,
@@ -21,35 +20,22 @@ export class TokenBucketLimiter {
     this.lastRefill = now;
   }
 
-  private tryAcquireToken(): boolean {
-    this.refill();
-    if (this.tokens >= 1 && this.concurrent < this.maxConcurrent) {
-      this.tokens -= 1;
-      this.concurrent += 1;
-      return true;
-    }
-    return false;
-  }
-
   async acquire(): Promise<void> {
-    if (this.tryAcquireToken()) return;
-
-    await new Promise<void>((resolve) => {
-      const check = (): void => {
-        if (this.tryAcquireToken()) {
-          resolve();
-          return;
-        }
-        setTimeout(check, 50);
-      };
-      this.waitQueue.push(check);
-      check();
-    });
+    // Polling đơn giản, tránh race deadlock khi nhiều waiter đan xen release().
+    // Với maxConcurrent thấp (1-2) và acquire gọi tuần tự trong pipeline, polling
+    // 100ms là đủ và an toàn.
+    while (true) {
+      this.refill();
+      if (this.tokens >= 1 && this.concurrent < this.maxConcurrent) {
+        this.tokens -= 1;
+        this.concurrent += 1;
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 100));
+    }
   }
 
   release(): void {
     this.concurrent = Math.max(0, this.concurrent - 1);
-    const next = this.waitQueue.shift();
-    if (next) next();
   }
 }

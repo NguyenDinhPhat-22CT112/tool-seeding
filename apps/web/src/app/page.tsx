@@ -1,5 +1,5 @@
-import { BusinessWorkspace } from "@/components/business-workspace";
+import { OrgSelector } from '@/components/auth/org-selector';
 
-export default function HomePage() {
-  return <BusinessWorkspace />;
+export default function Page() {
+  return <OrgSelector />;
 }

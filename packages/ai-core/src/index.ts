@@ -6,6 +6,10 @@ export type {
   AnalyzeFeedbackInput,
   AnalyzeFeedbackResult,
   AICompletionUsage,
+  GenerateInsightsInput,
+  GenerateInsightsResult,
+  GenerateStrategyInput,
+  GenerateStrategyResult,
 } from "./ai-provider.interface";
 
 export { AIRetryPolicy, executeWithRetry } from "./retry-policy";
@@ -21,7 +25,10 @@ export type { PromptDefinition } from "./prompt-registry";
 export { FEEDBACK_ANALYSIS_V1 } from "./prompts/feedback-analysis/v1";
 export { FEEDBACK_ANALYSIS_V2 } from "./prompts/feedback-analysis/v2";
 export { INSIGHT_GENERATION_V1 } from "./prompts/insight-generation/v1";
+export { INSIGHT_GENERATION_V2 } from "./prompts/insight-generation/v2";
 export { STRATEGY_GENERATION_V1 } from "./prompts/strategy-generation/v1";
+export { STRATEGY_GENERATION_V2 } from "./prompts/strategy-generation/v2";
+export { DEFAULT_PROMPTS, registerDefaultPrompts } from "./prompts";
 
 export {
   feedbackAnalysisOutputSchema,
@@ -49,6 +56,14 @@ export type { OpenAIProviderConfig } from "./providers/openai-provider";
 
 export { createGeminiProvider } from "./providers/gemini-provider";
 export type { GeminiProviderConfig } from "./providers/gemini-provider";
+
+export { createFailoverProvider } from "./providers/failover-provider";
+
+export { createOllamaProvider } from "./providers/ollama-provider";
+export type { OllamaProviderConfig } from "./providers/ollama-provider";
+
+export { createDeepSeekProvider } from "./providers/deepseek-provider";
+export type { DeepSeekProviderConfig } from "./providers/deepseek-provider";
 
 export { createAIProvider } from "./factory";
 export type { AIProviderConfig } from "./factory";

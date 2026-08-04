@@ -6,6 +6,7 @@ import {
   DataSourceRepository,
   DataSourceStatus,
   SourceType,
+  UpdateDataSourceData,
 } from "../domain/data-source.types";
 
 function toEntity(row: {
@@ -89,6 +90,55 @@ export class PrismaDataSourceRepository implements DataSourceRepository {
       },
     });
     return row ? toEntity(row) : null;
+  }
+
+  async update(
+    id: string,
+    analysisSessionId: string,
+    organizationId: string,
+    data: UpdateDataSourceData,
+  ): Promise<DataSourceEntity | null> {
+    const existing = await this.findByIdInSession(id, analysisSessionId, organizationId);
+    if (!existing) return null;
+
+    const row = await this.prisma.dataSource.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name } : {}),
+        ...(data.businessLocationId !== undefined
+          ? { businessLocationId: data.businessLocationId }
+          : {}),
+      },
+    });
+    return toEntity(row);
+  }
+
+  async remove(
+    id: string,
+    analysisSessionId: string,
+    organizationId: string,
+  ): Promise<DataSourceEntity | null> {
+    const existing = await this.findByIdInSession(id, analysisSessionId, organizationId);
+    if (!existing) return null;
+
+    const row = await this.prisma.dataSource.delete({ where: { id } });
+    return toEntity(row);
+  }
+
+  async countFeedback(
+    id: string,
+    analysisSessionId: string,
+    organizationId: string,
+  ): Promise<number> {
+    const existing = await this.findByIdInSession(id, analysisSessionId, organizationId);
+    if (!existing) return 0;
+    return this.prisma.customerFeedback.count({
+      where: {
+        dataSourceId: id,
+        analysisSessionId,
+        analysisSession: { organizationId },
+      },
+    });
   }
 
   async updateStatus(

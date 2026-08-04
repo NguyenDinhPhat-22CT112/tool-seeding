@@ -32,4 +32,32 @@ export class DataProcessingController {
   ) {
     return this.service.triggerProcess(ctx, sessionId);
   }
+
+  @Post("insight-generation")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Kích hoạt AI sinh insights từ feedback analyses" })
+  @ApiCreatedResponse({ description: "Insight generation job đã tạo" })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiConflictResponse({ type: ApiErrorResponseDto })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  triggerInsightGeneration(
+    @Ctx() ctx: RequestContext,
+    @Param("sessionId", ResourceIdPipe) sessionId: string,
+  ) {
+    return this.service.triggerInsightGeneration(ctx, sessionId);
+  }
+
+  @Post("strategy-generation")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Kích hoạt AI sinh chiến lược từ insights đã duyệt" })
+  @ApiCreatedResponse({ description: "Strategy generation job đã tạo" })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiConflictResponse({ type: ApiErrorResponseDto })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  triggerStrategyGeneration(
+    @Ctx() ctx: RequestContext,
+    @Param("sessionId", ResourceIdPipe) sessionId: string,
+  ) {
+    return this.service.triggerStrategyGeneration(ctx, sessionId);
+  }
 }

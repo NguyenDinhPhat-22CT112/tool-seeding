@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from "@nestjs/common";
-import { Response } from "express";
+import type { Response } from "express";
 import { randomUUID } from "node:crypto";
 import { STATUS_CODES } from "node:http";
 import type { ApiErrorResponse } from "@seeding/contracts";

@@ -12,4 +12,5 @@ export class SerpApiStatusResponseDto implements SerpApiStatusResponse {
     configured!: boolean;
     autocomplete?: SerpApiUsageItem;
     placeDetails?: SerpApiUsageItem;
+    reviews?: SerpApiUsageItem;
 }

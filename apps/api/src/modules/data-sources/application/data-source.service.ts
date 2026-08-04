@@ -11,7 +11,7 @@ import {
   DATA_SOURCE_REPOSITORY,
   DataSourceRepository,
 } from "../domain/data-source.types";
-import { CreateDataSourceDto } from "./data-source.dto";
+import { CreateDataSourceDto, UpdateDataSourceDto } from "./data-source.dto";
 import { DataSourceMapper } from "./data-source.mapper";
 import { DataSourcePolicy } from "./data-source.policy";
 
@@ -28,6 +28,43 @@ export class DataSourceService {
     await this.assertSessionAllowsData(ctx, sessionId);
     const items = await this.repo.listBySession(sessionId, ctx.organizationId);
     return items.map(DataSourceMapper.toResponse);
+  }
+
+  async get(ctx: RequestContext, sessionId: string, id: string) {
+    await this.assertSessionAllowsData(ctx, sessionId);
+    const item = await this.repo.findByIdInSession(id, sessionId, ctx.organizationId);
+    if (!item) throw new DomainError("DATA_SOURCE_NOT_FOUND");
+    return DataSourceMapper.toResponse(item);
+  }
+
+  async update(
+    ctx: RequestContext,
+    sessionId: string,
+    id: string,
+    dto: UpdateDataSourceDto,
+  ) {
+    this.policy.assertCanCreate(ctx);
+    await this.assertSessionAllowsData(ctx, sessionId);
+    const updated = await this.repo.update(id, sessionId, ctx.organizationId, {
+      ...(dto.name !== undefined ? { name: dto.name } : {}),
+      ...(dto.businessLocationId !== undefined
+        ? { businessLocationId: dto.businessLocationId }
+        : {}),
+    });
+    if (!updated) throw new DomainError("DATA_SOURCE_NOT_FOUND");
+    return DataSourceMapper.toResponse(updated);
+  }
+
+  async remove(ctx: RequestContext, sessionId: string, id: string) {
+    this.policy.assertCanCreate(ctx);
+    await this.assertSessionAllowsData(ctx, sessionId);
+
+    const feedbackCount = await this.repo.countFeedback(id, sessionId, ctx.organizationId);
+    if (feedbackCount > 0) throw new DomainError("DATA_SOURCE_IN_USE");
+
+    const removed = await this.repo.remove(id, sessionId, ctx.organizationId);
+    if (!removed) throw new DomainError("DATA_SOURCE_NOT_FOUND");
+    return DataSourceMapper.toResponse(removed);
   }
 
   async create(ctx: RequestContext, sessionId: string, dto: CreateDataSourceDto) {

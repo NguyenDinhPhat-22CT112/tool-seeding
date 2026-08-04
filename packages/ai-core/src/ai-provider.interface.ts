@@ -1,4 +1,6 @@
 import type { FeedbackAnalysisOutput } from "./schemas/feedback-analysis.schema";
+import type { InsightGenerationOutput } from "./schemas/insight-generation.schema";
+import type { StrategyGenerationOutput } from "./schemas/strategy-generation.schema";
 
 export interface AnalyzeFeedbackInput {
   feedbackId: string;
@@ -7,6 +9,39 @@ export interface AnalyzeFeedbackInput {
   industry?: string | null;
   objective?: string | null;
   rating?: number | null;
+  promptVersion?: string;
+}
+
+export interface GenerateInsightsInput {
+  businessName: string;
+  industry?: string | null;
+  objective?: string | null;
+  analyses: Array<{
+    feedbackId: string;
+    content: string;
+    sentiment?: string | null;
+    sentimentScore?: number | null;
+    topics: string[];
+    painPoints: string[];
+    questions: string[];
+    priority?: number | null;
+    confidence?: number | null;
+  }>;
+  promptVersion?: string;
+}
+
+export interface GenerateStrategyInput {
+  businessName: string;
+  objective?: string | null;
+  insights: Array<{
+    id: string;
+    title: string;
+    description: string;
+    priority: number;
+    confidence: number;
+    frequencyPct: number;
+    status: string;
+  }>;
   promptVersion?: string;
 }
 
@@ -26,9 +61,31 @@ export interface AnalyzeFeedbackResult {
   durationMs: number;
 }
 
+export interface GenerateInsightsResult {
+  output: InsightGenerationOutput;
+  model: string;
+  provider: string;
+  promptVersion: string;
+  usage: AICompletionUsage;
+  rawResponse: unknown;
+  durationMs: number;
+}
+
+export interface GenerateStrategyResult {
+  output: StrategyGenerationOutput;
+  model: string;
+  provider: string;
+  promptVersion: string;
+  usage: AICompletionUsage;
+  rawResponse: unknown;
+  durationMs: number;
+}
+
 export interface AIProvider {
   readonly name: string;
   analyzeFeedback(input: AnalyzeFeedbackInput): Promise<AnalyzeFeedbackResult>;
+  generateInsights(input: GenerateInsightsInput): Promise<GenerateInsightsResult>;
+  generateStrategy(input: GenerateStrategyInput): Promise<GenerateStrategyResult>;
 }
 
 export class AIProviderError extends Error {

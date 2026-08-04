@@ -124,8 +124,7 @@ export class PrismaFeedbackRepository implements FeedbackRepository {
     analysisSessionId: string,
     organizationId: string,
     data: UpdateFeedbackData,
-  ): Promise<FeedbackEntity | null> {
-    const existing = await this.findByIdInSession(id, analysisSessionId, organizationId);
+  ): Promise<FeedbackEntity | null> {    const existing = await this.findByIdInSession(id, analysisSessionId, organizationId);
     if (!existing) return null;
 
     const row = await this.prisma.customerFeedback.update({

@@ -1,3 +1,4 @@
+import { PrismaService } from "@seeding/database";
 import {
   BusinessRuleViolationError,
 } from "../../../../shared/exceptions/domain.exceptions";
@@ -49,8 +50,10 @@ function repository() {
   const findByIdInOrg = vi.fn<BusinessRepository["findByIdInOrg"]>();
   const update = vi.fn<BusinessRepository["update"]>();
   const list = vi.fn<BusinessRepository["list"]>();
-  const deactivate = vi.fn<BusinessRepository["deactivate"]>();
-  const restore = vi.fn<BusinessRepository["restore"]>();
+  const findByIdWithLock = vi.fn<BusinessRepository["findByIdWithLock"]>();
+  const archiveDraftSessions = vi.fn<BusinessRepository["archiveDraftSessions"]>();
+  const countSessionsNotInStatuses = vi.fn<BusinessRepository["countSessionsNotInStatuses"]>();
+  const updateIsActive = vi.fn<BusinessRepository["updateIsActive"]>();
   const createWithLocation = vi.fn<BusinessRepository["createWithLocation"]>();
   const createLocation = vi.fn<BusinessRepository["createLocation"]>();
   const findLocationBySerpApiPlaceIdInOrg =
@@ -64,8 +67,10 @@ function repository() {
     findByIdInOrg,
     update,
     list,
-    deactivate,
-    restore,
+    findByIdWithLock,
+    archiveDraftSessions,
+    countSessionsNotInStatuses,
+    updateIsActive,
     createWithLocation,
     createLocation,
     findLocationBySerpApiPlaceIdInOrg,
@@ -75,8 +80,15 @@ function repository() {
   };
   return {
     repo,
-    mocks: { create, findByIdInOrg, update, list, deactivate, restore },
+    mocks: {
+      create, findByIdInOrg, update, list,
+      findByIdWithLock, archiveDraftSessions, countSessionsNotInStatuses, updateIsActive,
+    },
   };
+}
+
+function prismaService() {
+  return { $transaction: vi.fn() } as unknown as PrismaService;
 }
 
 describe("BusinessService", () => {
@@ -88,7 +100,7 @@ describe("BusinessService", () => {
       page: 1,
       pageSize: 20,
     });
-    const service = new BusinessService(repo, new BusinessPolicy());
+    const service = new BusinessService(repo, prismaService(), new BusinessPolicy());
 
     const result = await service.list(adminContext, {});
 
@@ -99,7 +111,7 @@ describe("BusinessService", () => {
   it("không cho cập nhật Business inactive", async () => {
     const { repo, mocks } = repository();
     mocks.findByIdInOrg.mockResolvedValue(business({ isActive: false }));
-    const service = new BusinessService(repo, new BusinessPolicy());
+    const service = new BusinessService(repo, prismaService(), new BusinessPolicy());
 
     await expect(
       service.update(adminContext, "business_1", { name: "Tên mới" }),

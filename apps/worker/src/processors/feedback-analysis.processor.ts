@@ -1,22 +1,20 @@
-import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
 import { Job } from "bullmq";
 import { AiAnalysisService } from "../services/ai-analysis.service";
 import { JobRepositoryService } from "../services/job-repository.service";
+import { globalFileLogger } from "../common/file-logger";
 
-const DATA_PROCESSING_QUEUE = "data-processing";
 const CHECK_CANCELLATION_EVERY = 5;
 
 @Injectable()
-@Processor(DATA_PROCESSING_QUEUE)
-export class FeedbackAnalysisProcessor extends WorkerHost {
+export class FeedbackAnalysisProcessor {
   private readonly logger = new Logger(FeedbackAnalysisProcessor.name);
 
   constructor(
     private readonly aiAnalysis: AiAnalysisService,
     private readonly jobRepo: JobRepositoryService,
   ) {
-    super();
+    this.logger.log("FeedbackAnalysisProcessor initialized");
   }
 
   async process(job: Job): Promise<void> {
@@ -27,10 +25,19 @@ export class FeedbackAnalysisProcessor extends WorkerHost {
       organizationId: string;
       jobType: string;
       pipelineId?: string | null;
+      sampleLimit?: number | null;
     };
 
     const { processingJobId, analysisSessionId, organizationId } = data;
     const startedAt = Date.now();
+
+    await globalFileLogger.log("INFO", "FeedbackAnalysisProcessor.process called", {
+      processingJobId,
+      analysisSessionId,
+      organizationId,
+      jobType: data.jobType,
+      bullmqJobId: job.id,
+    });
 
     this.logger.log({ processingJobId, analysisSessionId }, "AI feedback analysis started");
 
@@ -42,7 +49,10 @@ export class FeedbackAnalysisProcessor extends WorkerHost {
       return;
     }
 
-    const feedbacks = await this.jobRepo.findFeedbacksToAnalyze(analysisSessionId);
+    const feedbacks = await this.jobRepo.findFeedbacksToAnalyze(
+      analysisSessionId,
+      data.sampleLimit,
+    );
 
     const total = feedbacks.length;
     this.logger.log({ total, analysisSessionId }, "Analyzing feedbacks with AI");
@@ -132,8 +142,17 @@ export class FeedbackAnalysisProcessor extends WorkerHost {
     await this.jobRepo.markCompleted(processingJobId);
     await this.jobRepo.transitionSession(analysisSessionId, "PROCESSING", "ANALYZING");
 
+    const durationMs = Date.now() - startedAt;
+    await globalFileLogger.log("INFO", "FeedbackAnalysisProcessor completed", {
+      processingJobId,
+      total,
+      processedCount,
+      failedCount,
+      durationMs,
+    });
+
     this.logger.log({
-      processingJobId, total, processedCount, failedCount, durationMs: Date.now() - startedAt,
+      processingJobId, total, processedCount, failedCount, durationMs,
     }, "AI feedback analysis completed");
   }
 }

@@ -19,6 +19,10 @@ import { FeedbackModule } from "./modules/feedback";
 import { ImportsModule } from "./modules/imports";
 import { DataProcessingModule } from "./modules/data-processing";
 import { AiAnalysisModule } from "./modules/ai-analysis";
+import { ReviewsCrawlerModule } from "./modules/reviews-crawler";
+import { InsightsModule } from "./modules/insights";
+import { StrategyModule } from "./modules/strategy";
+import { IamModule } from "./modules/iam";
 import { QueueModule } from "./shared/queues/queue.module";
 import { AiModule } from "./integrations/ai/ai.module";
 import { TemporaryRequestContextMiddleware } from "./shared/context/request-context";
@@ -42,6 +46,10 @@ import { AuditService } from "./shared/audit";
     ImportsModule,
     DataProcessingModule,
     AiAnalysisModule,
+    ReviewsCrawlerModule,
+    InsightsModule,
+    StrategyModule,
+    IamModule,
     QueueModule,
     AiModule,
     // Mỗi bounded context được import tại composition root này.
@@ -53,7 +61,10 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(TemporaryRequestContextMiddleware)
-      .exclude({ path: "health", method: RequestMethod.ALL })
+      .exclude(
+        { path: "health", method: RequestMethod.ALL },
+        { path: "iam/bootstrap", method: RequestMethod.ALL },
+      )
       .forRoutes("*");
   }
 }

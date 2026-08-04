@@ -32,7 +32,7 @@ export class AIRetryPolicy implements RetryPolicy {
   }
 
   maxRetries(error: AICallErrorInfo): number {
-    if (error.httpStatus === 429) return 5;
+    if (error.httpStatus === 429) return error.retryAfterMs ? 5 : 0;
     if (error.type === "SCHEMA_INVALID") return 1;
     if (error.type === "TIMEOUT") return 2;
     return 3;

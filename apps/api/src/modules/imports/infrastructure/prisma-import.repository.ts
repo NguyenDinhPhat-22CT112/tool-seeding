@@ -72,6 +72,22 @@ export class PrismaImportRepository implements ImportRepository {
     return row ? toEntity(row) : null;
   }
 
+  async listBySession(
+    analysisSessionId: string,
+    organizationId: string,
+  ): Promise<ImportBatchEntity[]> {
+    const rows = await this.prisma.importBatch.findMany({
+      where: {
+        dataSource: {
+          analysisSessionId,
+          analysisSession: { organizationId },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return rows.map(toEntity);
+  }
+
   async updateMapping(
     id: string,
     analysisSessionId: string,

@@ -82,25 +82,20 @@ describe("OpenAPI contract", () => {
     expect(JSON.stringify(response)).toContain("ApiErrorResponseDto");
   });
 
-  it("công bố đủ API Google Places và BusinessLocation", () => {
-    expect(
-      document.paths["/api/google-places/autocomplete"]?.post,
-    ).toBeDefined();
-    expect(document.paths["/api/google-places/preview"]?.post).toBeDefined();
-    expect(
-      document.paths["/api/businesses/from-google-place"]?.post,
-    ).toBeDefined();
+  it("công bố đủ API SerpAPI và BusinessLocation", () => {
+    expect(document.paths["/api/serpapi/autocomplete"]?.post).toBeDefined();
+    expect(document.paths["/api/serpapi/preview"]?.post).toBeDefined();
+    expect(document.paths["/api/businesses/from-serpapi"]?.post).toBeDefined();
     expect(
       document.paths["/api/businesses/{businessId}/locations"]?.get,
     ).toBeDefined();
     expect(
       document.paths[
-        "/api/businesses/{businessId}/locations/from-google-place"
+        "/api/businesses/{businessId}/locations/from-serpapi"
       ]?.post,
     ).toBeDefined();
 
-    const previewSchema =
-      document.components?.schemas?.GooglePlacePreviewResponse;
+    const previewSchema = document.components?.schemas?.SerpApiPreviewResponse;
     const properties =
       previewSchema && "properties" in previewSchema
         ? previewSchema.properties

@@ -1,7 +1,11 @@
 import { Transform, TransformFnParams } from "class-transformer";
 import { IsIn, IsOptional, IsString, MaxLength, MinLength, Matches } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import type { CreateDataSourceRequest, SourceType } from "@seeding/contracts";
+import type {
+  CreateDataSourceRequest,
+  SourceType,
+  UpdateDataSourceRequest,
+} from "@seeding/contracts";
 
 function trimString({ value }: TransformFnParams): unknown {
   const input = value as unknown;
@@ -21,6 +25,24 @@ export class CreateDataSourceDto implements CreateDataSourceRequest {
   @ApiProperty({ enum: SOURCE_TYPES })
   @IsIn(SOURCE_TYPES)
   sourceType!: SourceType;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  @Matches(/^[A-Za-z0-9_-]+$/)
+  @Transform(trimString)
+  businessLocationId?: string | null;
+}
+
+export class UpdateDataSourceDto implements UpdateDataSourceRequest {
+  @ApiPropertyOptional({ example: "Nhập tay Q4", maxLength: 200 })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(200)
+  @Transform(trimString)
+  name?: string;
 
   @ApiPropertyOptional({ nullable: true })
   @IsOptional()

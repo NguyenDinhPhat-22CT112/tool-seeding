@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
-import { Response } from "express";
+import type { Response } from "express";
 import { PrismaService } from "@seeding/database";
 import { RequestContext } from "../../../shared/context/request-context";
 import { DomainError } from "../../../shared/exceptions/domain.exceptions";
@@ -117,6 +117,20 @@ export class ImportService {
   async getBatch(ctx: RequestContext, sessionId: string, batchId: string) {
     const batch = await this.findBatchOrThrow(ctx, sessionId, batchId);
     return ImportMapper.toResponse(batch);
+  }
+
+  async list(ctx: RequestContext, sessionId: string) {
+    const session = await this.sessionRepo.findByIdInOrg(
+      sessionId,
+      ctx.organizationId,
+    );
+    if (!session) throw new DomainError("SESSION_NOT_FOUND");
+
+    const batches = await this.repo.listBySession(
+      sessionId,
+      ctx.organizationId,
+    );
+    return batches.map((batch) => ImportMapper.toResponse(batch));
   }
 
   async mapColumns(

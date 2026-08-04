@@ -8,10 +8,8 @@ import {
   AnalysisSessionStatus,
   BusinessProfileSnapshot,
   CreateAnalysisSessionData,
-  CreateAnalysisSessionResult,
   ListAnalysisSessionsFilter,
   Paginated,
-  StartDataCollectionResult,
   UpdateAnalysisSessionData,
 } from "../domain/analysis-session.types";
 
@@ -44,39 +42,24 @@ function toEntity(row: {
 export class PrismaAnalysisSessionRepository implements AnalysisSessionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateAnalysisSessionData): Promise<CreateAnalysisSessionResult> {
-    return this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw(
-        Prisma.sql`SELECT "id" FROM "businesses"
-          WHERE "id" = ${data.businessId}
-            AND "organizationId" = ${data.organizationId}
-          FOR UPDATE`,
-      );
-      const business = await tx.business.findFirst({
-        where: {
-          id: data.businessId,
-          organizationId: data.organizationId,
-          deletedAt: null,
-        },
-        select: { isActive: true },
-      });
-      if (!business) return { outcome: "BUSINESS_NOT_FOUND" } as const;
-      if (!business.isActive) return { outcome: "BUSINESS_INACTIVE" } as const;
-
-      const row = await tx.analysisSession.create({
-        data: {
-          organizationId: data.organizationId,
-          businessId: data.businessId,
-          name: data.name,
-          objective: data.objective,
-          focusProduct: data.focusProduct,
-          dateFrom: data.dateFrom,
-          dateTo: data.dateTo,
-          createdBy: data.createdBy,
-        },
-      });
-      return { outcome: "CREATED", session: toEntity(row) } as const;
+  async create(
+    data: CreateAnalysisSessionData,
+    tx?: Prisma.TransactionClient,
+  ): Promise<AnalysisSessionEntity> {
+    const client = tx ?? this.prisma;
+    const row = await client.analysisSession.create({
+      data: {
+        organizationId: data.organizationId,
+        businessId: data.businessId,
+        name: data.name,
+        objective: data.objective,
+        focusProduct: data.focusProduct,
+        dateFrom: data.dateFrom,
+        dateTo: data.dateTo,
+        createdBy: data.createdBy,
+      },
     });
+    return toEntity(row);
   }
 
   async findByIdInOrg(
@@ -104,82 +87,56 @@ export class PrismaAnalysisSessionRepository implements AnalysisSessionRepositor
     return toEntity(row);
   }
 
-  async startDataCollection(
+  async findByIdWithLock(
     id: string,
     organizationId: string,
-  ): Promise<StartDataCollectionResult> {
-    return this.prisma.$transaction(async (tx) => {
-      const initialSession = await tx.analysisSession.findFirst({
-        where: { id, organizationId },
-        select: { businessId: true },
-      });
-      if (!initialSession) return { outcome: "SESSION_NOT_FOUND" } as const;
+    tx: Prisma.TransactionClient,
+  ): Promise<AnalysisSessionEntity | null> {
+    await tx.$queryRaw(
+      Prisma.sql`SELECT "id" FROM "analysis_sessions"
+        WHERE "id" = ${id} AND "organizationId" = ${organizationId}
+        FOR UPDATE`,
+    );
+    const row = await tx.analysisSession.findFirst({
+      where: { id, organizationId },
+    });
+    return row ? toEntity(row) : null;
+  }
 
-      // Business deactivate/restore uses the same row lock. Checking isActive,
-      // capturing the snapshot and changing status therefore form one operation.
-      await tx.$queryRaw(
-        Prisma.sql`SELECT "id" FROM "businesses"
-          WHERE "id" = ${initialSession.businessId}
-            AND "organizationId" = ${organizationId}
-          FOR UPDATE`,
-      );
+  async transitionFromDraft(
+    id: string,
+    organizationId: string,
+    nextStatus: AnalysisSessionStatus,
+    snapshot: BusinessProfileSnapshot,
+    tx: Prisma.TransactionClient,
+  ): Promise<AnalysisSessionEntity | null> {
+    const { count } = await tx.analysisSession.updateMany({
+      where: { id, organizationId, status: "DRAFT" },
+      data: {
+        status: nextStatus,
+        businessSnapshot: snapshot as unknown as Prisma.InputJsonValue,
+        businessSnapshotAt: new Date(),
+      },
+    });
+    if (count === 0) return null;
 
-      const session = await tx.analysisSession.findFirst({
-        where: { id, organizationId },
-      });
-      if (!session) return { outcome: "SESSION_NOT_FOUND" } as const;
-      if (session.status !== "DRAFT") {
-        return {
-          outcome: "INVALID_STATE",
-          currentStatus: session.status as AnalysisSessionStatus,
-        } as const;
-      }
+    const row = await tx.analysisSession.findUniqueOrThrow({ where: { id } });
+    return toEntity(row);
+  }
 
-      const business = await tx.business.findFirst({
-        where: {
-          id: session.businessId,
-          organizationId,
-          deletedAt: null,
-        },
-      });
-      if (!business) return { outcome: "BUSINESS_NOT_FOUND" } as const;
-      if (!business.isActive) return { outcome: "BUSINESS_INACTIVE" } as const;
-
-      const snapshot: BusinessProfileSnapshot = {
-        id: business.id,
-        name: business.name,
-        industry: business.industry,
-        description: business.description,
-        website: business.website,
-        address: business.address,
-        phone: business.phone,
-        email: business.email,
-        products: business.products as unknown as BusinessProfileSnapshot["products"],
-        services: business.services as unknown as BusinessProfileSnapshot["services"],
-        targetAudience:
-          business.targetAudience as unknown as BusinessProfileSnapshot["targetAudience"],
-        competitors:
-          business.competitors as unknown as BusinessProfileSnapshot["competitors"],
-        strengths: business.strengths as unknown as string[],
-        brandVoice: business.brandVoice,
-        allowedTopics: business.allowedTopics as unknown as string[],
-        bannedTopics: business.bannedTopics as unknown as string[],
-        extraNotes: business.extraNotes,
-        sourceUpdatedAt: business.updatedAt.toISOString(),
-      };
-
-      const { count } = await tx.analysisSession.updateMany({
-        where: { id, organizationId, status: "DRAFT" },
-        data: {
-          status: "DATA_COLLECTION",
-          businessSnapshot: snapshot as unknown as Prisma.InputJsonValue,
-          businessSnapshotAt: new Date(),
-        },
-      });
-      if (count === 0) return { outcome: "CONCURRENT_CHANGE" } as const;
-
-      const updated = await tx.analysisSession.findUniqueOrThrow({ where: { id } });
-      return { outcome: "UPDATED", session: toEntity(updated) } as const;
+  async lockAndFindBusiness(
+    businessId: string,
+    organizationId: string,
+    tx: Prisma.TransactionClient,
+  ): Promise<{ isActive: boolean } | null> {
+    await tx.$queryRaw(
+      Prisma.sql`SELECT "id" FROM "businesses"
+        WHERE "id" = ${businessId} AND "organizationId" = ${organizationId}
+        FOR UPDATE`,
+    );
+    return tx.business.findFirst({
+      where: { id: businessId, organizationId, deletedAt: null },
+      select: { isActive: true },
     });
   }
 
@@ -270,5 +227,4 @@ export class PrismaAnalysisSessionRepository implements AnalysisSessionRepositor
     });
     return count > 0;
   }
-
 }

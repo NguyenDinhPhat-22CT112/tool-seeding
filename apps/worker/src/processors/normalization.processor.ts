@@ -1,16 +1,15 @@
-import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
 import { Queue, Job } from "bullmq";
 import { createHash } from "node:crypto";
 import { JobRepositoryService } from "../services/job-repository.service";
+import { globalFileLogger } from "../common/file-logger";
 
 const DATA_PROCESSING_QUEUE = "data-processing";
 const CHECK_CANCELLATION_EVERY = 10;
 
 @Injectable()
-@Processor(DATA_PROCESSING_QUEUE)
-export class NormalizationProcessor extends WorkerHost {
+export class NormalizationProcessor {
   private readonly logger = new Logger(NormalizationProcessor.name);
 
   constructor(
@@ -18,7 +17,7 @@ export class NormalizationProcessor extends WorkerHost {
     private readonly queue: Queue,
     private readonly jobRepo: JobRepositoryService,
   ) {
-    super();
+    this.logger.log("NormalizationProcessor initialized");
   }
 
   async process(job: Job): Promise<void> {
@@ -33,6 +32,14 @@ export class NormalizationProcessor extends WorkerHost {
 
     const { processingJobId, analysisSessionId, organizationId, pipelineId } = data;
     const startedAt = Date.now();
+
+    await globalFileLogger.log("INFO", "NormalizationProcessor.process called", {
+      processingJobId,
+      analysisSessionId,
+      organizationId,
+      jobType: data.jobType,
+      bullmqJobId: job.id,
+    });
 
     this.logger.log({ processingJobId, analysisSessionId }, "Normalization started");
 
@@ -67,8 +74,15 @@ export class NormalizationProcessor extends WorkerHost {
     await this.jobRepo.markCompleted(processingJobId);
     await this.enqueueNext(analysisSessionId, organizationId, pipelineId!, "DEDUPLICATION");
 
+    const durationMs = Date.now() - startedAt;
+    await globalFileLogger.log("INFO", "NormalizationProcessor completed", {
+      processingJobId,
+      total,
+      durationMs,
+    });
+
     this.logger.log({
-      processingJobId, total, durationMs: Date.now() - startedAt,
+      processingJobId, total, durationMs,
     }, "Normalization completed");
   }
 

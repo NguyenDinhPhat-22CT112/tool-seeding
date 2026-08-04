@@ -114,6 +114,71 @@ export class ProcessingJobService {
     };
   }
 
+  async triggerInsightGeneration(
+    ctx: RequestContext,
+    sessionId: string,
+  ): Promise<TriggerProcessResponse> {
+    this.policy.assertCanTrigger(ctx);
+
+    const session = await this.sessionRepo.findByIdInOrg(sessionId, ctx.organizationId);
+    if (!session) {
+      throw new DomainError("SESSION_NOT_FOUND");
+    }
+    if (session.status !== "ANALYZING") {
+      throw new DomainError("SESSION_WRONG_STATE");
+    }
+
+    return this.triggerAiStage(ctx, sessionId, "INSIGHT_GENERATION");
+  }
+
+  async triggerStrategyGeneration(
+    ctx: RequestContext,
+    sessionId: string,
+  ): Promise<TriggerProcessResponse> {
+    this.policy.assertCanTrigger(ctx);
+
+    const session = await this.sessionRepo.findByIdInOrg(sessionId, ctx.organizationId);
+    if (!session) {
+      throw new DomainError("SESSION_NOT_FOUND");
+    }
+    if (session.status !== "INSIGHT_REVIEW") {
+      throw new DomainError("SESSION_WRONG_STATE");
+    }
+
+    return this.triggerAiStage(ctx, sessionId, "STRATEGY_GENERATION");
+  }
+
+  private async triggerAiStage(
+    ctx: RequestContext,
+    sessionId: string,
+    jobType: "INSIGHT_GENERATION" | "STRATEGY_GENERATION",
+  ): Promise<TriggerProcessResponse> {
+    const pipelineId = randomUUID();
+    const payload = { pipelineId };
+
+    const job = await this.repo.create({
+      analysisSessionId: sessionId,
+      jobType,
+      payload,
+      createdBy: ctx.userId,
+    });
+
+    await this.publisher.enqueue({
+      processingJobId: job.id,
+      analysisSessionId: sessionId,
+      organizationId: ctx.organizationId,
+      jobType,
+      pipelineId,
+      triggeredBy: ctx.userId,
+    });
+
+    return {
+      pipelineId,
+      idempotent: false,
+      jobs: [ProcessingJobMapper.toResponse(job)],
+    };
+  }
+
   async list(ctx: RequestContext, query: ListProcessingJobsQueryDto) {
     const page = query.page ?? 1;
     const pageSize = query.pageSize ?? 20;
@@ -157,7 +222,9 @@ export class ProcessingJobService {
       throw new DomainError("JOB_CANNOT_RETRY");
     }
 
+    await this.publisher.remove(id);
     const pipelineId = this.extractPipelineId(reset);
+    const sampleLimit = this.extractSampleLimit(reset);
     await this.publisher.enqueue({
       processingJobId: reset.id,
       analysisSessionId: reset.analysisSessionId,
@@ -165,6 +232,7 @@ export class ProcessingJobService {
       jobType: reset.jobType as any,
       pipelineId,
       triggeredBy: ctx.userId,
+      sampleLimit,
     });
 
     return ProcessingJobMapper.toResponse(reset);
@@ -196,6 +264,14 @@ export class ProcessingJobService {
       return pipelineId;
     }
     return job.id;
+  }
+
+  private extractSampleLimit(job: ProcessingJobEntity): number | null {
+    const limit = job.payload?.sampleLimit;
+    if (typeof limit === "number" && Number.isFinite(limit) && limit > 0) {
+      return Math.floor(limit);
+    }
+    return null;
   }
 
   private async listPipelineJobs(

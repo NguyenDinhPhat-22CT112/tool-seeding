@@ -42,6 +42,11 @@ export interface ImportRepository {
     organizationId: string,
   ): Promise<ImportBatchEntity | null>;
 
+  listBySession(
+    analysisSessionId: string,
+    organizationId: string,
+  ): Promise<ImportBatchEntity[]>;
+
   updateMapping(
     id: string,
     analysisSessionId: string,

@@ -1,3 +1,4 @@
+import type { Prisma } from "@seeding/database";
 import type {
   AnalysisSessionStatus,
   BusinessProfileSnapshot,
@@ -5,6 +6,18 @@ import type {
 } from "@seeding/contracts";
 
 export type { AnalysisSessionStatus, BusinessProfileSnapshot };
+
+/** Nguồn chân lý duy nhất cho các giá trị trạng thái session — tránh magic string. */
+export const ANALYSIS_SESSION_STATUS = {
+  DRAFT: "DRAFT",
+  DATA_COLLECTION: "DATA_COLLECTION",
+  PROCESSING: "PROCESSING",
+  ANALYZING: "ANALYZING",
+  INSIGHT_REVIEW: "INSIGHT_REVIEW",
+  STRATEGY_BUILDING: "STRATEGY_BUILDING",
+  COMPLETED: "COMPLETED",
+  ARCHIVED: "ARCHIVED",
+} as const satisfies Record<string, AnalysisSessionStatus>;
 
 export interface AnalysisSessionEntity {
   id: string;
@@ -34,8 +47,6 @@ export type CreateAnalysisSessionData = {
   dateFrom: Date | null;
   dateTo: Date | null;
   createdBy: string | null;
-  // status KHÔNG có ở đây — luôn là DRAFT do repository/DB default quyết định,
-  // client không được truyền (đúng mục 3.1: "Client không được tự truyền trạng thái lúc tạo").
 };
 
 /** Chỉ các field phạm vi/mô tả — KHÔNG bao giờ chứa `status` (phải qua command riêng). */
@@ -67,21 +78,11 @@ export interface AnalysisSessionListRecord {
   feedbackCount: number;
 }
 
-export type StartDataCollectionResult =
-  | { outcome: "UPDATED"; session: AnalysisSessionEntity }
-  | { outcome: "SESSION_NOT_FOUND" }
-  | { outcome: "BUSINESS_NOT_FOUND" }
-  | { outcome: "BUSINESS_INACTIVE" }
-  | { outcome: "INVALID_STATE"; currentStatus: AnalysisSessionStatus }
-  | { outcome: "CONCURRENT_CHANGE" };
-
-export type CreateAnalysisSessionResult =
-  | { outcome: "CREATED"; session: AnalysisSessionEntity }
-  | { outcome: "BUSINESS_NOT_FOUND" }
-  | { outcome: "BUSINESS_INACTIVE" };
-
 export interface AnalysisSessionRepository {
-  create(data: CreateAnalysisSessionData): Promise<CreateAnalysisSessionResult>;
+  create(
+    data: CreateAnalysisSessionData,
+    tx?: Prisma.TransactionClient,
+  ): Promise<AnalysisSessionEntity>;
 
   findByIdInOrg(id: string, organizationId: string): Promise<AnalysisSessionEntity | null>;
 
@@ -91,17 +92,26 @@ export interface AnalysisSessionRepository {
     data: UpdateAnalysisSessionData,
   ): Promise<AnalysisSessionEntity | null>;
 
-  startDataCollection(
+  findByIdWithLock(
     id: string,
     organizationId: string,
-  ): Promise<StartDataCollectionResult>;
+    tx: Prisma.TransactionClient,
+  ): Promise<AnalysisSessionEntity | null>;
 
-  /**
-   * Chuyển trạng thái — tách riêng khỏi updateFields để không bao giờ vô tình
-   * cho phép PATCH thường đổi status (đúng nguyên tắc mục 4).
-   * `expectedCurrentStatus` dùng làm optimistic lock: nếu status hiện tại trong DB
-   * khác với giá trị này (bị race condition từ request khác), update sẽ thất bại.
-   */
+  transitionFromDraft(
+    id: string,
+    organizationId: string,
+    nextStatus: AnalysisSessionStatus,
+    snapshot: BusinessProfileSnapshot,
+    tx: Prisma.TransactionClient,
+  ): Promise<AnalysisSessionEntity | null>;
+
+  lockAndFindBusiness(
+    businessId: string,
+    organizationId: string,
+    tx: Prisma.TransactionClient,
+  ): Promise<{ isActive: boolean } | null>;
+
   transitionStatus(
     id: string,
     organizationId: string,
@@ -118,7 +128,6 @@ export interface AnalysisSessionRepository {
   countFeedbacks(sessionId: string, organizationId: string): Promise<number>;
 
   businessExistsInOrg(businessId: string, organizationId: string): Promise<boolean>;
-
 }
 
 export const ANALYSIS_SESSION_REPOSITORY = Symbol("ANALYSIS_SESSION_REPOSITORY");

@@ -1,109 +1,74 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "@seeding/database";
-import { serpApiConfig } from "./serpapi.config";
+import {
+  SerpApiQuotaExceededError as SharedQuotaError,
+  SerpApiSku,
+  SerpApiUsageDb,
+  SerpApiUsageLimits,
+  SerpApiUsageTracker,
+} from "@seeding/serpapi-client";
+import { serpApiConfig, type SerpApiConfig } from "./serpapi.config";
 import { SerpApiQuotaExceededError } from "./serpapi.errors";
 import type { SerpApiStatusResponse } from "@seeding/contracts";
 
-const PROVIDER_NAME = "SERPAPI";
-
-export type SerpApiTrackedSku = "AUTOCOMPLETE_REQUESTS" | "PLACE_DETAILS_ENTERPRISE";
+export type SerpApiTrackedSku = SerpApiSku;
 
 @Injectable()
 export class SerpApiUsageService {
+    private readonly tracker: SerpApiUsageTracker;
+
     constructor(
         private readonly prisma: PrismaService,
         @Inject(serpApiConfig.KEY)
-        private readonly config: typeof serpApiConfig extends (...args: any[]) => infer R ? R : never,
-    ) {}
-
-    async consume(organizationId: string, sku: SerpApiTrackedSku, now = new Date()): Promise<void> {
-        const period = toUtcMonth(now);
-        const limits = sku === "AUTOCOMPLETE_REQUESTS"
-            ? {
-                global: this.config.autocompleteMonthlyLimit,
-                organization: this.config.autocompleteOrgMonthlyLimit,
-            }
-            : {
-                global: this.config.placeDetailsMonthlyLimit,
-                organization: this.config.placeDetailsOrgMonthlyLimit,
-            };
-
-        await this.prisma.$transaction(async (tx) => {
-            const global = await tx.externalApiUsage.upsert({
-                where: {
-                    scopeKey_provider_sku_period: {
-                        scopeKey: "GLOBAL",
-                        provider: PROVIDER_NAME,
-                        sku,
-                        period,
-                    },
-                },
-                create: {
-                    scopeKey: "GLOBAL",
-                    provider: PROVIDER_NAME,
-                    sku,
-                    period,
-                    requestCount: 1,
-                },
-                update: { requestCount: { increment: 1 } },
-            });
-
-            if (global.requestCount > limits.global) {
-                throw new SerpApiQuotaExceededError("GLOBAL");
-            }
-
-            const organization = await tx.externalApiUsage.upsert({
-                where: {
-                    scopeKey_provider_sku_period: {
-                        scopeKey: `ORG:${organizationId}`,
-                        provider: PROVIDER_NAME,
-                        sku,
-                        period,
-                    },
-                },
-                create: {
-                    scopeKey: `ORG:${organizationId}`,
-                    provider: PROVIDER_NAME,
-                    sku,
-                    period,
-                    requestCount: 1,
-                },
-                update: { requestCount: { increment: 1 } },
-            });
-
-            if (organization.requestCount > limits.organization) {
-                throw new SerpApiQuotaExceededError("ORGANIZATION");
-            }
+        private readonly config: SerpApiConfig,
+    ) {
+        this.tracker = new SerpApiUsageTracker(this.toUsageDb(this.prisma), {
+            AUTOCOMPLETE_REQUESTS: {
+                global: config.autocompleteMonthlyLimit,
+                organization: config.autocompleteOrgMonthlyLimit,
+            },
+            PLACE_DETAILS_ENTERPRISE: {
+                global: config.placeDetailsMonthlyLimit,
+                organization: config.placeDetailsOrgMonthlyLimit,
+            },
+            REVIEWS_REQUESTS: {
+                global: config.reviewsMonthlyLimit,
+                organization: config.reviewsOrgMonthlyLimit,
+            },
         });
     }
 
-    async getStatus(organizationId: string, now = new Date()): Promise<SerpApiStatusResponse> {
-        const period = toUtcMonth(now);
-        const rows = await this.prisma.externalApiUsage.findMany({
-            where: {
-                scopeKey: `ORG:${organizationId}`,
-                provider: PROVIDER_NAME,
-                period,
-                sku: {
-                    in: ["AUTOCOMPLETE_REQUESTS", "PLACE_DETAILS_ENTERPRISE"],
-                },
-            },
-            select: { sku: true, requestCount: true },
-        });
+    /** Bridge Prisma → SerpApiUsageDb (overloaded $transaction của Prisma không khớp interface). */
+    private toUsageDb(prisma: PrismaService): SerpApiUsageDb {
+        return {
+            $transaction: <R>(fn: (tx: SerpApiUsageDb) => Promise<R>) =>
+                prisma.$transaction((tx) => fn(tx as unknown as SerpApiUsageDb)),
+            externalApiUsage: prisma.externalApiUsage,
+        };
+    }
 
-        const used = new Map(rows.map((row) => [row.sku, row.requestCount]));
+    async consume(organizationId: string, sku: SerpApiTrackedSku, now = new Date()): Promise<void> {
+        try {
+            await this.tracker.consume(organizationId, sku, now);
+        } catch (error) {
+            if (error instanceof SharedQuotaError) {
+                throw new SerpApiQuotaExceededError(error.scope);
+            }
+            throw error;
+        }
+    }
+
+    async getStatus(organizationId: string, now = new Date()): Promise<SerpApiStatusResponse> {
+        const used = await this.tracker.getUsedCounts(organizationId, now);
 
         return {
             enabled: this.config.enabled,
             configured: this.config.enabled && Boolean(this.config.apiKey),
-            autocomplete: usageItem(used.get("AUTOCOMPLETE_REQUESTS") ?? 0, this.config.autocompleteOrgMonthlyLimit),
-            placeDetails: usageItem(used.get("PLACE_DETAILS_ENTERPRISE") ?? 0, this.config.placeDetailsOrgMonthlyLimit),
+            autocomplete: usageItem(used.AUTOCOMPLETE_REQUESTS, this.config.autocompleteOrgMonthlyLimit),
+            placeDetails: usageItem(used.PLACE_DETAILS_ENTERPRISE, this.config.placeDetailsOrgMonthlyLimit),
+            reviews: usageItem(used.REVIEWS_REQUESTS, this.config.reviewsOrgMonthlyLimit),
         };
     }
-}
-
-function toUtcMonth(value: Date) {
-    return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 function usageItem(used: number, limit: number) {
@@ -114,3 +79,5 @@ function usageItem(used: number, limit: number) {
         exhausted: used >= limit,
     };
 }
+
+export type { SerpApiUsageLimits };

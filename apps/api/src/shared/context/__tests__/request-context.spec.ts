@@ -1,5 +1,5 @@
 import { UnauthorizedException } from "@nestjs/common";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { TemporaryRequestContextMiddleware } from "../request-context";
 
 function request(headers: Record<string, string | undefined>): Request {

@@ -1,4 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { PrismaService } from "@seeding/database";
+import type { AnalysisSessionStatus } from "@seeding/contracts";
 import { RequestContext } from "../../../shared/context/request-context";
 import {
   BusinessRuleViolationError,
@@ -28,6 +30,7 @@ import { Paginated } from "../domain/business.types";
 export class BusinessService {
   constructor(
     @Inject(BUSINESS_REPOSITORY) private readonly repo: BusinessRepository,
+    private readonly prisma: PrismaService,
     private readonly policy: BusinessPolicy,
   ) {}
 
@@ -148,21 +151,61 @@ export class BusinessService {
       page: result.page,
       pageSize: result.pageSize,
     };
-  }  // ---------------------------------------------------------------------
-  // DeactivateBusiness — soft delete (isActive = false)
+  }
+
+  // ---------------------------------------------------------------------
+  // DeactivateBusiness — ngừng hoạt động (isActive = false)
   // ---------------------------------------------------------------------
   async deactivate(
     ctx: RequestContext,
     id: string,
+  ): Promise<BusinessDetailResponse & { archivedDraftCount: number }> {
+    return this.prisma.$transaction(async (tx) => {
+      const business = await this.repo.findByIdWithLock(id, ctx.organizationId, tx);
+      if (!business) {
+        throw new ResourceNotFoundError("doanh nghiệp", id);
+      }
+      if (!business.isActive) {
+        throw new BusinessRuleViolationError("Doanh nghiệp đã ngừng hoạt động");
+      }
+
+      const archivedDraftCount = await this.repo.archiveDraftSessions(
+        id, ctx.organizationId, tx,
+      );
+
+      const terminalStatuses: AnalysisSessionStatus[] = ["COMPLETED", "ARCHIVED"];
+      const blockingCount = await this.repo.countSessionsNotInStatuses(
+        id, ctx.organizationId, terminalStatuses, tx,
+      );
+      if (blockingCount > 0) {
+        throw new BusinessRuleViolationError(
+          `Không thể ngừng hoạt động: còn ${blockingCount} đợt phân tích đang chạy`,
+        );
+      }
+
+      const updated = await this.repo.updateIsActive(id, ctx.organizationId, false, tx);
+      return { ...BusinessMapper.toDetail(updated!), archivedDraftCount };
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // RestoreBusiness — khôi phục hoạt động (isActive = true)
+  // ---------------------------------------------------------------------
+  async restore(
+    ctx: RequestContext,
+    id: string,
   ): Promise<BusinessDetailResponse> {
-    const existing = await this.repo.findByIdInOrg(id, ctx.organizationId);
-    if (!existing) {
-      throw new ResourceNotFoundError("doanh nghiệp", id);
-    }
-    const updated = await this.repo.update(id, ctx.organizationId, { isActive: false } as any);
-    if (!updated) {
-      throw new BusinessRuleViolationError("Không thể xoá doanh nghiệp");
-    }
-    return BusinessMapper.toDetail(updated);
+    return this.prisma.$transaction(async (tx) => {
+      const business = await this.repo.findByIdWithLock(id, ctx.organizationId, tx);
+      if (!business) {
+        throw new ResourceNotFoundError("doanh nghiệp", id);
+      }
+      if (business.isActive) {
+        throw new BusinessRuleViolationError("Doanh nghiệp đã hoạt động");
+      }
+
+      const updated = await this.repo.updateIsActive(id, ctx.organizationId, true, tx);
+      return BusinessMapper.toDetail(updated!);
+    });
   }
 }

@@ -1,4 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { PrismaService } from "@seeding/database";
+import type { BusinessProfileSnapshot } from "@seeding/contracts";
 import { RequestContext } from "../../../shared/context/request-context";
 import {
   BusinessRuleViolationError,
@@ -30,6 +32,7 @@ import { AnalysisSessionPolicy } from "./analysis-session.policy";
 export class AnalysisSessionService {
   constructor(
     @Inject(ANALYSIS_SESSION_REPOSITORY) private readonly repo: AnalysisSessionRepository,
+    private readonly prisma: PrismaService,
     private readonly policy: AnalysisSessionPolicy,
   ) {}
 
@@ -54,16 +57,23 @@ export class AnalysisSessionService {
       createdBy: ctx.userId,
     };
 
-    const result = await this.repo.create(data);
-    if (result.outcome === "BUSINESS_NOT_FOUND") {
-      throw new ResourceNotFoundError("doanh nghiệp", dto.businessId);
-    }
-    if (result.outcome === "BUSINESS_INACTIVE") {
-      throw new BusinessRuleViolationError(
-        "Không thể tạo đợt phân tích cho doanh nghiệp đã ngừng hoạt động",
+    const session = await this.prisma.$transaction(async (tx) => {
+      const business = await this.repo.lockAndFindBusiness(
+        dto.businessId, ctx.organizationId, tx,
       );
-    }
-    return AnalysisSessionMapper.toDetail(result.session, 0);
+      if (!business) {
+        throw new ResourceNotFoundError("doanh nghiệp", dto.businessId);
+      }
+      if (!business.isActive) {
+        throw new BusinessRuleViolationError(
+          "Không thể tạo đợt phân tích cho doanh nghiệp đã ngừng hoạt động",
+        );
+      }
+
+      return this.repo.create(data, tx);
+    });
+
+    return AnalysisSessionMapper.toDetail(session, 0);
   }
 
   async getDetail(
@@ -182,34 +192,71 @@ export class AnalysisSessionService {
   ): Promise<AnalysisSessionDetailResponse> {
     this.policy.assertCanEditDraft(ctx);
 
-    const result = await this.repo.startDataCollection(id, ctx.organizationId);
-    switch (result.outcome) {
-      case "SESSION_NOT_FOUND":
+    const session = await this.prisma.$transaction(async (tx) => {
+      const sessionEntity = await this.repo.findByIdWithLock(
+        id, ctx.organizationId, tx,
+      );
+      if (!sessionEntity) {
         throw new ResourceNotFoundError("đợt phân tích", id);
-      case "BUSINESS_NOT_FOUND":
+      }
+      if (sessionEntity.status !== "DRAFT") {
+        throw new InvalidStateTransitionError(
+          `Không thể chuyển trạng thái từ ${sessionEntity.status} sang DATA_COLLECTION`,
+        );
+      }
+
+      const business = await this.repo.lockAndFindBusiness(
+        sessionEntity.businessId, ctx.organizationId, tx,
+      );
+      if (!business) {
         throw new BusinessRuleViolationError(
           "Không thể bắt đầu: doanh nghiệp không còn khả dụng",
         );
-      case "BUSINESS_INACTIVE":
+      }
+      if (!business.isActive) {
         throw new BusinessRuleViolationError(
           "Không thể bắt đầu đợt phân tích: doanh nghiệp đã ngừng hoạt động",
         );
-      case "INVALID_STATE":
-        throw new InvalidStateTransitionError(
-          `Không thể chuyển trạng thái từ ${result.currentStatus} sang DATA_COLLECTION`,
-        );
-      case "CONCURRENT_CHANGE":
+      }
+
+      const businessRow = await tx.business.findFirst({
+        where: { id: sessionEntity.businessId, organizationId: ctx.organizationId },
+      });
+      const snapshot: BusinessProfileSnapshot = {
+        id: businessRow!.id,
+        name: businessRow!.name,
+        industry: businessRow!.industry,
+        description: businessRow!.description,
+        website: businessRow!.website,
+        address: businessRow!.address,
+        phone: businessRow!.phone,
+        email: businessRow!.email,
+        products: businessRow!.products as unknown as BusinessProfileSnapshot["products"],
+        services: businessRow!.services as unknown as BusinessProfileSnapshot["services"],
+        targetAudience: businessRow!.targetAudience as unknown as BusinessProfileSnapshot["targetAudience"],
+        competitors: businessRow!.competitors as unknown as BusinessProfileSnapshot["competitors"],
+        strengths: businessRow!.strengths as unknown as string[],
+        brandVoice: businessRow!.brandVoice,
+        allowedTopics: businessRow!.allowedTopics as unknown as string[],
+        bannedTopics: businessRow!.bannedTopics as unknown as string[],
+        extraNotes: businessRow!.extraNotes,
+        sourceUpdatedAt: businessRow!.updatedAt.toISOString(),
+      };
+
+      const updated = await this.repo.transitionFromDraft(
+        id, ctx.organizationId, "DATA_COLLECTION", snapshot, tx,
+      );
+      if (!updated) {
         throw new InvalidStateTransitionError(
           "Trạng thái session đã thay đổi, vui lòng tải lại và thử lại",
         );
-      case "UPDATED": {
-        const feedbackCount = await this.repo.countFeedbacks(
-          id,
-          ctx.organizationId,
-        );
-        return AnalysisSessionMapper.toDetail(result.session, feedbackCount);
       }
-    }
+
+      return updated;
+    });
+
+    const feedbackCount = await this.repo.countFeedbacks(id, ctx.organizationId);
+    return AnalysisSessionMapper.toDetail(session, feedbackCount);
   }
 
   async complete(

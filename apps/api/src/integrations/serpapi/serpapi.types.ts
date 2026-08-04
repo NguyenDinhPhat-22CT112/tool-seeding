@@ -1,18 +1,13 @@
-import type { SerpApiPrediction, SerpApiPreview } from "@seeding/contracts";
+import type {
+  SerpApiAutocompleteInput,
+  SerpApiClientLike,
+  SerpApiDetailsInput,
+  SerpApiReviewsInput,
+} from "@seeding/serpapi-client";
 
-export interface SerpApiAutocompleteInput {
-    input: string;
-    sessionToken: string;
-}
+export type { SerpApiAutocompleteInput, SerpApiDetailsInput, SerpApiReviewsInput };
 
-export interface SerpApiDetailsInput {
-    placeId: string;
-    sessionToken?: string;
-}
-
-export interface SerpApiClient {
-    autocomplete(input: SerpApiAutocompleteInput): Promise<SerpApiPrediction[]>;
-    getPlacePreview(input: SerpApiDetailsInput): Promise<SerpApiPreview>;
-}
+/** Type mà API inject — chính là interface của shared client. */
+export type SerpApiClient = SerpApiClientLike;
 
 export const SERPAPI_CLIENT = Symbol("SERPAPI_CLIENT");

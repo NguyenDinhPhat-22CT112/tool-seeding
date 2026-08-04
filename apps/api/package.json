@@ -29,6 +29,7 @@
     "@seeding/ai-core": "workspace:*",
     "@seeding/contracts": "workspace:*",
     "@seeding/database": "workspace:*",
+    "@seeding/serpapi-client": "workspace:*",
     "@seeding/validation": "workspace:*",
     "bullmq": "^5.81.1",
     "class-transformer": "^0.5.1",

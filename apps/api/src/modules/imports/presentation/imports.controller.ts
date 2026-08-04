@@ -21,7 +21,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { memoryStorage } from "multer";
-import { Response } from "express";
+import type { Response } from "express";
 import { ApiErrorResponseDto } from "../../../common";
 import { DomainError } from "../../../shared/exceptions/domain.exceptions";
 import { Ctx, RequestContext } from "../../../shared/context/request-context";
@@ -64,6 +64,17 @@ export class ImportsController {
       throw new DomainError("IMPORT_PARSE_ERROR", "File upload bắt buộc");
     }
     return this.service.upload(ctx, sessionId, file);
+  }
+
+  @Get()
+  @ApiOperation({ summary: "Danh sách import batches trong session" })
+  @ApiOkResponse({ description: "Danh sách import batches" })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  list(
+    @Ctx() ctx: RequestContext,
+    @Param("sessionId", ResourceIdPipe) sessionId: string,
+  ) {
+    return this.service.list(ctx, sessionId);
   }
 
   @Get(":id")

@@ -35,6 +35,7 @@ import {
 import {
   BusinessDetailResponse,
   BusinessListResponse,
+  DeactivateBusinessResponse,
 } from "../application/business.mapper";
 import {
   BusinessLocationListResponse,
@@ -45,7 +46,7 @@ import {
   CreateBusinessFromSerpApiDto,
   AddBusinessLocationFromSerpApiDto,
 } from "../application/serpapi.dto";
-import { UpdateBusinessLocationDto } from "../application/business-location.dto";
+import { UpdateBusinessLocationDto, CreateBusinessLocationDto } from "../application/business-location.dto";
 
 @ApiTags("Businesses")
 @ApiTemporaryAuth()
@@ -121,6 +122,38 @@ export class BusinessesController {
     return this.service.update(ctx, id, dto);
   }
 
+  @Post(":id/deactivate")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Ngừng hoạt động doanh nghiệp" })
+  @ApiOkResponse({ type: DeactivateBusinessResponse })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto, description: "Không tìm thấy doanh nghiệp" })
+  @ApiBadRequestResponse({
+    type: ApiErrorResponseDto,
+    description: "Còn đợt phân tích đang chạy hoặc doanh nghiệp đã ngừng hoạt động",
+  })
+  deactivate(
+    @Ctx() ctx: RequestContext,
+    @Param("id", ResourceIdPipe) id: string,
+  ) {
+    return this.service.deactivate(ctx, id);
+  }
+
+  @Post(":id/restore")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Khôi phục hoạt động doanh nghiệp" })
+  @ApiOkResponse({ type: BusinessDetailResponse })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto, description: "Không tìm thấy doanh nghiệp" })
+  @ApiBadRequestResponse({
+    type: ApiErrorResponseDto,
+    description: "Doanh nghiệp đã hoạt động",
+  })
+  restore(
+    @Ctx() ctx: RequestContext,
+    @Param("id", ResourceIdPipe) id: string,
+  ) {
+    return this.service.restore(ctx, id);
+  }
+
   @Delete(":id")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Xoá doanh nghiệp" })
@@ -164,6 +197,34 @@ export class BusinessesController {
     @Param("businessId", ResourceIdPipe) businessId: string,
   ) {
     return this.locations.list(ctx, businessId);
+  }
+
+  @Post(":businessId/locations")
+  @ApiOperation({ summary: "Tạo địa điểm mới (manual)" })
+  @ApiCreatedResponse({ type: BusinessLocationResponse })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto })
+  createLocation(
+    @Ctx() ctx: RequestContext,
+    @Param("businessId", ResourceIdPipe) businessId: string,
+    @Body() dto: CreateBusinessLocationDto,
+  ) {
+    return this.locations.create(ctx, businessId, dto);
+  }
+
+  @Delete(":businessId/locations/:locationId")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Xoá mềm địa điểm doanh nghiệp" })
+  @ApiOkResponse({ type: BusinessLocationResponse })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  deleteLocation(
+    @Ctx() ctx: RequestContext,
+    @Param("businessId", ResourceIdPipe) businessId: string,
+    @Param("locationId", ResourceIdPipe) locationId: string,
+  ) {
+    return this.locations.remove(ctx, businessId, locationId);
   }
 
   @Get(":businessId/locations/:locationId")

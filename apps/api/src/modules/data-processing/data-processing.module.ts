@@ -20,6 +20,6 @@ import { ProcessingJobsController } from "./presentation/processing-jobs.control
       useClass: PrismaProcessingJobRepository,
     },
   ],
-  exports: [ProcessingJobService, PROCESSING_JOB_REPOSITORY],
+  exports: [ProcessingJobService, PROCESSING_JOB_REPOSITORY, ProcessingQueuePublisher],
 })
 export class DataProcessingModule {}

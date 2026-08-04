@@ -3,6 +3,7 @@ import type {
   BusinessDetailResponse as BusinessDetailContract,
   BusinessListItemResponse as BusinessListItemContract,
   BusinessListResponse as BusinessListContract,
+  DeactivateBusinessResponse as DeactivateBusinessContract,
 } from "@seeding/contracts";
 import { BusinessEntity } from "../domain/business.types";
 import { NamedNoteDto, TargetAudienceItemDto, CompetitorItemDto } from "./business.dto";
@@ -95,6 +96,14 @@ export class BusinessDetailResponse implements BusinessDetailContract {
 
   @ApiProperty({ format: "date-time" })
   updatedAt!: string;
+}
+
+export class DeactivateBusinessResponse
+  extends BusinessDetailResponse
+  implements DeactivateBusinessContract
+{
+  @ApiProperty()
+  archivedDraftCount!: number;
 }
 
 export class BusinessListResponse implements BusinessListContract {

@@ -1,8 +1,18 @@
-import type { AIProvider, AnalyzeFeedbackInput, AnalyzeFeedbackResult } from "../ai-provider.interface";
+import type {
+  AIProvider,
+  AnalyzeFeedbackInput,
+  AnalyzeFeedbackResult,
+  GenerateInsightsInput,
+  GenerateInsightsResult,
+  GenerateStrategyInput,
+  GenerateStrategyResult,
+} from "../ai-provider.interface";
 import { AIRetryPolicy } from "../retry-policy";
 import { TokenBucketLimiter } from "../rate-limiter";
 import { feedbackAnalysisOutputSchema } from "../schemas/feedback-analysis.schema";
-import { analyzeFeedbackWithProvider } from "./shared";
+import { insightGenerationOutputSchema } from "../schemas/insight-generation.schema";
+import { strategyGenerationOutputSchema } from "../schemas/strategy-generation.schema";
+import { analyzeFeedbackWithProvider, generateStructuredWithProvider } from "./shared";
 import type { ProviderHandler } from "./shared";
 
 export interface OpenAIProviderConfig {
@@ -101,6 +111,38 @@ export function createOpenAIProvider(config?: OpenAIProviderConfig): AIProvider 
     name: "openai",
     async analyzeFeedback(input) {
       return analyzeFeedbackWithProvider(providerHandler, apiKey, input, retryPolicy, limiter);
+    },
+    async generateInsights(input: GenerateInsightsInput): Promise<GenerateInsightsResult> {
+      return generateStructuredWithProvider({
+        handler: providerHandler,
+        apiKey,
+        promptId: "insight-generation",
+        promptVersion: input.promptVersion ?? "v1",
+        variables: {
+          businessName: input.businessName,
+          objective: input.objective ?? "Phân tích feedback khách hàng",
+          analyses: JSON.stringify(input.analyses, null, 2),
+        },
+        schema: insightGenerationOutputSchema,
+        retryPolicy,
+        limiter,
+      });
+    },
+    async generateStrategy(input: GenerateStrategyInput): Promise<GenerateStrategyResult> {
+      return generateStructuredWithProvider({
+        handler: providerHandler,
+        apiKey,
+        promptId: "strategy-generation",
+        promptVersion: input.promptVersion ?? "v1",
+        variables: {
+          businessName: input.businessName,
+          objective: input.objective ?? "Xây dựng chiến lược seeding",
+          insights: JSON.stringify(input.insights, null, 2),
+        },
+        schema: strategyGenerationOutputSchema,
+        retryPolicy,
+        limiter,
+      });
     },
   };
 }

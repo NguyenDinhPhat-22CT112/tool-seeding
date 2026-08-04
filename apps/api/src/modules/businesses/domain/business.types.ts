@@ -16,7 +16,9 @@
  *   - Array `[]`  → xóa hết phần tử (khác với `undefined` là không đụng).
  */
 
+import type { Prisma } from "@seeding/database";
 import type {
+  AnalysisSessionStatus,
   BusinessLocationSource,
   CompetitorItem,
   NamedNote,
@@ -130,20 +132,6 @@ export interface BusinessListRecord {
   sessionCount: number;
 }
 
-export interface DeactivateBusinessResult {
-  business: BusinessEntity | null;
-  /** Số session non-terminal (trừ DRAFT) còn chặn deactivate. */
-  blockingSessionCount: number;
-  /** Số session DRAFT đã tự động archive khi deactivate thành công. */
-  archivedDraftCount: number;
-  changed: boolean;
-}
-
-export interface RestoreBusinessResult {
-  business: BusinessEntity | null;
-  changed: boolean;
-}
-
 export interface BusinessRepository {
   create(data: CreateBusinessData): Promise<BusinessEntity>;
 
@@ -166,12 +154,31 @@ export interface BusinessRepository {
 
   list(filter: ListBusinessesFilter): Promise<Paginated<BusinessListRecord>>;
 
-  deactivate(
+  findByIdWithLock(
     id: string,
     organizationId: string,
-  ): Promise<DeactivateBusinessResult>;
+    tx?: Prisma.TransactionClient,
+  ): Promise<BusinessEntity | null>;
 
-  restore(id: string, organizationId: string): Promise<RestoreBusinessResult>;
+  archiveDraftSessions(
+    businessId: string,
+    organizationId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<number>;
+
+  countSessionsNotInStatuses(
+    businessId: string,
+    organizationId: string,
+    statuses: AnalysisSessionStatus[],
+    tx?: Prisma.TransactionClient,
+  ): Promise<number>;
+
+  updateIsActive(
+    id: string,
+    organizationId: string,
+    isActive: boolean,
+    tx?: Prisma.TransactionClient,
+  ): Promise<BusinessEntity | null>;
 
   createWithLocation(
     business: CreateBusinessData,
@@ -180,6 +187,13 @@ export interface BusinessRepository {
 
   createLocation(
     data: CreateBusinessLocationData,
+  ): Promise<BusinessLocationEntity | null>;
+
+  /** Xóa mềm địa điểm — set isActive=false (giống deactivate business). */
+  deleteLocation(
+    id: string,
+    businessId: string,
+    organizationId: string,
   ): Promise<BusinessLocationEntity | null>;
 
   listLocations(

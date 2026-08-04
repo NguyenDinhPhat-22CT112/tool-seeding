@@ -10,7 +10,7 @@ import {
 } from "../domain/business.types";
 import { BusinessLocationListResponse, BusinessLocationMapper, BusinessLocationResponse } from "./business-location.mapper";
 import { BusinessPolicy } from "./business.policy";
-import { UpdateBusinessLocationDto } from "./business-location.dto";
+import { UpdateBusinessLocationDto, CreateBusinessLocationDto } from "./business-location.dto";
 
 @Injectable()
 export class BusinessLocationService {
@@ -18,6 +18,58 @@ export class BusinessLocationService {
     @Inject(BUSINESS_REPOSITORY) private readonly repo: BusinessRepository,
     private readonly policy: BusinessPolicy,
   ) {}
+
+  async create(
+    ctx: RequestContext,
+    businessId: string,
+    dto: CreateBusinessLocationDto,
+  ): Promise<BusinessLocationResponse> {
+    this.policy.assertCanUpdate(ctx);
+    const business = await this.requireBusiness(ctx, businessId);
+    if (!business.isActive) {
+      throw new BusinessRuleViolationError(
+        "Không thể thêm địa điểm cho doanh nghiệp đã ngừng hoạt động",
+      );
+    }
+    const created = await this.repo.createLocation({
+      organizationId: ctx.organizationId,
+      businessId,
+      name: dto.name,
+      address: dto.address ?? null,
+      phone: dto.phone ?? null,
+      website: dto.website ?? null,
+      primaryType: null,
+      rating: null,
+      userRatingCount: null,
+      source: "MANUAL",
+      isActive: true,
+    });
+    if (!created) {
+      throw new BusinessRuleViolationError(
+        "Không thể tạo địa điểm — có thể đã trùng dữ liệu",
+      );
+    }
+    return BusinessLocationMapper.toResponse(created);
+  }
+
+  async remove(
+    ctx: RequestContext,
+    businessId: string,
+    locationId: string,
+  ): Promise<BusinessLocationResponse> {
+    this.policy.assertCanUpdate(ctx);
+    await this.requireBusiness(ctx, businessId);
+    const deleted = await this.repo.deleteLocation(
+      locationId,
+      businessId,
+      ctx.organizationId,
+    );
+    if (!deleted) {
+      throw new ResourceNotFoundError("địa điểm doanh nghiệp", locationId);
+    }
+    return BusinessLocationMapper.toResponse(deleted);
+  }
+
 
   async list(
     ctx: RequestContext,
