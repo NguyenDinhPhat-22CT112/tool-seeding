@@ -190,7 +190,10 @@ export class PrismaAnalysisSessionRepository implements AnalysisSessionRepositor
     const [rows, total] = await this.prisma.$transaction([
       this.prisma.analysisSession.findMany({
         where,
-        include: { _count: { select: { feedbacks: true } } },
+        include: {
+          _count: { select: { feedbacks: true } },
+          business: { select: { name: true } },
+        },
         orderBy: { updatedAt: "desc" },
         skip: (filter.page - 1) * filter.pageSize,
         take: filter.pageSize,
@@ -202,6 +205,7 @@ export class PrismaAnalysisSessionRepository implements AnalysisSessionRepositor
       items: rows.map((row) => ({
         session: toEntity(row),
         feedbackCount: row._count.feedbacks,
+        businessName: row.business?.name ?? "",
       })),
       total,
       page: filter.page,
@@ -226,5 +230,38 @@ export class PrismaAnalysisSessionRepository implements AnalysisSessionRepositor
       where: { id: businessId, organizationId, deletedAt: null },
     });
     return count > 0;
+  }
+
+  async hardDelete(
+    id: string,
+    organizationId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.insightReviewLog.deleteMany({ where: { analysisSessionId: id } });
+    await client.strategyInsight.deleteMany({ where: { analysisSessionId: id } });
+    await client.insight.deleteMany({ where: { analysisSessionId: id } });
+
+    await client.strategy.updateMany({
+      where: { analysisSessionId: id },
+      data: { currentVersionId: null },
+    });
+    await client.strategyVersion.deleteMany({ where: { analysisSessionId: id } });
+    await client.strategy.deleteMany({ where: { analysisSessionId: id } });
+
+    await client.customerFeedback.updateMany({
+      where: { analysisSessionId: id },
+      data: { duplicateOfId: null },
+    });
+    await client.customerFeedback.deleteMany({ where: { analysisSessionId: id } });
+
+    await client.processingJob.deleteMany({ where: { analysisSessionId: id } });
+    await client.importBatch.deleteMany({
+      where: { dataSource: { analysisSessionId: id } },
+    });
+    await client.dataSource.deleteMany({ where: { analysisSessionId: id } });
+    await client.analysisSession.deleteMany({
+      where: { id, organizationId },
+    });
   }
 }

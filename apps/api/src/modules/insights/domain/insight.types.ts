@@ -208,6 +208,13 @@ export interface InsightRepository {
     },
     tx?: Prisma.TransactionClient,
   ): Promise<void>;
+
+  /** Xóa vĩnh viễn insight (cascade evidences, review logs, strategy links). */
+  hardDelete(
+    id: string,
+    analysisSessionId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void>;
 }
 
 export const INSIGHT_REPOSITORY = Symbol("INSIGHT_REPOSITORY");

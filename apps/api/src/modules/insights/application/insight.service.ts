@@ -334,6 +334,27 @@ export class InsightService {
     return this.getById(ctx, sessionId, updated.id);
   }
 
+  async delete(
+    ctx: RequestContext,
+    sessionId: string,
+    id: string,
+  ): Promise<InsightResponse> {
+    this.policy.assertCanDelete(ctx);
+    await this.assertSessionViewable(ctx, sessionId);
+    const insight = await this.repo.findByIdInSession(id, sessionId);
+    if (!insight) {
+      throw new DomainError("INSIGHT_NOT_FOUND");
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await this.repo.hardDelete(id, sessionId, tx);
+    });
+    return InsightMapper.toResponse({
+      ...insight,
+      evidences: [],
+      reviewLogs: [],
+    });
+  }
+
   async merge(
     ctx: RequestContext,
     sessionId: string,

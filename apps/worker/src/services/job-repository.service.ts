@@ -434,6 +434,13 @@ export class JobRepositoryService {
     });
   }
 
+  async updateProgress(id: string, progress: number): Promise<void> {
+    await this.prisma.processingJob.update({
+      where: { id },
+      data: { progress },
+    });
+  }
+
   async markCompleted(id: string): Promise<void> {
     await this.prisma.processingJob.update({
       where: { id },

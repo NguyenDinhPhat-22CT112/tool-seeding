@@ -5,6 +5,7 @@ import { JobRepositoryService } from "../services/job-repository.service";
 import { globalFileLogger } from "../common/file-logger";
 
 const CHECK_CANCELLATION_EVERY = 5;
+const MAX_CONTENT_CHARS = 300;
 
 @Injectable()
 export class InsightGenerationProcessor {
@@ -61,7 +62,7 @@ export class InsightGenerationProcessor {
         objective: session.objective,
         analyses: analyses.map((a) => ({
           feedbackId: a.feedbackId,
-          content: a.feedback.normalizedContent ?? a.feedback.rawContent,
+          content: (a.feedback.normalizedContent ?? a.feedback.rawContent).slice(0, MAX_CONTENT_CHARS),
           sentiment: a.sentiment,
           sentimentScore: a.sentimentScore,
           topics: (a.topics as string[]) ?? [],

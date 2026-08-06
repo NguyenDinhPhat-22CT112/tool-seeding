@@ -113,6 +113,35 @@ export type StrategyInsight = $Result.DefaultSelection<Prisma.$StrategyInsightPa
  * 
  */
 export type AIUsageLog = $Result.DefaultSelection<Prisma.$AIUsageLogPayload>
+/**
+ * Model SeedingBot
+ * Nhân thân seeding (persona) – đại diện một "người" xuất hiện trên nền tảng.
+ * Bot là một persona có thể sở hữu nhiều tài khoản (SeedingBotAccount).
+ * KHÔNG lưu credential (mật khẩu/token) – chỉ lưu thông tin định danh an toàn.
+ */
+export type SeedingBot = $Result.DefaultSelection<Prisma.$SeedingBotPayload>
+/**
+ * Model SeedingBotAccount
+ * Tài khoản nền tảng của một bot. Chỉ lưu thông tin an toàn (email/handle, link profile)
+ * – tuyệt đối không lưu mật khẩu, token hay session.
+ */
+export type SeedingBotAccount = $Result.DefaultSelection<Prisma.$SeedingBotAccountPayload>
+/**
+ * Model SeedingBotLocation
+ * Gán bot (persona) phụ trách một địa điểm của doanh nghiệp
+ */
+export type SeedingBotLocation = $Result.DefaultSelection<Prisma.$SeedingBotLocationPayload>
+/**
+ * Model SeedingBotTask
+ * Nhiệm vụ seeding của một bot tại một địa điểm. Được sinh từ chiến lược đã duyệt
+ * hoặc tạo thủ công; người vận hành đăng nội dung và đánh dấu hoàn thành.
+ */
+export type SeedingBotTask = $Result.DefaultSelection<Prisma.$SeedingBotTaskPayload>
+/**
+ * Model SeedingBotActivityLog
+ * Log append-only cho toàn bộ vòng đời bot và nhiệm vụ
+ */
+export type SeedingBotActivityLog = $Result.DefaultSelection<Prisma.$SeedingBotActivityLogPayload>
 
 /**
  * Enums
@@ -293,6 +322,47 @@ export const JobStatus: {
 
 export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus]
 
+
+export const BotPlatform: {
+  GOOGLE_MAPS: 'GOOGLE_MAPS'
+};
+
+export type BotPlatform = (typeof BotPlatform)[keyof typeof BotPlatform]
+
+
+export const BotStatus: {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  DISABLED: 'DISABLED'
+};
+
+export type BotStatus = (typeof BotStatus)[keyof typeof BotStatus]
+
+
+export const BotAccountStatus: {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  BANNED: 'BANNED'
+};
+
+export type BotAccountStatus = (typeof BotAccountStatus)[keyof typeof BotAccountStatus]
+
+
+export const BotTaskType: {
+  REVIEW_SEEDING: 'REVIEW_SEEDING'
+};
+
+export type BotTaskType = (typeof BotTaskType)[keyof typeof BotTaskType]
+
+
+export const BotTaskStatus: {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type BotTaskStatus = (typeof BotTaskStatus)[keyof typeof BotTaskStatus]
+
 }
 
 export type OrgRole = $Enums.OrgRole
@@ -358,6 +428,26 @@ export const JobType: typeof $Enums.JobType
 export type JobStatus = $Enums.JobStatus
 
 export const JobStatus: typeof $Enums.JobStatus
+
+export type BotPlatform = $Enums.BotPlatform
+
+export const BotPlatform: typeof $Enums.BotPlatform
+
+export type BotStatus = $Enums.BotStatus
+
+export const BotStatus: typeof $Enums.BotStatus
+
+export type BotAccountStatus = $Enums.BotAccountStatus
+
+export const BotAccountStatus: typeof $Enums.BotAccountStatus
+
+export type BotTaskType = $Enums.BotTaskType
+
+export const BotTaskType: typeof $Enums.BotTaskType
+
+export type BotTaskStatus = $Enums.BotTaskStatus
+
+export const BotTaskStatus: typeof $Enums.BotTaskStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -676,6 +766,56 @@ export class PrismaClient<
     * ```
     */
   get aIUsageLog(): Prisma.AIUsageLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.seedingBot`: Exposes CRUD operations for the **SeedingBot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeedingBots
+    * const seedingBots = await prisma.seedingBot.findMany()
+    * ```
+    */
+  get seedingBot(): Prisma.SeedingBotDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.seedingBotAccount`: Exposes CRUD operations for the **SeedingBotAccount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeedingBotAccounts
+    * const seedingBotAccounts = await prisma.seedingBotAccount.findMany()
+    * ```
+    */
+  get seedingBotAccount(): Prisma.SeedingBotAccountDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.seedingBotLocation`: Exposes CRUD operations for the **SeedingBotLocation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeedingBotLocations
+    * const seedingBotLocations = await prisma.seedingBotLocation.findMany()
+    * ```
+    */
+  get seedingBotLocation(): Prisma.SeedingBotLocationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.seedingBotTask`: Exposes CRUD operations for the **SeedingBotTask** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeedingBotTasks
+    * const seedingBotTasks = await prisma.seedingBotTask.findMany()
+    * ```
+    */
+  get seedingBotTask(): Prisma.SeedingBotTaskDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.seedingBotActivityLog`: Exposes CRUD operations for the **SeedingBotActivityLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeedingBotActivityLogs
+    * const seedingBotActivityLogs = await prisma.seedingBotActivityLog.findMany()
+    * ```
+    */
+  get seedingBotActivityLog(): Prisma.SeedingBotActivityLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1136,7 +1276,12 @@ export namespace Prisma {
     Strategy: 'Strategy',
     StrategyVersion: 'StrategyVersion',
     StrategyInsight: 'StrategyInsight',
-    AIUsageLog: 'AIUsageLog'
+    AIUsageLog: 'AIUsageLog',
+    SeedingBot: 'SeedingBot',
+    SeedingBotAccount: 'SeedingBotAccount',
+    SeedingBotLocation: 'SeedingBotLocation',
+    SeedingBotTask: 'SeedingBotTask',
+    SeedingBotActivityLog: 'SeedingBotActivityLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1155,7 +1300,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "organization" | "organizationMember" | "refreshToken" | "business" | "businessLocation" | "externalApiUsage" | "analysisSession" | "dataSource" | "customerFeedback" | "feedbackAnalysis" | "processingJob" | "importBatch" | "insight" | "insightEvidence" | "insightReviewLog" | "strategy" | "strategyVersion" | "strategyInsight" | "aIUsageLog"
+      modelProps: "user" | "organization" | "organizationMember" | "refreshToken" | "business" | "businessLocation" | "externalApiUsage" | "analysisSession" | "dataSource" | "customerFeedback" | "feedbackAnalysis" | "processingJob" | "importBatch" | "insight" | "insightEvidence" | "insightReviewLog" | "strategy" | "strategyVersion" | "strategyInsight" | "aIUsageLog" | "seedingBot" | "seedingBotAccount" | "seedingBotLocation" | "seedingBotTask" | "seedingBotActivityLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2639,6 +2784,376 @@ export namespace Prisma {
           }
         }
       }
+      SeedingBot: {
+        payload: Prisma.$SeedingBotPayload<ExtArgs>
+        fields: Prisma.SeedingBotFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SeedingBotFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SeedingBotFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>
+          }
+          findFirst: {
+            args: Prisma.SeedingBotFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SeedingBotFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>
+          }
+          findMany: {
+            args: Prisma.SeedingBotFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>[]
+          }
+          create: {
+            args: Prisma.SeedingBotCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>
+          }
+          createMany: {
+            args: Prisma.SeedingBotCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SeedingBotCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>[]
+          }
+          delete: {
+            args: Prisma.SeedingBotDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>
+          }
+          update: {
+            args: Prisma.SeedingBotUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>
+          }
+          deleteMany: {
+            args: Prisma.SeedingBotDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SeedingBotUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SeedingBotUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>[]
+          }
+          upsert: {
+            args: Prisma.SeedingBotUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotPayload>
+          }
+          aggregate: {
+            args: Prisma.SeedingBotAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSeedingBot>
+          }
+          groupBy: {
+            args: Prisma.SeedingBotGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SeedingBotCountArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotCountAggregateOutputType> | number
+          }
+        }
+      }
+      SeedingBotAccount: {
+        payload: Prisma.$SeedingBotAccountPayload<ExtArgs>
+        fields: Prisma.SeedingBotAccountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SeedingBotAccountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SeedingBotAccountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>
+          }
+          findFirst: {
+            args: Prisma.SeedingBotAccountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SeedingBotAccountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>
+          }
+          findMany: {
+            args: Prisma.SeedingBotAccountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>[]
+          }
+          create: {
+            args: Prisma.SeedingBotAccountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>
+          }
+          createMany: {
+            args: Prisma.SeedingBotAccountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SeedingBotAccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>[]
+          }
+          delete: {
+            args: Prisma.SeedingBotAccountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>
+          }
+          update: {
+            args: Prisma.SeedingBotAccountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>
+          }
+          deleteMany: {
+            args: Prisma.SeedingBotAccountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SeedingBotAccountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SeedingBotAccountUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>[]
+          }
+          upsert: {
+            args: Prisma.SeedingBotAccountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotAccountPayload>
+          }
+          aggregate: {
+            args: Prisma.SeedingBotAccountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSeedingBotAccount>
+          }
+          groupBy: {
+            args: Prisma.SeedingBotAccountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotAccountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SeedingBotAccountCountArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotAccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      SeedingBotLocation: {
+        payload: Prisma.$SeedingBotLocationPayload<ExtArgs>
+        fields: Prisma.SeedingBotLocationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SeedingBotLocationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SeedingBotLocationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>
+          }
+          findFirst: {
+            args: Prisma.SeedingBotLocationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SeedingBotLocationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>
+          }
+          findMany: {
+            args: Prisma.SeedingBotLocationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>[]
+          }
+          create: {
+            args: Prisma.SeedingBotLocationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>
+          }
+          createMany: {
+            args: Prisma.SeedingBotLocationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SeedingBotLocationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>[]
+          }
+          delete: {
+            args: Prisma.SeedingBotLocationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>
+          }
+          update: {
+            args: Prisma.SeedingBotLocationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>
+          }
+          deleteMany: {
+            args: Prisma.SeedingBotLocationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SeedingBotLocationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SeedingBotLocationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>[]
+          }
+          upsert: {
+            args: Prisma.SeedingBotLocationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotLocationPayload>
+          }
+          aggregate: {
+            args: Prisma.SeedingBotLocationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSeedingBotLocation>
+          }
+          groupBy: {
+            args: Prisma.SeedingBotLocationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotLocationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SeedingBotLocationCountArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotLocationCountAggregateOutputType> | number
+          }
+        }
+      }
+      SeedingBotTask: {
+        payload: Prisma.$SeedingBotTaskPayload<ExtArgs>
+        fields: Prisma.SeedingBotTaskFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SeedingBotTaskFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SeedingBotTaskFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>
+          }
+          findFirst: {
+            args: Prisma.SeedingBotTaskFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SeedingBotTaskFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>
+          }
+          findMany: {
+            args: Prisma.SeedingBotTaskFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>[]
+          }
+          create: {
+            args: Prisma.SeedingBotTaskCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>
+          }
+          createMany: {
+            args: Prisma.SeedingBotTaskCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SeedingBotTaskCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>[]
+          }
+          delete: {
+            args: Prisma.SeedingBotTaskDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>
+          }
+          update: {
+            args: Prisma.SeedingBotTaskUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>
+          }
+          deleteMany: {
+            args: Prisma.SeedingBotTaskDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SeedingBotTaskUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SeedingBotTaskUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>[]
+          }
+          upsert: {
+            args: Prisma.SeedingBotTaskUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotTaskPayload>
+          }
+          aggregate: {
+            args: Prisma.SeedingBotTaskAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSeedingBotTask>
+          }
+          groupBy: {
+            args: Prisma.SeedingBotTaskGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotTaskGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SeedingBotTaskCountArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotTaskCountAggregateOutputType> | number
+          }
+        }
+      }
+      SeedingBotActivityLog: {
+        payload: Prisma.$SeedingBotActivityLogPayload<ExtArgs>
+        fields: Prisma.SeedingBotActivityLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SeedingBotActivityLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SeedingBotActivityLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>
+          }
+          findFirst: {
+            args: Prisma.SeedingBotActivityLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SeedingBotActivityLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>
+          }
+          findMany: {
+            args: Prisma.SeedingBotActivityLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>[]
+          }
+          create: {
+            args: Prisma.SeedingBotActivityLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>
+          }
+          createMany: {
+            args: Prisma.SeedingBotActivityLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SeedingBotActivityLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>[]
+          }
+          delete: {
+            args: Prisma.SeedingBotActivityLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>
+          }
+          update: {
+            args: Prisma.SeedingBotActivityLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.SeedingBotActivityLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SeedingBotActivityLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SeedingBotActivityLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.SeedingBotActivityLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingBotActivityLogPayload>
+          }
+          aggregate: {
+            args: Prisma.SeedingBotActivityLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSeedingBotActivityLog>
+          }
+          groupBy: {
+            args: Prisma.SeedingBotActivityLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotActivityLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SeedingBotActivityLogCountArgs<ExtArgs>
+            result: $Utils.Optional<SeedingBotActivityLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2755,6 +3270,11 @@ export namespace Prisma {
     strategyVersion?: StrategyVersionOmit
     strategyInsight?: StrategyInsightOmit
     aIUsageLog?: AIUsageLogOmit
+    seedingBot?: SeedingBotOmit
+    seedingBotAccount?: SeedingBotAccountOmit
+    seedingBotLocation?: SeedingBotLocationOmit
+    seedingBotTask?: SeedingBotTaskOmit
+    seedingBotActivityLog?: SeedingBotActivityLogOmit
   }
 
   /* Types for Logging */
@@ -2878,12 +3398,14 @@ export namespace Prisma {
     members: number
     businesses: number
     analysisSessions: number
+    seedingBots: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | OrganizationCountOutputTypeCountMembersArgs
     businesses?: boolean | OrganizationCountOutputTypeCountBusinessesArgs
     analysisSessions?: boolean | OrganizationCountOutputTypeCountAnalysisSessionsArgs
+    seedingBots?: boolean | OrganizationCountOutputTypeCountSeedingBotsArgs
   }
 
   // Custom InputTypes
@@ -2916,6 +3438,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountAnalysisSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AnalysisSessionWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountSeedingBotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotWhereInput
   }
 
 
@@ -2965,10 +3494,14 @@ export namespace Prisma {
 
   export type BusinessLocationCountOutputType = {
     dataSources: number
+    botAssignments: number
+    botTasks: number
   }
 
   export type BusinessLocationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dataSources?: boolean | BusinessLocationCountOutputTypeCountDataSourcesArgs
+    botAssignments?: boolean | BusinessLocationCountOutputTypeCountBotAssignmentsArgs
+    botTasks?: boolean | BusinessLocationCountOutputTypeCountBotTasksArgs
   }
 
   // Custom InputTypes
@@ -2989,6 +3522,20 @@ export namespace Prisma {
     where?: DataSourceWhereInput
   }
 
+  /**
+   * BusinessLocationCountOutputType without action
+   */
+  export type BusinessLocationCountOutputTypeCountBotAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotLocationWhereInput
+  }
+
+  /**
+   * BusinessLocationCountOutputType without action
+   */
+  export type BusinessLocationCountOutputTypeCountBotTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotTaskWhereInput
+  }
+
 
   /**
    * Count Type AnalysisSessionCountOutputType
@@ -3000,6 +3547,7 @@ export namespace Prisma {
     processingJobs: number
     insights: number
     strategies: number
+    botTasks: number
   }
 
   export type AnalysisSessionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3008,6 +3556,7 @@ export namespace Prisma {
     processingJobs?: boolean | AnalysisSessionCountOutputTypeCountProcessingJobsArgs
     insights?: boolean | AnalysisSessionCountOutputTypeCountInsightsArgs
     strategies?: boolean | AnalysisSessionCountOutputTypeCountStrategiesArgs
+    botTasks?: boolean | AnalysisSessionCountOutputTypeCountBotTasksArgs
   }
 
   // Custom InputTypes
@@ -3054,6 +3603,13 @@ export namespace Prisma {
    */
   export type AnalysisSessionCountOutputTypeCountStrategiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StrategyWhereInput
+  }
+
+  /**
+   * AnalysisSessionCountOutputType without action
+   */
+  export type AnalysisSessionCountOutputTypeCountBotTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotTaskWhereInput
   }
 
 
@@ -3281,10 +3837,12 @@ export namespace Prisma {
 
   export type StrategyVersionCountOutputType = {
     insights: number
+    botTasks: number
   }
 
   export type StrategyVersionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     insights?: boolean | StrategyVersionCountOutputTypeCountInsightsArgs
+    botTasks?: boolean | StrategyVersionCountOutputTypeCountBotTasksArgs
   }
 
   // Custom InputTypes
@@ -3303,6 +3861,142 @@ export namespace Prisma {
    */
   export type StrategyVersionCountOutputTypeCountInsightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StrategyInsightWhereInput
+  }
+
+  /**
+   * StrategyVersionCountOutputType without action
+   */
+  export type StrategyVersionCountOutputTypeCountBotTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotTaskWhereInput
+  }
+
+
+  /**
+   * Count Type SeedingBotCountOutputType
+   */
+
+  export type SeedingBotCountOutputType = {
+    accounts: number
+    locations: number
+    tasks: number
+    activityLogs: number
+  }
+
+  export type SeedingBotCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    accounts?: boolean | SeedingBotCountOutputTypeCountAccountsArgs
+    locations?: boolean | SeedingBotCountOutputTypeCountLocationsArgs
+    tasks?: boolean | SeedingBotCountOutputTypeCountTasksArgs
+    activityLogs?: boolean | SeedingBotCountOutputTypeCountActivityLogsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SeedingBotCountOutputType without action
+   */
+  export type SeedingBotCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotCountOutputType
+     */
+    select?: SeedingBotCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotCountOutputType without action
+   */
+  export type SeedingBotCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotAccountWhereInput
+  }
+
+  /**
+   * SeedingBotCountOutputType without action
+   */
+  export type SeedingBotCountOutputTypeCountLocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotLocationWhereInput
+  }
+
+  /**
+   * SeedingBotCountOutputType without action
+   */
+  export type SeedingBotCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotTaskWhereInput
+  }
+
+  /**
+   * SeedingBotCountOutputType without action
+   */
+  export type SeedingBotCountOutputTypeCountActivityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotActivityLogWhereInput
+  }
+
+
+  /**
+   * Count Type SeedingBotAccountCountOutputType
+   */
+
+  export type SeedingBotAccountCountOutputType = {
+    tasks: number
+    activityLogs: number
+  }
+
+  export type SeedingBotAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tasks?: boolean | SeedingBotAccountCountOutputTypeCountTasksArgs
+    activityLogs?: boolean | SeedingBotAccountCountOutputTypeCountActivityLogsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SeedingBotAccountCountOutputType without action
+   */
+  export type SeedingBotAccountCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccountCountOutputType
+     */
+    select?: SeedingBotAccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotAccountCountOutputType without action
+   */
+  export type SeedingBotAccountCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotTaskWhereInput
+  }
+
+  /**
+   * SeedingBotAccountCountOutputType without action
+   */
+  export type SeedingBotAccountCountOutputTypeCountActivityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotActivityLogWhereInput
+  }
+
+
+  /**
+   * Count Type SeedingBotTaskCountOutputType
+   */
+
+  export type SeedingBotTaskCountOutputType = {
+    activityLogs: number
+  }
+
+  export type SeedingBotTaskCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    activityLogs?: boolean | SeedingBotTaskCountOutputTypeCountActivityLogsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SeedingBotTaskCountOutputType without action
+   */
+  export type SeedingBotTaskCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTaskCountOutputType
+     */
+    select?: SeedingBotTaskCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotTaskCountOutputType without action
+   */
+  export type SeedingBotTaskCountOutputTypeCountActivityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotActivityLogWhereInput
   }
 
 
@@ -4664,6 +5358,7 @@ export namespace Prisma {
     members?: boolean | Organization$membersArgs<ExtArgs>
     businesses?: boolean | Organization$businessesArgs<ExtArgs>
     analysisSessions?: boolean | Organization$analysisSessionsArgs<ExtArgs>
+    seedingBots?: boolean | Organization$seedingBotsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -4705,6 +5400,7 @@ export namespace Prisma {
     members?: boolean | Organization$membersArgs<ExtArgs>
     businesses?: boolean | Organization$businessesArgs<ExtArgs>
     analysisSessions?: boolean | Organization$analysisSessionsArgs<ExtArgs>
+    seedingBots?: boolean | Organization$seedingBotsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4716,6 +5412,7 @@ export namespace Prisma {
       members: Prisma.$OrganizationMemberPayload<ExtArgs>[]
       businesses: Prisma.$BusinessPayload<ExtArgs>[]
       analysisSessions: Prisma.$AnalysisSessionPayload<ExtArgs>[]
+      seedingBots: Prisma.$SeedingBotPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5123,6 +5820,7 @@ export namespace Prisma {
     members<T extends Organization$membersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     businesses<T extends Organization$businessesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$businessesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BusinessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     analysisSessions<T extends Organization$analysisSessionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$analysisSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    seedingBots<T extends Organization$seedingBotsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$seedingBotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5617,6 +6315,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AnalysisSessionScalarFieldEnum | AnalysisSessionScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.seedingBots
+   */
+  export type Organization$seedingBotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    where?: SeedingBotWhereInput
+    orderBy?: SeedingBotOrderByWithRelationInput | SeedingBotOrderByWithRelationInput[]
+    cursor?: SeedingBotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotScalarFieldEnum | SeedingBotScalarFieldEnum[]
   }
 
   /**
@@ -9431,6 +10153,8 @@ export namespace Prisma {
     updatedAt?: boolean
     business?: boolean | BusinessDefaultArgs<ExtArgs>
     dataSources?: boolean | BusinessLocation$dataSourcesArgs<ExtArgs>
+    botAssignments?: boolean | BusinessLocation$botAssignmentsArgs<ExtArgs>
+    botTasks?: boolean | BusinessLocation$botTasksArgs<ExtArgs>
     _count?: boolean | BusinessLocationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["businessLocation"]>
 
@@ -9503,6 +10227,8 @@ export namespace Prisma {
   export type BusinessLocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     business?: boolean | BusinessDefaultArgs<ExtArgs>
     dataSources?: boolean | BusinessLocation$dataSourcesArgs<ExtArgs>
+    botAssignments?: boolean | BusinessLocation$botAssignmentsArgs<ExtArgs>
+    botTasks?: boolean | BusinessLocation$botTasksArgs<ExtArgs>
     _count?: boolean | BusinessLocationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BusinessLocationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9517,6 +10243,8 @@ export namespace Prisma {
     objects: {
       business: Prisma.$BusinessPayload<ExtArgs>
       dataSources: Prisma.$DataSourcePayload<ExtArgs>[]
+      botAssignments: Prisma.$SeedingBotLocationPayload<ExtArgs>[]
+      botTasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9933,6 +10661,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     business<T extends BusinessDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BusinessDefaultArgs<ExtArgs>>): Prisma__BusinessClient<$Result.GetResult<Prisma.$BusinessPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     dataSources<T extends BusinessLocation$dataSourcesArgs<ExtArgs> = {}>(args?: Subset<T, BusinessLocation$dataSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DataSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    botAssignments<T extends BusinessLocation$botAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, BusinessLocation$botAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    botTasks<T extends BusinessLocation$botTasksArgs<ExtArgs> = {}>(args?: Subset<T, BusinessLocation$botTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10397,6 +11127,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DataSourceScalarFieldEnum | DataSourceScalarFieldEnum[]
+  }
+
+  /**
+   * BusinessLocation.botAssignments
+   */
+  export type BusinessLocation$botAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    where?: SeedingBotLocationWhereInput
+    orderBy?: SeedingBotLocationOrderByWithRelationInput | SeedingBotLocationOrderByWithRelationInput[]
+    cursor?: SeedingBotLocationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotLocationScalarFieldEnum | SeedingBotLocationScalarFieldEnum[]
+  }
+
+  /**
+   * BusinessLocation.botTasks
+   */
+  export type BusinessLocation$botTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    where?: SeedingBotTaskWhereInput
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    cursor?: SeedingBotTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
   }
 
   /**
@@ -11741,6 +12519,7 @@ export namespace Prisma {
     processingJobs?: boolean | AnalysisSession$processingJobsArgs<ExtArgs>
     insights?: boolean | AnalysisSession$insightsArgs<ExtArgs>
     strategies?: boolean | AnalysisSession$strategiesArgs<ExtArgs>
+    botTasks?: boolean | AnalysisSession$botTasksArgs<ExtArgs>
     _count?: boolean | AnalysisSessionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["analysisSession"]>
 
@@ -11814,6 +12593,7 @@ export namespace Prisma {
     processingJobs?: boolean | AnalysisSession$processingJobsArgs<ExtArgs>
     insights?: boolean | AnalysisSession$insightsArgs<ExtArgs>
     strategies?: boolean | AnalysisSession$strategiesArgs<ExtArgs>
+    botTasks?: boolean | AnalysisSession$botTasksArgs<ExtArgs>
     _count?: boolean | AnalysisSessionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AnalysisSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11835,6 +12615,7 @@ export namespace Prisma {
       processingJobs: Prisma.$ProcessingJobPayload<ExtArgs>[]
       insights: Prisma.$InsightPayload<ExtArgs>[]
       strategies: Prisma.$StrategyPayload<ExtArgs>[]
+      botTasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12254,6 +13035,7 @@ export namespace Prisma {
     processingJobs<T extends AnalysisSession$processingJobsArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$processingJobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProcessingJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     insights<T extends AnalysisSession$insightsArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$insightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InsightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     strategies<T extends AnalysisSession$strategiesArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$strategiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StrategyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    botTasks<T extends AnalysisSession$botTasksArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$botTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12812,6 +13594,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StrategyScalarFieldEnum | StrategyScalarFieldEnum[]
+  }
+
+  /**
+   * AnalysisSession.botTasks
+   */
+  export type AnalysisSession$botTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    where?: SeedingBotTaskWhereInput
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    cursor?: SeedingBotTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
   }
 
   /**
@@ -24587,6 +25393,7 @@ export namespace Prisma {
     strategy?: boolean | StrategyDefaultArgs<ExtArgs>
     activeForStrategy?: boolean | StrategyVersion$activeForStrategyArgs<ExtArgs>
     insights?: boolean | StrategyVersion$insightsArgs<ExtArgs>
+    botTasks?: boolean | StrategyVersion$botTasksArgs<ExtArgs>
     _count?: boolean | StrategyVersionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["strategyVersion"]>
 
@@ -24687,6 +25494,7 @@ export namespace Prisma {
     strategy?: boolean | StrategyDefaultArgs<ExtArgs>
     activeForStrategy?: boolean | StrategyVersion$activeForStrategyArgs<ExtArgs>
     insights?: boolean | StrategyVersion$insightsArgs<ExtArgs>
+    botTasks?: boolean | StrategyVersion$botTasksArgs<ExtArgs>
     _count?: boolean | StrategyVersionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StrategyVersionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24702,6 +25510,7 @@ export namespace Prisma {
       strategy: Prisma.$StrategyPayload<ExtArgs>
       activeForStrategy: Prisma.$StrategyPayload<ExtArgs> | null
       insights: Prisma.$StrategyInsightPayload<ExtArgs>[]
+      botTasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -25128,6 +25937,7 @@ export namespace Prisma {
     strategy<T extends StrategyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StrategyDefaultArgs<ExtArgs>>): Prisma__StrategyClient<$Result.GetResult<Prisma.$StrategyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     activeForStrategy<T extends StrategyVersion$activeForStrategyArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$activeForStrategyArgs<ExtArgs>>): Prisma__StrategyClient<$Result.GetResult<Prisma.$StrategyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     insights<T extends StrategyVersion$insightsArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$insightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StrategyInsightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    botTasks<T extends StrategyVersion$botTasksArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$botTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -25620,6 +26430,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StrategyInsightScalarFieldEnum | StrategyInsightScalarFieldEnum[]
+  }
+
+  /**
+   * StrategyVersion.botTasks
+   */
+  export type StrategyVersion$botTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    where?: SeedingBotTaskWhereInput
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    cursor?: SeedingBotTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
   }
 
   /**
@@ -27965,6 +28799,6147 @@ export namespace Prisma {
 
 
   /**
+   * Model SeedingBot
+   */
+
+  export type AggregateSeedingBot = {
+    _count: SeedingBotCountAggregateOutputType | null
+    _avg: SeedingBotAvgAggregateOutputType | null
+    _sum: SeedingBotSumAggregateOutputType | null
+    _min: SeedingBotMinAggregateOutputType | null
+    _max: SeedingBotMaxAggregateOutputType | null
+  }
+
+  export type SeedingBotAvgAggregateOutputType = {
+    maturityLevel: number | null
+  }
+
+  export type SeedingBotSumAggregateOutputType = {
+    maturityLevel: number | null
+  }
+
+  export type SeedingBotMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    displayName: string | null
+    avatarUrl: string | null
+    brandVoice: string | null
+    maturityLevel: number | null
+    status: $Enums.BotStatus | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    deletedAt: Date | null
+  }
+
+  export type SeedingBotMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    displayName: string | null
+    avatarUrl: string | null
+    brandVoice: string | null
+    maturityLevel: number | null
+    status: $Enums.BotStatus | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    deletedAt: Date | null
+  }
+
+  export type SeedingBotCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    name: number
+    displayName: number
+    avatarUrl: number
+    brandVoice: number
+    maturityLevel: number
+    status: number
+    notes: number
+    createdBy: number
+    createdAt: number
+    updatedAt: number
+    deletedAt: number
+    _all: number
+  }
+
+
+  export type SeedingBotAvgAggregateInputType = {
+    maturityLevel?: true
+  }
+
+  export type SeedingBotSumAggregateInputType = {
+    maturityLevel?: true
+  }
+
+  export type SeedingBotMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    displayName?: true
+    avatarUrl?: true
+    brandVoice?: true
+    maturityLevel?: true
+    status?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    deletedAt?: true
+  }
+
+  export type SeedingBotMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    displayName?: true
+    avatarUrl?: true
+    brandVoice?: true
+    maturityLevel?: true
+    status?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    deletedAt?: true
+  }
+
+  export type SeedingBotCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    displayName?: true
+    avatarUrl?: true
+    brandVoice?: true
+    maturityLevel?: true
+    status?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    deletedAt?: true
+    _all?: true
+  }
+
+  export type SeedingBotAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBot to aggregate.
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBots to fetch.
+     */
+    orderBy?: SeedingBotOrderByWithRelationInput | SeedingBotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SeedingBotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SeedingBots
+    **/
+    _count?: true | SeedingBotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SeedingBotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SeedingBotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SeedingBotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SeedingBotMaxAggregateInputType
+  }
+
+  export type GetSeedingBotAggregateType<T extends SeedingBotAggregateArgs> = {
+        [P in keyof T & keyof AggregateSeedingBot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSeedingBot[P]>
+      : GetScalarType<T[P], AggregateSeedingBot[P]>
+  }
+
+
+
+
+  export type SeedingBotGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotWhereInput
+    orderBy?: SeedingBotOrderByWithAggregationInput | SeedingBotOrderByWithAggregationInput[]
+    by: SeedingBotScalarFieldEnum[] | SeedingBotScalarFieldEnum
+    having?: SeedingBotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SeedingBotCountAggregateInputType | true
+    _avg?: SeedingBotAvgAggregateInputType
+    _sum?: SeedingBotSumAggregateInputType
+    _min?: SeedingBotMinAggregateInputType
+    _max?: SeedingBotMaxAggregateInputType
+  }
+
+  export type SeedingBotGroupByOutputType = {
+    id: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl: string | null
+    brandVoice: string | null
+    maturityLevel: number
+    status: $Enums.BotStatus
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date
+    updatedAt: Date
+    deletedAt: Date | null
+    _count: SeedingBotCountAggregateOutputType | null
+    _avg: SeedingBotAvgAggregateOutputType | null
+    _sum: SeedingBotSumAggregateOutputType | null
+    _min: SeedingBotMinAggregateOutputType | null
+    _max: SeedingBotMaxAggregateOutputType | null
+  }
+
+  type GetSeedingBotGroupByPayload<T extends SeedingBotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SeedingBotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SeedingBotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SeedingBotGroupByOutputType[P]>
+            : GetScalarType<T[P], SeedingBotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SeedingBotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    displayName?: boolean
+    avatarUrl?: boolean
+    brandVoice?: boolean
+    maturityLevel?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    accounts?: boolean | SeedingBot$accountsArgs<ExtArgs>
+    locations?: boolean | SeedingBot$locationsArgs<ExtArgs>
+    tasks?: boolean | SeedingBot$tasksArgs<ExtArgs>
+    activityLogs?: boolean | SeedingBot$activityLogsArgs<ExtArgs>
+    _count?: boolean | SeedingBotCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBot"]>
+
+  export type SeedingBotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    displayName?: boolean
+    avatarUrl?: boolean
+    brandVoice?: boolean
+    maturityLevel?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBot"]>
+
+  export type SeedingBotSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    displayName?: boolean
+    avatarUrl?: boolean
+    brandVoice?: boolean
+    maturityLevel?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBot"]>
+
+  export type SeedingBotSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    displayName?: boolean
+    avatarUrl?: boolean
+    brandVoice?: boolean
+    maturityLevel?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+  }
+
+  export type SeedingBotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "displayName" | "avatarUrl" | "brandVoice" | "maturityLevel" | "status" | "notes" | "createdBy" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["seedingBot"]>
+  export type SeedingBotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    accounts?: boolean | SeedingBot$accountsArgs<ExtArgs>
+    locations?: boolean | SeedingBot$locationsArgs<ExtArgs>
+    tasks?: boolean | SeedingBot$tasksArgs<ExtArgs>
+    activityLogs?: boolean | SeedingBot$activityLogsArgs<ExtArgs>
+    _count?: boolean | SeedingBotCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $SeedingBotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SeedingBot"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      accounts: Prisma.$SeedingBotAccountPayload<ExtArgs>[]
+      locations: Prisma.$SeedingBotLocationPayload<ExtArgs>[]
+      tasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
+      activityLogs: Prisma.$SeedingBotActivityLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      name: string
+      displayName: string
+      avatarUrl: string | null
+      brandVoice: string | null
+      maturityLevel: number
+      status: $Enums.BotStatus
+      notes: string | null
+      createdBy: string | null
+      createdAt: Date
+      updatedAt: Date
+      deletedAt: Date | null
+    }, ExtArgs["result"]["seedingBot"]>
+    composites: {}
+  }
+
+  type SeedingBotGetPayload<S extends boolean | null | undefined | SeedingBotDefaultArgs> = $Result.GetResult<Prisma.$SeedingBotPayload, S>
+
+  type SeedingBotCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SeedingBotFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SeedingBotCountAggregateInputType | true
+    }
+
+  export interface SeedingBotDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SeedingBot'], meta: { name: 'SeedingBot' } }
+    /**
+     * Find zero or one SeedingBot that matches the filter.
+     * @param {SeedingBotFindUniqueArgs} args - Arguments to find a SeedingBot
+     * @example
+     * // Get one SeedingBot
+     * const seedingBot = await prisma.seedingBot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SeedingBotFindUniqueArgs>(args: SelectSubset<T, SeedingBotFindUniqueArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SeedingBot that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SeedingBotFindUniqueOrThrowArgs} args - Arguments to find a SeedingBot
+     * @example
+     * // Get one SeedingBot
+     * const seedingBot = await prisma.seedingBot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SeedingBotFindUniqueOrThrowArgs>(args: SelectSubset<T, SeedingBotFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotFindFirstArgs} args - Arguments to find a SeedingBot
+     * @example
+     * // Get one SeedingBot
+     * const seedingBot = await prisma.seedingBot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SeedingBotFindFirstArgs>(args?: SelectSubset<T, SeedingBotFindFirstArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBot that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotFindFirstOrThrowArgs} args - Arguments to find a SeedingBot
+     * @example
+     * // Get one SeedingBot
+     * const seedingBot = await prisma.seedingBot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SeedingBotFindFirstOrThrowArgs>(args?: SelectSubset<T, SeedingBotFindFirstOrThrowArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SeedingBots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SeedingBots
+     * const seedingBots = await prisma.seedingBot.findMany()
+     * 
+     * // Get first 10 SeedingBots
+     * const seedingBots = await prisma.seedingBot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const seedingBotWithIdOnly = await prisma.seedingBot.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SeedingBotFindManyArgs>(args?: SelectSubset<T, SeedingBotFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SeedingBot.
+     * @param {SeedingBotCreateArgs} args - Arguments to create a SeedingBot.
+     * @example
+     * // Create one SeedingBot
+     * const SeedingBot = await prisma.seedingBot.create({
+     *   data: {
+     *     // ... data to create a SeedingBot
+     *   }
+     * })
+     * 
+     */
+    create<T extends SeedingBotCreateArgs>(args: SelectSubset<T, SeedingBotCreateArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SeedingBots.
+     * @param {SeedingBotCreateManyArgs} args - Arguments to create many SeedingBots.
+     * @example
+     * // Create many SeedingBots
+     * const seedingBot = await prisma.seedingBot.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SeedingBotCreateManyArgs>(args?: SelectSubset<T, SeedingBotCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SeedingBots and returns the data saved in the database.
+     * @param {SeedingBotCreateManyAndReturnArgs} args - Arguments to create many SeedingBots.
+     * @example
+     * // Create many SeedingBots
+     * const seedingBot = await prisma.seedingBot.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SeedingBots and only return the `id`
+     * const seedingBotWithIdOnly = await prisma.seedingBot.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SeedingBotCreateManyAndReturnArgs>(args?: SelectSubset<T, SeedingBotCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SeedingBot.
+     * @param {SeedingBotDeleteArgs} args - Arguments to delete one SeedingBot.
+     * @example
+     * // Delete one SeedingBot
+     * const SeedingBot = await prisma.seedingBot.delete({
+     *   where: {
+     *     // ... filter to delete one SeedingBot
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SeedingBotDeleteArgs>(args: SelectSubset<T, SeedingBotDeleteArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SeedingBot.
+     * @param {SeedingBotUpdateArgs} args - Arguments to update one SeedingBot.
+     * @example
+     * // Update one SeedingBot
+     * const seedingBot = await prisma.seedingBot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SeedingBotUpdateArgs>(args: SelectSubset<T, SeedingBotUpdateArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SeedingBots.
+     * @param {SeedingBotDeleteManyArgs} args - Arguments to filter SeedingBots to delete.
+     * @example
+     * // Delete a few SeedingBots
+     * const { count } = await prisma.seedingBot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SeedingBotDeleteManyArgs>(args?: SelectSubset<T, SeedingBotDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SeedingBots
+     * const seedingBot = await prisma.seedingBot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SeedingBotUpdateManyArgs>(args: SelectSubset<T, SeedingBotUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBots and returns the data updated in the database.
+     * @param {SeedingBotUpdateManyAndReturnArgs} args - Arguments to update many SeedingBots.
+     * @example
+     * // Update many SeedingBots
+     * const seedingBot = await prisma.seedingBot.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SeedingBots and only return the `id`
+     * const seedingBotWithIdOnly = await prisma.seedingBot.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SeedingBotUpdateManyAndReturnArgs>(args: SelectSubset<T, SeedingBotUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SeedingBot.
+     * @param {SeedingBotUpsertArgs} args - Arguments to update or create a SeedingBot.
+     * @example
+     * // Update or create a SeedingBot
+     * const seedingBot = await prisma.seedingBot.upsert({
+     *   create: {
+     *     // ... data to create a SeedingBot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SeedingBot we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SeedingBotUpsertArgs>(args: SelectSubset<T, SeedingBotUpsertArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SeedingBots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotCountArgs} args - Arguments to filter SeedingBots to count.
+     * @example
+     * // Count the number of SeedingBots
+     * const count = await prisma.seedingBot.count({
+     *   where: {
+     *     // ... the filter for the SeedingBots we want to count
+     *   }
+     * })
+    **/
+    count<T extends SeedingBotCountArgs>(
+      args?: Subset<T, SeedingBotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SeedingBotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SeedingBot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SeedingBotAggregateArgs>(args: Subset<T, SeedingBotAggregateArgs>): Prisma.PrismaPromise<GetSeedingBotAggregateType<T>>
+
+    /**
+     * Group by SeedingBot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SeedingBotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SeedingBotGroupByArgs['orderBy'] }
+        : { orderBy?: SeedingBotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SeedingBotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSeedingBotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SeedingBot model
+   */
+  readonly fields: SeedingBotFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SeedingBot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SeedingBotClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    accounts<T extends SeedingBot$accountsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBot$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    locations<T extends SeedingBot$locationsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBot$locationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tasks<T extends SeedingBot$tasksArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBot$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    activityLogs<T extends SeedingBot$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBot$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SeedingBot model
+   */
+  interface SeedingBotFieldRefs {
+    readonly id: FieldRef<"SeedingBot", 'String'>
+    readonly organizationId: FieldRef<"SeedingBot", 'String'>
+    readonly name: FieldRef<"SeedingBot", 'String'>
+    readonly displayName: FieldRef<"SeedingBot", 'String'>
+    readonly avatarUrl: FieldRef<"SeedingBot", 'String'>
+    readonly brandVoice: FieldRef<"SeedingBot", 'String'>
+    readonly maturityLevel: FieldRef<"SeedingBot", 'Int'>
+    readonly status: FieldRef<"SeedingBot", 'BotStatus'>
+    readonly notes: FieldRef<"SeedingBot", 'String'>
+    readonly createdBy: FieldRef<"SeedingBot", 'String'>
+    readonly createdAt: FieldRef<"SeedingBot", 'DateTime'>
+    readonly updatedAt: FieldRef<"SeedingBot", 'DateTime'>
+    readonly deletedAt: FieldRef<"SeedingBot", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SeedingBot findUnique
+   */
+  export type SeedingBotFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBot to fetch.
+     */
+    where: SeedingBotWhereUniqueInput
+  }
+
+  /**
+   * SeedingBot findUniqueOrThrow
+   */
+  export type SeedingBotFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBot to fetch.
+     */
+    where: SeedingBotWhereUniqueInput
+  }
+
+  /**
+   * SeedingBot findFirst
+   */
+  export type SeedingBotFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBot to fetch.
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBots to fetch.
+     */
+    orderBy?: SeedingBotOrderByWithRelationInput | SeedingBotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBots.
+     */
+    cursor?: SeedingBotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBots.
+     */
+    distinct?: SeedingBotScalarFieldEnum | SeedingBotScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot findFirstOrThrow
+   */
+  export type SeedingBotFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBot to fetch.
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBots to fetch.
+     */
+    orderBy?: SeedingBotOrderByWithRelationInput | SeedingBotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBots.
+     */
+    cursor?: SeedingBotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBots.
+     */
+    distinct?: SeedingBotScalarFieldEnum | SeedingBotScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot findMany
+   */
+  export type SeedingBotFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBots to fetch.
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBots to fetch.
+     */
+    orderBy?: SeedingBotOrderByWithRelationInput | SeedingBotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SeedingBots.
+     */
+    cursor?: SeedingBotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBots.
+     */
+    skip?: number
+    distinct?: SeedingBotScalarFieldEnum | SeedingBotScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot create
+   */
+  export type SeedingBotCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SeedingBot.
+     */
+    data: XOR<SeedingBotCreateInput, SeedingBotUncheckedCreateInput>
+  }
+
+  /**
+   * SeedingBot createMany
+   */
+  export type SeedingBotCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SeedingBots.
+     */
+    data: SeedingBotCreateManyInput | SeedingBotCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SeedingBot createManyAndReturn
+   */
+  export type SeedingBotCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * The data used to create many SeedingBots.
+     */
+    data: SeedingBotCreateManyInput | SeedingBotCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBot update
+   */
+  export type SeedingBotUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SeedingBot.
+     */
+    data: XOR<SeedingBotUpdateInput, SeedingBotUncheckedUpdateInput>
+    /**
+     * Choose, which SeedingBot to update.
+     */
+    where: SeedingBotWhereUniqueInput
+  }
+
+  /**
+   * SeedingBot updateMany
+   */
+  export type SeedingBotUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SeedingBots.
+     */
+    data: XOR<SeedingBotUpdateManyMutationInput, SeedingBotUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBots to update
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * Limit how many SeedingBots to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBot updateManyAndReturn
+   */
+  export type SeedingBotUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * The data used to update SeedingBots.
+     */
+    data: XOR<SeedingBotUpdateManyMutationInput, SeedingBotUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBots to update
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * Limit how many SeedingBots to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBot upsert
+   */
+  export type SeedingBotUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SeedingBot to update in case it exists.
+     */
+    where: SeedingBotWhereUniqueInput
+    /**
+     * In case the SeedingBot found by the `where` argument doesn't exist, create a new SeedingBot with this data.
+     */
+    create: XOR<SeedingBotCreateInput, SeedingBotUncheckedCreateInput>
+    /**
+     * In case the SeedingBot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SeedingBotUpdateInput, SeedingBotUncheckedUpdateInput>
+  }
+
+  /**
+   * SeedingBot delete
+   */
+  export type SeedingBotDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+    /**
+     * Filter which SeedingBot to delete.
+     */
+    where: SeedingBotWhereUniqueInput
+  }
+
+  /**
+   * SeedingBot deleteMany
+   */
+  export type SeedingBotDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBots to delete
+     */
+    where?: SeedingBotWhereInput
+    /**
+     * Limit how many SeedingBots to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBot.accounts
+   */
+  export type SeedingBot$accountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    where?: SeedingBotAccountWhereInput
+    orderBy?: SeedingBotAccountOrderByWithRelationInput | SeedingBotAccountOrderByWithRelationInput[]
+    cursor?: SeedingBotAccountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotAccountScalarFieldEnum | SeedingBotAccountScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot.locations
+   */
+  export type SeedingBot$locationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    where?: SeedingBotLocationWhereInput
+    orderBy?: SeedingBotLocationOrderByWithRelationInput | SeedingBotLocationOrderByWithRelationInput[]
+    cursor?: SeedingBotLocationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotLocationScalarFieldEnum | SeedingBotLocationScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot.tasks
+   */
+  export type SeedingBot$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    where?: SeedingBotTaskWhereInput
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    cursor?: SeedingBotTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot.activityLogs
+   */
+  export type SeedingBot$activityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    where?: SeedingBotActivityLogWhereInput
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotActivityLogScalarFieldEnum | SeedingBotActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBot without action
+   */
+  export type SeedingBotDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBot
+     */
+    select?: SeedingBotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBot
+     */
+    omit?: SeedingBotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SeedingBotAccount
+   */
+
+  export type AggregateSeedingBotAccount = {
+    _count: SeedingBotAccountCountAggregateOutputType | null
+    _min: SeedingBotAccountMinAggregateOutputType | null
+    _max: SeedingBotAccountMaxAggregateOutputType | null
+  }
+
+  export type SeedingBotAccountMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    platform: $Enums.BotPlatform | null
+    accountLabel: string | null
+    profileUrl: string | null
+    avatarUrl: string | null
+    accountStatus: $Enums.BotAccountStatus | null
+    accountCreatedAt: Date | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SeedingBotAccountMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    platform: $Enums.BotPlatform | null
+    accountLabel: string | null
+    profileUrl: string | null
+    avatarUrl: string | null
+    accountStatus: $Enums.BotAccountStatus | null
+    accountCreatedAt: Date | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SeedingBotAccountCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    botId: number
+    platform: number
+    accountLabel: number
+    profileUrl: number
+    avatarUrl: number
+    accountStatus: number
+    accountCreatedAt: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SeedingBotAccountMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    platform?: true
+    accountLabel?: true
+    profileUrl?: true
+    avatarUrl?: true
+    accountStatus?: true
+    accountCreatedAt?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SeedingBotAccountMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    platform?: true
+    accountLabel?: true
+    profileUrl?: true
+    avatarUrl?: true
+    accountStatus?: true
+    accountCreatedAt?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SeedingBotAccountCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    platform?: true
+    accountLabel?: true
+    profileUrl?: true
+    avatarUrl?: true
+    accountStatus?: true
+    accountCreatedAt?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SeedingBotAccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotAccount to aggregate.
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotAccounts to fetch.
+     */
+    orderBy?: SeedingBotAccountOrderByWithRelationInput | SeedingBotAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SeedingBotAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SeedingBotAccounts
+    **/
+    _count?: true | SeedingBotAccountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SeedingBotAccountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SeedingBotAccountMaxAggregateInputType
+  }
+
+  export type GetSeedingBotAccountAggregateType<T extends SeedingBotAccountAggregateArgs> = {
+        [P in keyof T & keyof AggregateSeedingBotAccount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSeedingBotAccount[P]>
+      : GetScalarType<T[P], AggregateSeedingBotAccount[P]>
+  }
+
+
+
+
+  export type SeedingBotAccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotAccountWhereInput
+    orderBy?: SeedingBotAccountOrderByWithAggregationInput | SeedingBotAccountOrderByWithAggregationInput[]
+    by: SeedingBotAccountScalarFieldEnum[] | SeedingBotAccountScalarFieldEnum
+    having?: SeedingBotAccountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SeedingBotAccountCountAggregateInputType | true
+    _min?: SeedingBotAccountMinAggregateInputType
+    _max?: SeedingBotAccountMaxAggregateInputType
+  }
+
+  export type SeedingBotAccountGroupByOutputType = {
+    id: string
+    organizationId: string
+    botId: string
+    platform: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl: string | null
+    avatarUrl: string | null
+    accountStatus: $Enums.BotAccountStatus
+    accountCreatedAt: Date | null
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SeedingBotAccountCountAggregateOutputType | null
+    _min: SeedingBotAccountMinAggregateOutputType | null
+    _max: SeedingBotAccountMaxAggregateOutputType | null
+  }
+
+  type GetSeedingBotAccountGroupByPayload<T extends SeedingBotAccountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SeedingBotAccountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SeedingBotAccountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SeedingBotAccountGroupByOutputType[P]>
+            : GetScalarType<T[P], SeedingBotAccountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SeedingBotAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    platform?: boolean
+    accountLabel?: boolean
+    profileUrl?: boolean
+    avatarUrl?: boolean
+    accountStatus?: boolean
+    accountCreatedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    tasks?: boolean | SeedingBotAccount$tasksArgs<ExtArgs>
+    activityLogs?: boolean | SeedingBotAccount$activityLogsArgs<ExtArgs>
+    _count?: boolean | SeedingBotAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotAccount"]>
+
+  export type SeedingBotAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    platform?: boolean
+    accountLabel?: boolean
+    profileUrl?: boolean
+    avatarUrl?: boolean
+    accountStatus?: boolean
+    accountCreatedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotAccount"]>
+
+  export type SeedingBotAccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    platform?: boolean
+    accountLabel?: boolean
+    profileUrl?: boolean
+    avatarUrl?: boolean
+    accountStatus?: boolean
+    accountCreatedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotAccount"]>
+
+  export type SeedingBotAccountSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    platform?: boolean
+    accountLabel?: boolean
+    profileUrl?: boolean
+    avatarUrl?: boolean
+    accountStatus?: boolean
+    accountCreatedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SeedingBotAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "botId" | "platform" | "accountLabel" | "profileUrl" | "avatarUrl" | "accountStatus" | "accountCreatedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["seedingBotAccount"]>
+  export type SeedingBotAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    tasks?: boolean | SeedingBotAccount$tasksArgs<ExtArgs>
+    activityLogs?: boolean | SeedingBotAccount$activityLogsArgs<ExtArgs>
+    _count?: boolean | SeedingBotAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotAccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+  }
+
+  export type $SeedingBotAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SeedingBotAccount"
+    objects: {
+      bot: Prisma.$SeedingBotPayload<ExtArgs>
+      tasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
+      activityLogs: Prisma.$SeedingBotActivityLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      botId: string
+      platform: $Enums.BotPlatform
+      accountLabel: string
+      profileUrl: string | null
+      avatarUrl: string | null
+      accountStatus: $Enums.BotAccountStatus
+      accountCreatedAt: Date | null
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["seedingBotAccount"]>
+    composites: {}
+  }
+
+  type SeedingBotAccountGetPayload<S extends boolean | null | undefined | SeedingBotAccountDefaultArgs> = $Result.GetResult<Prisma.$SeedingBotAccountPayload, S>
+
+  type SeedingBotAccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SeedingBotAccountFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SeedingBotAccountCountAggregateInputType | true
+    }
+
+  export interface SeedingBotAccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SeedingBotAccount'], meta: { name: 'SeedingBotAccount' } }
+    /**
+     * Find zero or one SeedingBotAccount that matches the filter.
+     * @param {SeedingBotAccountFindUniqueArgs} args - Arguments to find a SeedingBotAccount
+     * @example
+     * // Get one SeedingBotAccount
+     * const seedingBotAccount = await prisma.seedingBotAccount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SeedingBotAccountFindUniqueArgs>(args: SelectSubset<T, SeedingBotAccountFindUniqueArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SeedingBotAccount that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SeedingBotAccountFindUniqueOrThrowArgs} args - Arguments to find a SeedingBotAccount
+     * @example
+     * // Get one SeedingBotAccount
+     * const seedingBotAccount = await prisma.seedingBotAccount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SeedingBotAccountFindUniqueOrThrowArgs>(args: SelectSubset<T, SeedingBotAccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotAccount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountFindFirstArgs} args - Arguments to find a SeedingBotAccount
+     * @example
+     * // Get one SeedingBotAccount
+     * const seedingBotAccount = await prisma.seedingBotAccount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SeedingBotAccountFindFirstArgs>(args?: SelectSubset<T, SeedingBotAccountFindFirstArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotAccount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountFindFirstOrThrowArgs} args - Arguments to find a SeedingBotAccount
+     * @example
+     * // Get one SeedingBotAccount
+     * const seedingBotAccount = await prisma.seedingBotAccount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SeedingBotAccountFindFirstOrThrowArgs>(args?: SelectSubset<T, SeedingBotAccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SeedingBotAccounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SeedingBotAccounts
+     * const seedingBotAccounts = await prisma.seedingBotAccount.findMany()
+     * 
+     * // Get first 10 SeedingBotAccounts
+     * const seedingBotAccounts = await prisma.seedingBotAccount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const seedingBotAccountWithIdOnly = await prisma.seedingBotAccount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SeedingBotAccountFindManyArgs>(args?: SelectSubset<T, SeedingBotAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SeedingBotAccount.
+     * @param {SeedingBotAccountCreateArgs} args - Arguments to create a SeedingBotAccount.
+     * @example
+     * // Create one SeedingBotAccount
+     * const SeedingBotAccount = await prisma.seedingBotAccount.create({
+     *   data: {
+     *     // ... data to create a SeedingBotAccount
+     *   }
+     * })
+     * 
+     */
+    create<T extends SeedingBotAccountCreateArgs>(args: SelectSubset<T, SeedingBotAccountCreateArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SeedingBotAccounts.
+     * @param {SeedingBotAccountCreateManyArgs} args - Arguments to create many SeedingBotAccounts.
+     * @example
+     * // Create many SeedingBotAccounts
+     * const seedingBotAccount = await prisma.seedingBotAccount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SeedingBotAccountCreateManyArgs>(args?: SelectSubset<T, SeedingBotAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SeedingBotAccounts and returns the data saved in the database.
+     * @param {SeedingBotAccountCreateManyAndReturnArgs} args - Arguments to create many SeedingBotAccounts.
+     * @example
+     * // Create many SeedingBotAccounts
+     * const seedingBotAccount = await prisma.seedingBotAccount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SeedingBotAccounts and only return the `id`
+     * const seedingBotAccountWithIdOnly = await prisma.seedingBotAccount.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SeedingBotAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, SeedingBotAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SeedingBotAccount.
+     * @param {SeedingBotAccountDeleteArgs} args - Arguments to delete one SeedingBotAccount.
+     * @example
+     * // Delete one SeedingBotAccount
+     * const SeedingBotAccount = await prisma.seedingBotAccount.delete({
+     *   where: {
+     *     // ... filter to delete one SeedingBotAccount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SeedingBotAccountDeleteArgs>(args: SelectSubset<T, SeedingBotAccountDeleteArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SeedingBotAccount.
+     * @param {SeedingBotAccountUpdateArgs} args - Arguments to update one SeedingBotAccount.
+     * @example
+     * // Update one SeedingBotAccount
+     * const seedingBotAccount = await prisma.seedingBotAccount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SeedingBotAccountUpdateArgs>(args: SelectSubset<T, SeedingBotAccountUpdateArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SeedingBotAccounts.
+     * @param {SeedingBotAccountDeleteManyArgs} args - Arguments to filter SeedingBotAccounts to delete.
+     * @example
+     * // Delete a few SeedingBotAccounts
+     * const { count } = await prisma.seedingBotAccount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SeedingBotAccountDeleteManyArgs>(args?: SelectSubset<T, SeedingBotAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SeedingBotAccounts
+     * const seedingBotAccount = await prisma.seedingBotAccount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SeedingBotAccountUpdateManyArgs>(args: SelectSubset<T, SeedingBotAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotAccounts and returns the data updated in the database.
+     * @param {SeedingBotAccountUpdateManyAndReturnArgs} args - Arguments to update many SeedingBotAccounts.
+     * @example
+     * // Update many SeedingBotAccounts
+     * const seedingBotAccount = await prisma.seedingBotAccount.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SeedingBotAccounts and only return the `id`
+     * const seedingBotAccountWithIdOnly = await prisma.seedingBotAccount.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SeedingBotAccountUpdateManyAndReturnArgs>(args: SelectSubset<T, SeedingBotAccountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SeedingBotAccount.
+     * @param {SeedingBotAccountUpsertArgs} args - Arguments to update or create a SeedingBotAccount.
+     * @example
+     * // Update or create a SeedingBotAccount
+     * const seedingBotAccount = await prisma.seedingBotAccount.upsert({
+     *   create: {
+     *     // ... data to create a SeedingBotAccount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SeedingBotAccount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SeedingBotAccountUpsertArgs>(args: SelectSubset<T, SeedingBotAccountUpsertArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SeedingBotAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountCountArgs} args - Arguments to filter SeedingBotAccounts to count.
+     * @example
+     * // Count the number of SeedingBotAccounts
+     * const count = await prisma.seedingBotAccount.count({
+     *   where: {
+     *     // ... the filter for the SeedingBotAccounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends SeedingBotAccountCountArgs>(
+      args?: Subset<T, SeedingBotAccountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SeedingBotAccountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SeedingBotAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SeedingBotAccountAggregateArgs>(args: Subset<T, SeedingBotAccountAggregateArgs>): Prisma.PrismaPromise<GetSeedingBotAccountAggregateType<T>>
+
+    /**
+     * Group by SeedingBotAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotAccountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SeedingBotAccountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SeedingBotAccountGroupByArgs['orderBy'] }
+        : { orderBy?: SeedingBotAccountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SeedingBotAccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSeedingBotAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SeedingBotAccount model
+   */
+  readonly fields: SeedingBotAccountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SeedingBotAccount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SeedingBotAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bot<T extends SeedingBotDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotDefaultArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    tasks<T extends SeedingBotAccount$tasksArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotAccount$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    activityLogs<T extends SeedingBotAccount$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotAccount$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SeedingBotAccount model
+   */
+  interface SeedingBotAccountFieldRefs {
+    readonly id: FieldRef<"SeedingBotAccount", 'String'>
+    readonly organizationId: FieldRef<"SeedingBotAccount", 'String'>
+    readonly botId: FieldRef<"SeedingBotAccount", 'String'>
+    readonly platform: FieldRef<"SeedingBotAccount", 'BotPlatform'>
+    readonly accountLabel: FieldRef<"SeedingBotAccount", 'String'>
+    readonly profileUrl: FieldRef<"SeedingBotAccount", 'String'>
+    readonly avatarUrl: FieldRef<"SeedingBotAccount", 'String'>
+    readonly accountStatus: FieldRef<"SeedingBotAccount", 'BotAccountStatus'>
+    readonly accountCreatedAt: FieldRef<"SeedingBotAccount", 'DateTime'>
+    readonly notes: FieldRef<"SeedingBotAccount", 'String'>
+    readonly createdAt: FieldRef<"SeedingBotAccount", 'DateTime'>
+    readonly updatedAt: FieldRef<"SeedingBotAccount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SeedingBotAccount findUnique
+   */
+  export type SeedingBotAccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotAccount to fetch.
+     */
+    where: SeedingBotAccountWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotAccount findUniqueOrThrow
+   */
+  export type SeedingBotAccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotAccount to fetch.
+     */
+    where: SeedingBotAccountWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotAccount findFirst
+   */
+  export type SeedingBotAccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotAccount to fetch.
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotAccounts to fetch.
+     */
+    orderBy?: SeedingBotAccountOrderByWithRelationInput | SeedingBotAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotAccounts.
+     */
+    cursor?: SeedingBotAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotAccounts.
+     */
+    distinct?: SeedingBotAccountScalarFieldEnum | SeedingBotAccountScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotAccount findFirstOrThrow
+   */
+  export type SeedingBotAccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotAccount to fetch.
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotAccounts to fetch.
+     */
+    orderBy?: SeedingBotAccountOrderByWithRelationInput | SeedingBotAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotAccounts.
+     */
+    cursor?: SeedingBotAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotAccounts.
+     */
+    distinct?: SeedingBotAccountScalarFieldEnum | SeedingBotAccountScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotAccount findMany
+   */
+  export type SeedingBotAccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotAccounts to fetch.
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotAccounts to fetch.
+     */
+    orderBy?: SeedingBotAccountOrderByWithRelationInput | SeedingBotAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SeedingBotAccounts.
+     */
+    cursor?: SeedingBotAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotAccounts.
+     */
+    skip?: number
+    distinct?: SeedingBotAccountScalarFieldEnum | SeedingBotAccountScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotAccount create
+   */
+  export type SeedingBotAccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SeedingBotAccount.
+     */
+    data: XOR<SeedingBotAccountCreateInput, SeedingBotAccountUncheckedCreateInput>
+  }
+
+  /**
+   * SeedingBotAccount createMany
+   */
+  export type SeedingBotAccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SeedingBotAccounts.
+     */
+    data: SeedingBotAccountCreateManyInput | SeedingBotAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SeedingBotAccount createManyAndReturn
+   */
+  export type SeedingBotAccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * The data used to create many SeedingBotAccounts.
+     */
+    data: SeedingBotAccountCreateManyInput | SeedingBotAccountCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotAccount update
+   */
+  export type SeedingBotAccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SeedingBotAccount.
+     */
+    data: XOR<SeedingBotAccountUpdateInput, SeedingBotAccountUncheckedUpdateInput>
+    /**
+     * Choose, which SeedingBotAccount to update.
+     */
+    where: SeedingBotAccountWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotAccount updateMany
+   */
+  export type SeedingBotAccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SeedingBotAccounts.
+     */
+    data: XOR<SeedingBotAccountUpdateManyMutationInput, SeedingBotAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotAccounts to update
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * Limit how many SeedingBotAccounts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotAccount updateManyAndReturn
+   */
+  export type SeedingBotAccountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * The data used to update SeedingBotAccounts.
+     */
+    data: XOR<SeedingBotAccountUpdateManyMutationInput, SeedingBotAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotAccounts to update
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * Limit how many SeedingBotAccounts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotAccount upsert
+   */
+  export type SeedingBotAccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SeedingBotAccount to update in case it exists.
+     */
+    where: SeedingBotAccountWhereUniqueInput
+    /**
+     * In case the SeedingBotAccount found by the `where` argument doesn't exist, create a new SeedingBotAccount with this data.
+     */
+    create: XOR<SeedingBotAccountCreateInput, SeedingBotAccountUncheckedCreateInput>
+    /**
+     * In case the SeedingBotAccount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SeedingBotAccountUpdateInput, SeedingBotAccountUncheckedUpdateInput>
+  }
+
+  /**
+   * SeedingBotAccount delete
+   */
+  export type SeedingBotAccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    /**
+     * Filter which SeedingBotAccount to delete.
+     */
+    where: SeedingBotAccountWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotAccount deleteMany
+   */
+  export type SeedingBotAccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotAccounts to delete
+     */
+    where?: SeedingBotAccountWhereInput
+    /**
+     * Limit how many SeedingBotAccounts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotAccount.tasks
+   */
+  export type SeedingBotAccount$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    where?: SeedingBotTaskWhereInput
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    cursor?: SeedingBotTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotAccount.activityLogs
+   */
+  export type SeedingBotAccount$activityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    where?: SeedingBotActivityLogWhereInput
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotActivityLogScalarFieldEnum | SeedingBotActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotAccount without action
+   */
+  export type SeedingBotAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SeedingBotLocation
+   */
+
+  export type AggregateSeedingBotLocation = {
+    _count: SeedingBotLocationCountAggregateOutputType | null
+    _min: SeedingBotLocationMinAggregateOutputType | null
+    _max: SeedingBotLocationMaxAggregateOutputType | null
+  }
+
+  export type SeedingBotLocationMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    businessId: string | null
+    businessLocationId: string | null
+    isPrimary: boolean | null
+    createdAt: Date | null
+  }
+
+  export type SeedingBotLocationMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    businessId: string | null
+    businessLocationId: string | null
+    isPrimary: boolean | null
+    createdAt: Date | null
+  }
+
+  export type SeedingBotLocationCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    botId: number
+    businessId: number
+    businessLocationId: number
+    isPrimary: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SeedingBotLocationMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    businessId?: true
+    businessLocationId?: true
+    isPrimary?: true
+    createdAt?: true
+  }
+
+  export type SeedingBotLocationMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    businessId?: true
+    businessLocationId?: true
+    isPrimary?: true
+    createdAt?: true
+  }
+
+  export type SeedingBotLocationCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    businessId?: true
+    businessLocationId?: true
+    isPrimary?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SeedingBotLocationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotLocation to aggregate.
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotLocations to fetch.
+     */
+    orderBy?: SeedingBotLocationOrderByWithRelationInput | SeedingBotLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SeedingBotLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SeedingBotLocations
+    **/
+    _count?: true | SeedingBotLocationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SeedingBotLocationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SeedingBotLocationMaxAggregateInputType
+  }
+
+  export type GetSeedingBotLocationAggregateType<T extends SeedingBotLocationAggregateArgs> = {
+        [P in keyof T & keyof AggregateSeedingBotLocation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSeedingBotLocation[P]>
+      : GetScalarType<T[P], AggregateSeedingBotLocation[P]>
+  }
+
+
+
+
+  export type SeedingBotLocationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotLocationWhereInput
+    orderBy?: SeedingBotLocationOrderByWithAggregationInput | SeedingBotLocationOrderByWithAggregationInput[]
+    by: SeedingBotLocationScalarFieldEnum[] | SeedingBotLocationScalarFieldEnum
+    having?: SeedingBotLocationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SeedingBotLocationCountAggregateInputType | true
+    _min?: SeedingBotLocationMinAggregateInputType
+    _max?: SeedingBotLocationMaxAggregateInputType
+  }
+
+  export type SeedingBotLocationGroupByOutputType = {
+    id: string
+    organizationId: string
+    botId: string
+    businessId: string
+    businessLocationId: string
+    isPrimary: boolean
+    createdAt: Date
+    _count: SeedingBotLocationCountAggregateOutputType | null
+    _min: SeedingBotLocationMinAggregateOutputType | null
+    _max: SeedingBotLocationMaxAggregateOutputType | null
+  }
+
+  type GetSeedingBotLocationGroupByPayload<T extends SeedingBotLocationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SeedingBotLocationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SeedingBotLocationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SeedingBotLocationGroupByOutputType[P]>
+            : GetScalarType<T[P], SeedingBotLocationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SeedingBotLocationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotLocation"]>
+
+  export type SeedingBotLocationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotLocation"]>
+
+  export type SeedingBotLocationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotLocation"]>
+
+  export type SeedingBotLocationSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+  }
+
+  export type SeedingBotLocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "botId" | "businessId" | "businessLocationId" | "isPrimary" | "createdAt", ExtArgs["result"]["seedingBotLocation"]>
+  export type SeedingBotLocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotLocationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotLocationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+  }
+
+  export type $SeedingBotLocationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SeedingBotLocation"
+    objects: {
+      bot: Prisma.$SeedingBotPayload<ExtArgs>
+      businessLocation: Prisma.$BusinessLocationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      botId: string
+      businessId: string
+      businessLocationId: string
+      isPrimary: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["seedingBotLocation"]>
+    composites: {}
+  }
+
+  type SeedingBotLocationGetPayload<S extends boolean | null | undefined | SeedingBotLocationDefaultArgs> = $Result.GetResult<Prisma.$SeedingBotLocationPayload, S>
+
+  type SeedingBotLocationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SeedingBotLocationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SeedingBotLocationCountAggregateInputType | true
+    }
+
+  export interface SeedingBotLocationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SeedingBotLocation'], meta: { name: 'SeedingBotLocation' } }
+    /**
+     * Find zero or one SeedingBotLocation that matches the filter.
+     * @param {SeedingBotLocationFindUniqueArgs} args - Arguments to find a SeedingBotLocation
+     * @example
+     * // Get one SeedingBotLocation
+     * const seedingBotLocation = await prisma.seedingBotLocation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SeedingBotLocationFindUniqueArgs>(args: SelectSubset<T, SeedingBotLocationFindUniqueArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SeedingBotLocation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SeedingBotLocationFindUniqueOrThrowArgs} args - Arguments to find a SeedingBotLocation
+     * @example
+     * // Get one SeedingBotLocation
+     * const seedingBotLocation = await prisma.seedingBotLocation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SeedingBotLocationFindUniqueOrThrowArgs>(args: SelectSubset<T, SeedingBotLocationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotLocation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationFindFirstArgs} args - Arguments to find a SeedingBotLocation
+     * @example
+     * // Get one SeedingBotLocation
+     * const seedingBotLocation = await prisma.seedingBotLocation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SeedingBotLocationFindFirstArgs>(args?: SelectSubset<T, SeedingBotLocationFindFirstArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotLocation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationFindFirstOrThrowArgs} args - Arguments to find a SeedingBotLocation
+     * @example
+     * // Get one SeedingBotLocation
+     * const seedingBotLocation = await prisma.seedingBotLocation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SeedingBotLocationFindFirstOrThrowArgs>(args?: SelectSubset<T, SeedingBotLocationFindFirstOrThrowArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SeedingBotLocations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SeedingBotLocations
+     * const seedingBotLocations = await prisma.seedingBotLocation.findMany()
+     * 
+     * // Get first 10 SeedingBotLocations
+     * const seedingBotLocations = await prisma.seedingBotLocation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const seedingBotLocationWithIdOnly = await prisma.seedingBotLocation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SeedingBotLocationFindManyArgs>(args?: SelectSubset<T, SeedingBotLocationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SeedingBotLocation.
+     * @param {SeedingBotLocationCreateArgs} args - Arguments to create a SeedingBotLocation.
+     * @example
+     * // Create one SeedingBotLocation
+     * const SeedingBotLocation = await prisma.seedingBotLocation.create({
+     *   data: {
+     *     // ... data to create a SeedingBotLocation
+     *   }
+     * })
+     * 
+     */
+    create<T extends SeedingBotLocationCreateArgs>(args: SelectSubset<T, SeedingBotLocationCreateArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SeedingBotLocations.
+     * @param {SeedingBotLocationCreateManyArgs} args - Arguments to create many SeedingBotLocations.
+     * @example
+     * // Create many SeedingBotLocations
+     * const seedingBotLocation = await prisma.seedingBotLocation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SeedingBotLocationCreateManyArgs>(args?: SelectSubset<T, SeedingBotLocationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SeedingBotLocations and returns the data saved in the database.
+     * @param {SeedingBotLocationCreateManyAndReturnArgs} args - Arguments to create many SeedingBotLocations.
+     * @example
+     * // Create many SeedingBotLocations
+     * const seedingBotLocation = await prisma.seedingBotLocation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SeedingBotLocations and only return the `id`
+     * const seedingBotLocationWithIdOnly = await prisma.seedingBotLocation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SeedingBotLocationCreateManyAndReturnArgs>(args?: SelectSubset<T, SeedingBotLocationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SeedingBotLocation.
+     * @param {SeedingBotLocationDeleteArgs} args - Arguments to delete one SeedingBotLocation.
+     * @example
+     * // Delete one SeedingBotLocation
+     * const SeedingBotLocation = await prisma.seedingBotLocation.delete({
+     *   where: {
+     *     // ... filter to delete one SeedingBotLocation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SeedingBotLocationDeleteArgs>(args: SelectSubset<T, SeedingBotLocationDeleteArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SeedingBotLocation.
+     * @param {SeedingBotLocationUpdateArgs} args - Arguments to update one SeedingBotLocation.
+     * @example
+     * // Update one SeedingBotLocation
+     * const seedingBotLocation = await prisma.seedingBotLocation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SeedingBotLocationUpdateArgs>(args: SelectSubset<T, SeedingBotLocationUpdateArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SeedingBotLocations.
+     * @param {SeedingBotLocationDeleteManyArgs} args - Arguments to filter SeedingBotLocations to delete.
+     * @example
+     * // Delete a few SeedingBotLocations
+     * const { count } = await prisma.seedingBotLocation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SeedingBotLocationDeleteManyArgs>(args?: SelectSubset<T, SeedingBotLocationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotLocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SeedingBotLocations
+     * const seedingBotLocation = await prisma.seedingBotLocation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SeedingBotLocationUpdateManyArgs>(args: SelectSubset<T, SeedingBotLocationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotLocations and returns the data updated in the database.
+     * @param {SeedingBotLocationUpdateManyAndReturnArgs} args - Arguments to update many SeedingBotLocations.
+     * @example
+     * // Update many SeedingBotLocations
+     * const seedingBotLocation = await prisma.seedingBotLocation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SeedingBotLocations and only return the `id`
+     * const seedingBotLocationWithIdOnly = await prisma.seedingBotLocation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SeedingBotLocationUpdateManyAndReturnArgs>(args: SelectSubset<T, SeedingBotLocationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SeedingBotLocation.
+     * @param {SeedingBotLocationUpsertArgs} args - Arguments to update or create a SeedingBotLocation.
+     * @example
+     * // Update or create a SeedingBotLocation
+     * const seedingBotLocation = await prisma.seedingBotLocation.upsert({
+     *   create: {
+     *     // ... data to create a SeedingBotLocation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SeedingBotLocation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SeedingBotLocationUpsertArgs>(args: SelectSubset<T, SeedingBotLocationUpsertArgs<ExtArgs>>): Prisma__SeedingBotLocationClient<$Result.GetResult<Prisma.$SeedingBotLocationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SeedingBotLocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationCountArgs} args - Arguments to filter SeedingBotLocations to count.
+     * @example
+     * // Count the number of SeedingBotLocations
+     * const count = await prisma.seedingBotLocation.count({
+     *   where: {
+     *     // ... the filter for the SeedingBotLocations we want to count
+     *   }
+     * })
+    **/
+    count<T extends SeedingBotLocationCountArgs>(
+      args?: Subset<T, SeedingBotLocationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SeedingBotLocationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SeedingBotLocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SeedingBotLocationAggregateArgs>(args: Subset<T, SeedingBotLocationAggregateArgs>): Prisma.PrismaPromise<GetSeedingBotLocationAggregateType<T>>
+
+    /**
+     * Group by SeedingBotLocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotLocationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SeedingBotLocationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SeedingBotLocationGroupByArgs['orderBy'] }
+        : { orderBy?: SeedingBotLocationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SeedingBotLocationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSeedingBotLocationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SeedingBotLocation model
+   */
+  readonly fields: SeedingBotLocationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SeedingBotLocation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SeedingBotLocationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bot<T extends SeedingBotDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotDefaultArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    businessLocation<T extends BusinessLocationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BusinessLocationDefaultArgs<ExtArgs>>): Prisma__BusinessLocationClient<$Result.GetResult<Prisma.$BusinessLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SeedingBotLocation model
+   */
+  interface SeedingBotLocationFieldRefs {
+    readonly id: FieldRef<"SeedingBotLocation", 'String'>
+    readonly organizationId: FieldRef<"SeedingBotLocation", 'String'>
+    readonly botId: FieldRef<"SeedingBotLocation", 'String'>
+    readonly businessId: FieldRef<"SeedingBotLocation", 'String'>
+    readonly businessLocationId: FieldRef<"SeedingBotLocation", 'String'>
+    readonly isPrimary: FieldRef<"SeedingBotLocation", 'Boolean'>
+    readonly createdAt: FieldRef<"SeedingBotLocation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SeedingBotLocation findUnique
+   */
+  export type SeedingBotLocationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotLocation to fetch.
+     */
+    where: SeedingBotLocationWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotLocation findUniqueOrThrow
+   */
+  export type SeedingBotLocationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotLocation to fetch.
+     */
+    where: SeedingBotLocationWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotLocation findFirst
+   */
+  export type SeedingBotLocationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotLocation to fetch.
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotLocations to fetch.
+     */
+    orderBy?: SeedingBotLocationOrderByWithRelationInput | SeedingBotLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotLocations.
+     */
+    cursor?: SeedingBotLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotLocations.
+     */
+    distinct?: SeedingBotLocationScalarFieldEnum | SeedingBotLocationScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotLocation findFirstOrThrow
+   */
+  export type SeedingBotLocationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotLocation to fetch.
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotLocations to fetch.
+     */
+    orderBy?: SeedingBotLocationOrderByWithRelationInput | SeedingBotLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotLocations.
+     */
+    cursor?: SeedingBotLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotLocations.
+     */
+    distinct?: SeedingBotLocationScalarFieldEnum | SeedingBotLocationScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotLocation findMany
+   */
+  export type SeedingBotLocationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotLocations to fetch.
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotLocations to fetch.
+     */
+    orderBy?: SeedingBotLocationOrderByWithRelationInput | SeedingBotLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SeedingBotLocations.
+     */
+    cursor?: SeedingBotLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotLocations.
+     */
+    skip?: number
+    distinct?: SeedingBotLocationScalarFieldEnum | SeedingBotLocationScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotLocation create
+   */
+  export type SeedingBotLocationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SeedingBotLocation.
+     */
+    data: XOR<SeedingBotLocationCreateInput, SeedingBotLocationUncheckedCreateInput>
+  }
+
+  /**
+   * SeedingBotLocation createMany
+   */
+  export type SeedingBotLocationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SeedingBotLocations.
+     */
+    data: SeedingBotLocationCreateManyInput | SeedingBotLocationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SeedingBotLocation createManyAndReturn
+   */
+  export type SeedingBotLocationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * The data used to create many SeedingBotLocations.
+     */
+    data: SeedingBotLocationCreateManyInput | SeedingBotLocationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotLocation update
+   */
+  export type SeedingBotLocationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SeedingBotLocation.
+     */
+    data: XOR<SeedingBotLocationUpdateInput, SeedingBotLocationUncheckedUpdateInput>
+    /**
+     * Choose, which SeedingBotLocation to update.
+     */
+    where: SeedingBotLocationWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotLocation updateMany
+   */
+  export type SeedingBotLocationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SeedingBotLocations.
+     */
+    data: XOR<SeedingBotLocationUpdateManyMutationInput, SeedingBotLocationUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotLocations to update
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * Limit how many SeedingBotLocations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotLocation updateManyAndReturn
+   */
+  export type SeedingBotLocationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * The data used to update SeedingBotLocations.
+     */
+    data: XOR<SeedingBotLocationUpdateManyMutationInput, SeedingBotLocationUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotLocations to update
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * Limit how many SeedingBotLocations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotLocation upsert
+   */
+  export type SeedingBotLocationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SeedingBotLocation to update in case it exists.
+     */
+    where: SeedingBotLocationWhereUniqueInput
+    /**
+     * In case the SeedingBotLocation found by the `where` argument doesn't exist, create a new SeedingBotLocation with this data.
+     */
+    create: XOR<SeedingBotLocationCreateInput, SeedingBotLocationUncheckedCreateInput>
+    /**
+     * In case the SeedingBotLocation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SeedingBotLocationUpdateInput, SeedingBotLocationUncheckedUpdateInput>
+  }
+
+  /**
+   * SeedingBotLocation delete
+   */
+  export type SeedingBotLocationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+    /**
+     * Filter which SeedingBotLocation to delete.
+     */
+    where: SeedingBotLocationWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotLocation deleteMany
+   */
+  export type SeedingBotLocationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotLocations to delete
+     */
+    where?: SeedingBotLocationWhereInput
+    /**
+     * Limit how many SeedingBotLocations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotLocation without action
+   */
+  export type SeedingBotLocationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotLocation
+     */
+    select?: SeedingBotLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotLocation
+     */
+    omit?: SeedingBotLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotLocationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SeedingBotTask
+   */
+
+  export type AggregateSeedingBotTask = {
+    _count: SeedingBotTaskCountAggregateOutputType | null
+    _min: SeedingBotTaskMinAggregateOutputType | null
+    _max: SeedingBotTaskMaxAggregateOutputType | null
+  }
+
+  export type SeedingBotTaskMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    botAccountId: string | null
+    businessId: string | null
+    businessLocationId: string | null
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    taskType: $Enums.BotTaskType | null
+    status: $Enums.BotTaskStatus | null
+    title: string | null
+    content: string | null
+    scheduledAt: Date | null
+    externalRef: string | null
+    completedBy: string | null
+    completedAt: Date | null
+    failureReason: string | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SeedingBotTaskMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    botAccountId: string | null
+    businessId: string | null
+    businessLocationId: string | null
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    taskType: $Enums.BotTaskType | null
+    status: $Enums.BotTaskStatus | null
+    title: string | null
+    content: string | null
+    scheduledAt: Date | null
+    externalRef: string | null
+    completedBy: string | null
+    completedAt: Date | null
+    failureReason: string | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SeedingBotTaskCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    botId: number
+    botAccountId: number
+    businessId: number
+    businessLocationId: number
+    analysisSessionId: number
+    strategyVersionId: number
+    taskType: number
+    status: number
+    title: number
+    content: number
+    scheduledAt: number
+    externalRef: number
+    completedBy: number
+    completedAt: number
+    failureReason: number
+    notes: number
+    createdBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SeedingBotTaskMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    botAccountId?: true
+    businessId?: true
+    businessLocationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    taskType?: true
+    status?: true
+    title?: true
+    content?: true
+    scheduledAt?: true
+    externalRef?: true
+    completedBy?: true
+    completedAt?: true
+    failureReason?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SeedingBotTaskMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    botAccountId?: true
+    businessId?: true
+    businessLocationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    taskType?: true
+    status?: true
+    title?: true
+    content?: true
+    scheduledAt?: true
+    externalRef?: true
+    completedBy?: true
+    completedAt?: true
+    failureReason?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SeedingBotTaskCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    botAccountId?: true
+    businessId?: true
+    businessLocationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    taskType?: true
+    status?: true
+    title?: true
+    content?: true
+    scheduledAt?: true
+    externalRef?: true
+    completedBy?: true
+    completedAt?: true
+    failureReason?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SeedingBotTaskAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotTask to aggregate.
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotTasks to fetch.
+     */
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SeedingBotTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SeedingBotTasks
+    **/
+    _count?: true | SeedingBotTaskCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SeedingBotTaskMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SeedingBotTaskMaxAggregateInputType
+  }
+
+  export type GetSeedingBotTaskAggregateType<T extends SeedingBotTaskAggregateArgs> = {
+        [P in keyof T & keyof AggregateSeedingBotTask]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSeedingBotTask[P]>
+      : GetScalarType<T[P], AggregateSeedingBotTask[P]>
+  }
+
+
+
+
+  export type SeedingBotTaskGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotTaskWhereInput
+    orderBy?: SeedingBotTaskOrderByWithAggregationInput | SeedingBotTaskOrderByWithAggregationInput[]
+    by: SeedingBotTaskScalarFieldEnum[] | SeedingBotTaskScalarFieldEnum
+    having?: SeedingBotTaskScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SeedingBotTaskCountAggregateInputType | true
+    _min?: SeedingBotTaskMinAggregateInputType
+    _max?: SeedingBotTaskMaxAggregateInputType
+  }
+
+  export type SeedingBotTaskGroupByOutputType = {
+    id: string
+    organizationId: string
+    botId: string
+    botAccountId: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    taskType: $Enums.BotTaskType
+    status: $Enums.BotTaskStatus
+    title: string
+    content: string | null
+    scheduledAt: Date | null
+    externalRef: string | null
+    completedBy: string | null
+    completedAt: Date | null
+    failureReason: string | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SeedingBotTaskCountAggregateOutputType | null
+    _min: SeedingBotTaskMinAggregateOutputType | null
+    _max: SeedingBotTaskMaxAggregateOutputType | null
+  }
+
+  type GetSeedingBotTaskGroupByPayload<T extends SeedingBotTaskGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SeedingBotTaskGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SeedingBotTaskGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SeedingBotTaskGroupByOutputType[P]>
+            : GetScalarType<T[P], SeedingBotTaskGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SeedingBotTaskSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    taskType?: boolean
+    status?: boolean
+    title?: boolean
+    content?: boolean
+    scheduledAt?: boolean
+    externalRef?: boolean
+    completedBy?: boolean
+    completedAt?: boolean
+    failureReason?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotTask$botAccountArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+    analysisSession?: boolean | SeedingBotTask$analysisSessionArgs<ExtArgs>
+    strategyVersion?: boolean | SeedingBotTask$strategyVersionArgs<ExtArgs>
+    activityLogs?: boolean | SeedingBotTask$activityLogsArgs<ExtArgs>
+    _count?: boolean | SeedingBotTaskCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotTask"]>
+
+  export type SeedingBotTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    taskType?: boolean
+    status?: boolean
+    title?: boolean
+    content?: boolean
+    scheduledAt?: boolean
+    externalRef?: boolean
+    completedBy?: boolean
+    completedAt?: boolean
+    failureReason?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotTask$botAccountArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+    analysisSession?: boolean | SeedingBotTask$analysisSessionArgs<ExtArgs>
+    strategyVersion?: boolean | SeedingBotTask$strategyVersionArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotTask"]>
+
+  export type SeedingBotTaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    taskType?: boolean
+    status?: boolean
+    title?: boolean
+    content?: boolean
+    scheduledAt?: boolean
+    externalRef?: boolean
+    completedBy?: boolean
+    completedAt?: boolean
+    failureReason?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotTask$botAccountArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+    analysisSession?: boolean | SeedingBotTask$analysisSessionArgs<ExtArgs>
+    strategyVersion?: boolean | SeedingBotTask$strategyVersionArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotTask"]>
+
+  export type SeedingBotTaskSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    businessId?: boolean
+    businessLocationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    taskType?: boolean
+    status?: boolean
+    title?: boolean
+    content?: boolean
+    scheduledAt?: boolean
+    externalRef?: boolean
+    completedBy?: boolean
+    completedAt?: boolean
+    failureReason?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SeedingBotTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "botId" | "botAccountId" | "businessId" | "businessLocationId" | "analysisSessionId" | "strategyVersionId" | "taskType" | "status" | "title" | "content" | "scheduledAt" | "externalRef" | "completedBy" | "completedAt" | "failureReason" | "notes" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["seedingBotTask"]>
+  export type SeedingBotTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotTask$botAccountArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+    analysisSession?: boolean | SeedingBotTask$analysisSessionArgs<ExtArgs>
+    strategyVersion?: boolean | SeedingBotTask$strategyVersionArgs<ExtArgs>
+    activityLogs?: boolean | SeedingBotTask$activityLogsArgs<ExtArgs>
+    _count?: boolean | SeedingBotTaskCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SeedingBotTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotTask$botAccountArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+    analysisSession?: boolean | SeedingBotTask$analysisSessionArgs<ExtArgs>
+    strategyVersion?: boolean | SeedingBotTask$strategyVersionArgs<ExtArgs>
+  }
+  export type SeedingBotTaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotTask$botAccountArgs<ExtArgs>
+    businessLocation?: boolean | BusinessLocationDefaultArgs<ExtArgs>
+    analysisSession?: boolean | SeedingBotTask$analysisSessionArgs<ExtArgs>
+    strategyVersion?: boolean | SeedingBotTask$strategyVersionArgs<ExtArgs>
+  }
+
+  export type $SeedingBotTaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SeedingBotTask"
+    objects: {
+      bot: Prisma.$SeedingBotPayload<ExtArgs>
+      botAccount: Prisma.$SeedingBotAccountPayload<ExtArgs> | null
+      businessLocation: Prisma.$BusinessLocationPayload<ExtArgs>
+      analysisSession: Prisma.$AnalysisSessionPayload<ExtArgs> | null
+      strategyVersion: Prisma.$StrategyVersionPayload<ExtArgs> | null
+      activityLogs: Prisma.$SeedingBotActivityLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      botId: string
+      botAccountId: string | null
+      businessId: string
+      businessLocationId: string
+      analysisSessionId: string | null
+      strategyVersionId: string | null
+      taskType: $Enums.BotTaskType
+      status: $Enums.BotTaskStatus
+      title: string
+      content: string | null
+      scheduledAt: Date | null
+      externalRef: string | null
+      completedBy: string | null
+      completedAt: Date | null
+      failureReason: string | null
+      notes: string | null
+      createdBy: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["seedingBotTask"]>
+    composites: {}
+  }
+
+  type SeedingBotTaskGetPayload<S extends boolean | null | undefined | SeedingBotTaskDefaultArgs> = $Result.GetResult<Prisma.$SeedingBotTaskPayload, S>
+
+  type SeedingBotTaskCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SeedingBotTaskFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SeedingBotTaskCountAggregateInputType | true
+    }
+
+  export interface SeedingBotTaskDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SeedingBotTask'], meta: { name: 'SeedingBotTask' } }
+    /**
+     * Find zero or one SeedingBotTask that matches the filter.
+     * @param {SeedingBotTaskFindUniqueArgs} args - Arguments to find a SeedingBotTask
+     * @example
+     * // Get one SeedingBotTask
+     * const seedingBotTask = await prisma.seedingBotTask.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SeedingBotTaskFindUniqueArgs>(args: SelectSubset<T, SeedingBotTaskFindUniqueArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SeedingBotTask that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SeedingBotTaskFindUniqueOrThrowArgs} args - Arguments to find a SeedingBotTask
+     * @example
+     * // Get one SeedingBotTask
+     * const seedingBotTask = await prisma.seedingBotTask.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SeedingBotTaskFindUniqueOrThrowArgs>(args: SelectSubset<T, SeedingBotTaskFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotTask that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskFindFirstArgs} args - Arguments to find a SeedingBotTask
+     * @example
+     * // Get one SeedingBotTask
+     * const seedingBotTask = await prisma.seedingBotTask.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SeedingBotTaskFindFirstArgs>(args?: SelectSubset<T, SeedingBotTaskFindFirstArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotTask that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskFindFirstOrThrowArgs} args - Arguments to find a SeedingBotTask
+     * @example
+     * // Get one SeedingBotTask
+     * const seedingBotTask = await prisma.seedingBotTask.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SeedingBotTaskFindFirstOrThrowArgs>(args?: SelectSubset<T, SeedingBotTaskFindFirstOrThrowArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SeedingBotTasks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SeedingBotTasks
+     * const seedingBotTasks = await prisma.seedingBotTask.findMany()
+     * 
+     * // Get first 10 SeedingBotTasks
+     * const seedingBotTasks = await prisma.seedingBotTask.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const seedingBotTaskWithIdOnly = await prisma.seedingBotTask.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SeedingBotTaskFindManyArgs>(args?: SelectSubset<T, SeedingBotTaskFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SeedingBotTask.
+     * @param {SeedingBotTaskCreateArgs} args - Arguments to create a SeedingBotTask.
+     * @example
+     * // Create one SeedingBotTask
+     * const SeedingBotTask = await prisma.seedingBotTask.create({
+     *   data: {
+     *     // ... data to create a SeedingBotTask
+     *   }
+     * })
+     * 
+     */
+    create<T extends SeedingBotTaskCreateArgs>(args: SelectSubset<T, SeedingBotTaskCreateArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SeedingBotTasks.
+     * @param {SeedingBotTaskCreateManyArgs} args - Arguments to create many SeedingBotTasks.
+     * @example
+     * // Create many SeedingBotTasks
+     * const seedingBotTask = await prisma.seedingBotTask.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SeedingBotTaskCreateManyArgs>(args?: SelectSubset<T, SeedingBotTaskCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SeedingBotTasks and returns the data saved in the database.
+     * @param {SeedingBotTaskCreateManyAndReturnArgs} args - Arguments to create many SeedingBotTasks.
+     * @example
+     * // Create many SeedingBotTasks
+     * const seedingBotTask = await prisma.seedingBotTask.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SeedingBotTasks and only return the `id`
+     * const seedingBotTaskWithIdOnly = await prisma.seedingBotTask.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SeedingBotTaskCreateManyAndReturnArgs>(args?: SelectSubset<T, SeedingBotTaskCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SeedingBotTask.
+     * @param {SeedingBotTaskDeleteArgs} args - Arguments to delete one SeedingBotTask.
+     * @example
+     * // Delete one SeedingBotTask
+     * const SeedingBotTask = await prisma.seedingBotTask.delete({
+     *   where: {
+     *     // ... filter to delete one SeedingBotTask
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SeedingBotTaskDeleteArgs>(args: SelectSubset<T, SeedingBotTaskDeleteArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SeedingBotTask.
+     * @param {SeedingBotTaskUpdateArgs} args - Arguments to update one SeedingBotTask.
+     * @example
+     * // Update one SeedingBotTask
+     * const seedingBotTask = await prisma.seedingBotTask.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SeedingBotTaskUpdateArgs>(args: SelectSubset<T, SeedingBotTaskUpdateArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SeedingBotTasks.
+     * @param {SeedingBotTaskDeleteManyArgs} args - Arguments to filter SeedingBotTasks to delete.
+     * @example
+     * // Delete a few SeedingBotTasks
+     * const { count } = await prisma.seedingBotTask.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SeedingBotTaskDeleteManyArgs>(args?: SelectSubset<T, SeedingBotTaskDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SeedingBotTasks
+     * const seedingBotTask = await prisma.seedingBotTask.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SeedingBotTaskUpdateManyArgs>(args: SelectSubset<T, SeedingBotTaskUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotTasks and returns the data updated in the database.
+     * @param {SeedingBotTaskUpdateManyAndReturnArgs} args - Arguments to update many SeedingBotTasks.
+     * @example
+     * // Update many SeedingBotTasks
+     * const seedingBotTask = await prisma.seedingBotTask.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SeedingBotTasks and only return the `id`
+     * const seedingBotTaskWithIdOnly = await prisma.seedingBotTask.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SeedingBotTaskUpdateManyAndReturnArgs>(args: SelectSubset<T, SeedingBotTaskUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SeedingBotTask.
+     * @param {SeedingBotTaskUpsertArgs} args - Arguments to update or create a SeedingBotTask.
+     * @example
+     * // Update or create a SeedingBotTask
+     * const seedingBotTask = await prisma.seedingBotTask.upsert({
+     *   create: {
+     *     // ... data to create a SeedingBotTask
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SeedingBotTask we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SeedingBotTaskUpsertArgs>(args: SelectSubset<T, SeedingBotTaskUpsertArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SeedingBotTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskCountArgs} args - Arguments to filter SeedingBotTasks to count.
+     * @example
+     * // Count the number of SeedingBotTasks
+     * const count = await prisma.seedingBotTask.count({
+     *   where: {
+     *     // ... the filter for the SeedingBotTasks we want to count
+     *   }
+     * })
+    **/
+    count<T extends SeedingBotTaskCountArgs>(
+      args?: Subset<T, SeedingBotTaskCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SeedingBotTaskCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SeedingBotTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SeedingBotTaskAggregateArgs>(args: Subset<T, SeedingBotTaskAggregateArgs>): Prisma.PrismaPromise<GetSeedingBotTaskAggregateType<T>>
+
+    /**
+     * Group by SeedingBotTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotTaskGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SeedingBotTaskGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SeedingBotTaskGroupByArgs['orderBy'] }
+        : { orderBy?: SeedingBotTaskGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SeedingBotTaskGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSeedingBotTaskGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SeedingBotTask model
+   */
+  readonly fields: SeedingBotTaskFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SeedingBotTask.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SeedingBotTaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bot<T extends SeedingBotDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotDefaultArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    botAccount<T extends SeedingBotTask$botAccountArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotTask$botAccountArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    businessLocation<T extends BusinessLocationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BusinessLocationDefaultArgs<ExtArgs>>): Prisma__BusinessLocationClient<$Result.GetResult<Prisma.$BusinessLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    analysisSession<T extends SeedingBotTask$analysisSessionArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotTask$analysisSessionArgs<ExtArgs>>): Prisma__AnalysisSessionClient<$Result.GetResult<Prisma.$AnalysisSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    strategyVersion<T extends SeedingBotTask$strategyVersionArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotTask$strategyVersionArgs<ExtArgs>>): Prisma__StrategyVersionClient<$Result.GetResult<Prisma.$StrategyVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    activityLogs<T extends SeedingBotTask$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotTask$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SeedingBotTask model
+   */
+  interface SeedingBotTaskFieldRefs {
+    readonly id: FieldRef<"SeedingBotTask", 'String'>
+    readonly organizationId: FieldRef<"SeedingBotTask", 'String'>
+    readonly botId: FieldRef<"SeedingBotTask", 'String'>
+    readonly botAccountId: FieldRef<"SeedingBotTask", 'String'>
+    readonly businessId: FieldRef<"SeedingBotTask", 'String'>
+    readonly businessLocationId: FieldRef<"SeedingBotTask", 'String'>
+    readonly analysisSessionId: FieldRef<"SeedingBotTask", 'String'>
+    readonly strategyVersionId: FieldRef<"SeedingBotTask", 'String'>
+    readonly taskType: FieldRef<"SeedingBotTask", 'BotTaskType'>
+    readonly status: FieldRef<"SeedingBotTask", 'BotTaskStatus'>
+    readonly title: FieldRef<"SeedingBotTask", 'String'>
+    readonly content: FieldRef<"SeedingBotTask", 'String'>
+    readonly scheduledAt: FieldRef<"SeedingBotTask", 'DateTime'>
+    readonly externalRef: FieldRef<"SeedingBotTask", 'String'>
+    readonly completedBy: FieldRef<"SeedingBotTask", 'String'>
+    readonly completedAt: FieldRef<"SeedingBotTask", 'DateTime'>
+    readonly failureReason: FieldRef<"SeedingBotTask", 'String'>
+    readonly notes: FieldRef<"SeedingBotTask", 'String'>
+    readonly createdBy: FieldRef<"SeedingBotTask", 'String'>
+    readonly createdAt: FieldRef<"SeedingBotTask", 'DateTime'>
+    readonly updatedAt: FieldRef<"SeedingBotTask", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SeedingBotTask findUnique
+   */
+  export type SeedingBotTaskFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotTask to fetch.
+     */
+    where: SeedingBotTaskWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotTask findUniqueOrThrow
+   */
+  export type SeedingBotTaskFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotTask to fetch.
+     */
+    where: SeedingBotTaskWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotTask findFirst
+   */
+  export type SeedingBotTaskFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotTask to fetch.
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotTasks to fetch.
+     */
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotTasks.
+     */
+    cursor?: SeedingBotTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotTasks.
+     */
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotTask findFirstOrThrow
+   */
+  export type SeedingBotTaskFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotTask to fetch.
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotTasks to fetch.
+     */
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotTasks.
+     */
+    cursor?: SeedingBotTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotTasks.
+     */
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotTask findMany
+   */
+  export type SeedingBotTaskFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotTasks to fetch.
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotTasks to fetch.
+     */
+    orderBy?: SeedingBotTaskOrderByWithRelationInput | SeedingBotTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SeedingBotTasks.
+     */
+    cursor?: SeedingBotTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotTasks.
+     */
+    skip?: number
+    distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotTask create
+   */
+  export type SeedingBotTaskCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SeedingBotTask.
+     */
+    data: XOR<SeedingBotTaskCreateInput, SeedingBotTaskUncheckedCreateInput>
+  }
+
+  /**
+   * SeedingBotTask createMany
+   */
+  export type SeedingBotTaskCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SeedingBotTasks.
+     */
+    data: SeedingBotTaskCreateManyInput | SeedingBotTaskCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SeedingBotTask createManyAndReturn
+   */
+  export type SeedingBotTaskCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * The data used to create many SeedingBotTasks.
+     */
+    data: SeedingBotTaskCreateManyInput | SeedingBotTaskCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotTask update
+   */
+  export type SeedingBotTaskUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SeedingBotTask.
+     */
+    data: XOR<SeedingBotTaskUpdateInput, SeedingBotTaskUncheckedUpdateInput>
+    /**
+     * Choose, which SeedingBotTask to update.
+     */
+    where: SeedingBotTaskWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotTask updateMany
+   */
+  export type SeedingBotTaskUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SeedingBotTasks.
+     */
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotTasks to update
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * Limit how many SeedingBotTasks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotTask updateManyAndReturn
+   */
+  export type SeedingBotTaskUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * The data used to update SeedingBotTasks.
+     */
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotTasks to update
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * Limit how many SeedingBotTasks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotTask upsert
+   */
+  export type SeedingBotTaskUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SeedingBotTask to update in case it exists.
+     */
+    where: SeedingBotTaskWhereUniqueInput
+    /**
+     * In case the SeedingBotTask found by the `where` argument doesn't exist, create a new SeedingBotTask with this data.
+     */
+    create: XOR<SeedingBotTaskCreateInput, SeedingBotTaskUncheckedCreateInput>
+    /**
+     * In case the SeedingBotTask was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SeedingBotTaskUpdateInput, SeedingBotTaskUncheckedUpdateInput>
+  }
+
+  /**
+   * SeedingBotTask delete
+   */
+  export type SeedingBotTaskDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    /**
+     * Filter which SeedingBotTask to delete.
+     */
+    where: SeedingBotTaskWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotTask deleteMany
+   */
+  export type SeedingBotTaskDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotTasks to delete
+     */
+    where?: SeedingBotTaskWhereInput
+    /**
+     * Limit how many SeedingBotTasks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotTask.botAccount
+   */
+  export type SeedingBotTask$botAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    where?: SeedingBotAccountWhereInput
+  }
+
+  /**
+   * SeedingBotTask.analysisSession
+   */
+  export type SeedingBotTask$analysisSessionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AnalysisSession
+     */
+    select?: AnalysisSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AnalysisSession
+     */
+    omit?: AnalysisSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AnalysisSessionInclude<ExtArgs> | null
+    where?: AnalysisSessionWhereInput
+  }
+
+  /**
+   * SeedingBotTask.strategyVersion
+   */
+  export type SeedingBotTask$strategyVersionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StrategyVersion
+     */
+    select?: StrategyVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StrategyVersion
+     */
+    omit?: StrategyVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StrategyVersionInclude<ExtArgs> | null
+    where?: StrategyVersionWhereInput
+  }
+
+  /**
+   * SeedingBotTask.activityLogs
+   */
+  export type SeedingBotTask$activityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    where?: SeedingBotActivityLogWhereInput
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingBotActivityLogScalarFieldEnum | SeedingBotActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotTask without action
+   */
+  export type SeedingBotTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SeedingBotActivityLog
+   */
+
+  export type AggregateSeedingBotActivityLog = {
+    _count: SeedingBotActivityLogCountAggregateOutputType | null
+    _min: SeedingBotActivityLogMinAggregateOutputType | null
+    _max: SeedingBotActivityLogMaxAggregateOutputType | null
+  }
+
+  export type SeedingBotActivityLogMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    botAccountId: string | null
+    taskId: string | null
+    action: string | null
+    createdAt: Date | null
+  }
+
+  export type SeedingBotActivityLogMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    botId: string | null
+    botAccountId: string | null
+    taskId: string | null
+    action: string | null
+    createdAt: Date | null
+  }
+
+  export type SeedingBotActivityLogCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    botId: number
+    botAccountId: number
+    taskId: number
+    action: number
+    detail: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SeedingBotActivityLogMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    botAccountId?: true
+    taskId?: true
+    action?: true
+    createdAt?: true
+  }
+
+  export type SeedingBotActivityLogMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    botAccountId?: true
+    taskId?: true
+    action?: true
+    createdAt?: true
+  }
+
+  export type SeedingBotActivityLogCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    botId?: true
+    botAccountId?: true
+    taskId?: true
+    action?: true
+    detail?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SeedingBotActivityLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotActivityLog to aggregate.
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotActivityLogs to fetch.
+     */
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotActivityLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotActivityLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SeedingBotActivityLogs
+    **/
+    _count?: true | SeedingBotActivityLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SeedingBotActivityLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SeedingBotActivityLogMaxAggregateInputType
+  }
+
+  export type GetSeedingBotActivityLogAggregateType<T extends SeedingBotActivityLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateSeedingBotActivityLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSeedingBotActivityLog[P]>
+      : GetScalarType<T[P], AggregateSeedingBotActivityLog[P]>
+  }
+
+
+
+
+  export type SeedingBotActivityLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingBotActivityLogWhereInput
+    orderBy?: SeedingBotActivityLogOrderByWithAggregationInput | SeedingBotActivityLogOrderByWithAggregationInput[]
+    by: SeedingBotActivityLogScalarFieldEnum[] | SeedingBotActivityLogScalarFieldEnum
+    having?: SeedingBotActivityLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SeedingBotActivityLogCountAggregateInputType | true
+    _min?: SeedingBotActivityLogMinAggregateInputType
+    _max?: SeedingBotActivityLogMaxAggregateInputType
+  }
+
+  export type SeedingBotActivityLogGroupByOutputType = {
+    id: string
+    organizationId: string
+    botId: string
+    botAccountId: string | null
+    taskId: string | null
+    action: string
+    detail: JsonValue | null
+    createdAt: Date
+    _count: SeedingBotActivityLogCountAggregateOutputType | null
+    _min: SeedingBotActivityLogMinAggregateOutputType | null
+    _max: SeedingBotActivityLogMaxAggregateOutputType | null
+  }
+
+  type GetSeedingBotActivityLogGroupByPayload<T extends SeedingBotActivityLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SeedingBotActivityLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SeedingBotActivityLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SeedingBotActivityLogGroupByOutputType[P]>
+            : GetScalarType<T[P], SeedingBotActivityLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SeedingBotActivityLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    taskId?: boolean
+    action?: boolean
+    detail?: boolean
+    createdAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotActivityLog$botAccountArgs<ExtArgs>
+    task?: boolean | SeedingBotActivityLog$taskArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotActivityLog"]>
+
+  export type SeedingBotActivityLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    taskId?: boolean
+    action?: boolean
+    detail?: boolean
+    createdAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotActivityLog$botAccountArgs<ExtArgs>
+    task?: boolean | SeedingBotActivityLog$taskArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotActivityLog"]>
+
+  export type SeedingBotActivityLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    taskId?: boolean
+    action?: boolean
+    detail?: boolean
+    createdAt?: boolean
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotActivityLog$botAccountArgs<ExtArgs>
+    task?: boolean | SeedingBotActivityLog$taskArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingBotActivityLog"]>
+
+  export type SeedingBotActivityLogSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    botId?: boolean
+    botAccountId?: boolean
+    taskId?: boolean
+    action?: boolean
+    detail?: boolean
+    createdAt?: boolean
+  }
+
+  export type SeedingBotActivityLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "botId" | "botAccountId" | "taskId" | "action" | "detail" | "createdAt", ExtArgs["result"]["seedingBotActivityLog"]>
+  export type SeedingBotActivityLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotActivityLog$botAccountArgs<ExtArgs>
+    task?: boolean | SeedingBotActivityLog$taskArgs<ExtArgs>
+  }
+  export type SeedingBotActivityLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotActivityLog$botAccountArgs<ExtArgs>
+    task?: boolean | SeedingBotActivityLog$taskArgs<ExtArgs>
+  }
+  export type SeedingBotActivityLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bot?: boolean | SeedingBotDefaultArgs<ExtArgs>
+    botAccount?: boolean | SeedingBotActivityLog$botAccountArgs<ExtArgs>
+    task?: boolean | SeedingBotActivityLog$taskArgs<ExtArgs>
+  }
+
+  export type $SeedingBotActivityLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SeedingBotActivityLog"
+    objects: {
+      bot: Prisma.$SeedingBotPayload<ExtArgs>
+      botAccount: Prisma.$SeedingBotAccountPayload<ExtArgs> | null
+      task: Prisma.$SeedingBotTaskPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      botId: string
+      botAccountId: string | null
+      taskId: string | null
+      action: string
+      detail: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["seedingBotActivityLog"]>
+    composites: {}
+  }
+
+  type SeedingBotActivityLogGetPayload<S extends boolean | null | undefined | SeedingBotActivityLogDefaultArgs> = $Result.GetResult<Prisma.$SeedingBotActivityLogPayload, S>
+
+  type SeedingBotActivityLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SeedingBotActivityLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SeedingBotActivityLogCountAggregateInputType | true
+    }
+
+  export interface SeedingBotActivityLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SeedingBotActivityLog'], meta: { name: 'SeedingBotActivityLog' } }
+    /**
+     * Find zero or one SeedingBotActivityLog that matches the filter.
+     * @param {SeedingBotActivityLogFindUniqueArgs} args - Arguments to find a SeedingBotActivityLog
+     * @example
+     * // Get one SeedingBotActivityLog
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SeedingBotActivityLogFindUniqueArgs>(args: SelectSubset<T, SeedingBotActivityLogFindUniqueArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SeedingBotActivityLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SeedingBotActivityLogFindUniqueOrThrowArgs} args - Arguments to find a SeedingBotActivityLog
+     * @example
+     * // Get one SeedingBotActivityLog
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SeedingBotActivityLogFindUniqueOrThrowArgs>(args: SelectSubset<T, SeedingBotActivityLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotActivityLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogFindFirstArgs} args - Arguments to find a SeedingBotActivityLog
+     * @example
+     * // Get one SeedingBotActivityLog
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SeedingBotActivityLogFindFirstArgs>(args?: SelectSubset<T, SeedingBotActivityLogFindFirstArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingBotActivityLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogFindFirstOrThrowArgs} args - Arguments to find a SeedingBotActivityLog
+     * @example
+     * // Get one SeedingBotActivityLog
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SeedingBotActivityLogFindFirstOrThrowArgs>(args?: SelectSubset<T, SeedingBotActivityLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SeedingBotActivityLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SeedingBotActivityLogs
+     * const seedingBotActivityLogs = await prisma.seedingBotActivityLog.findMany()
+     * 
+     * // Get first 10 SeedingBotActivityLogs
+     * const seedingBotActivityLogs = await prisma.seedingBotActivityLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const seedingBotActivityLogWithIdOnly = await prisma.seedingBotActivityLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SeedingBotActivityLogFindManyArgs>(args?: SelectSubset<T, SeedingBotActivityLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SeedingBotActivityLog.
+     * @param {SeedingBotActivityLogCreateArgs} args - Arguments to create a SeedingBotActivityLog.
+     * @example
+     * // Create one SeedingBotActivityLog
+     * const SeedingBotActivityLog = await prisma.seedingBotActivityLog.create({
+     *   data: {
+     *     // ... data to create a SeedingBotActivityLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends SeedingBotActivityLogCreateArgs>(args: SelectSubset<T, SeedingBotActivityLogCreateArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SeedingBotActivityLogs.
+     * @param {SeedingBotActivityLogCreateManyArgs} args - Arguments to create many SeedingBotActivityLogs.
+     * @example
+     * // Create many SeedingBotActivityLogs
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SeedingBotActivityLogCreateManyArgs>(args?: SelectSubset<T, SeedingBotActivityLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SeedingBotActivityLogs and returns the data saved in the database.
+     * @param {SeedingBotActivityLogCreateManyAndReturnArgs} args - Arguments to create many SeedingBotActivityLogs.
+     * @example
+     * // Create many SeedingBotActivityLogs
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SeedingBotActivityLogs and only return the `id`
+     * const seedingBotActivityLogWithIdOnly = await prisma.seedingBotActivityLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SeedingBotActivityLogCreateManyAndReturnArgs>(args?: SelectSubset<T, SeedingBotActivityLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SeedingBotActivityLog.
+     * @param {SeedingBotActivityLogDeleteArgs} args - Arguments to delete one SeedingBotActivityLog.
+     * @example
+     * // Delete one SeedingBotActivityLog
+     * const SeedingBotActivityLog = await prisma.seedingBotActivityLog.delete({
+     *   where: {
+     *     // ... filter to delete one SeedingBotActivityLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SeedingBotActivityLogDeleteArgs>(args: SelectSubset<T, SeedingBotActivityLogDeleteArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SeedingBotActivityLog.
+     * @param {SeedingBotActivityLogUpdateArgs} args - Arguments to update one SeedingBotActivityLog.
+     * @example
+     * // Update one SeedingBotActivityLog
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SeedingBotActivityLogUpdateArgs>(args: SelectSubset<T, SeedingBotActivityLogUpdateArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SeedingBotActivityLogs.
+     * @param {SeedingBotActivityLogDeleteManyArgs} args - Arguments to filter SeedingBotActivityLogs to delete.
+     * @example
+     * // Delete a few SeedingBotActivityLogs
+     * const { count } = await prisma.seedingBotActivityLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SeedingBotActivityLogDeleteManyArgs>(args?: SelectSubset<T, SeedingBotActivityLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotActivityLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SeedingBotActivityLogs
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SeedingBotActivityLogUpdateManyArgs>(args: SelectSubset<T, SeedingBotActivityLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingBotActivityLogs and returns the data updated in the database.
+     * @param {SeedingBotActivityLogUpdateManyAndReturnArgs} args - Arguments to update many SeedingBotActivityLogs.
+     * @example
+     * // Update many SeedingBotActivityLogs
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SeedingBotActivityLogs and only return the `id`
+     * const seedingBotActivityLogWithIdOnly = await prisma.seedingBotActivityLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SeedingBotActivityLogUpdateManyAndReturnArgs>(args: SelectSubset<T, SeedingBotActivityLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SeedingBotActivityLog.
+     * @param {SeedingBotActivityLogUpsertArgs} args - Arguments to update or create a SeedingBotActivityLog.
+     * @example
+     * // Update or create a SeedingBotActivityLog
+     * const seedingBotActivityLog = await prisma.seedingBotActivityLog.upsert({
+     *   create: {
+     *     // ... data to create a SeedingBotActivityLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SeedingBotActivityLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SeedingBotActivityLogUpsertArgs>(args: SelectSubset<T, SeedingBotActivityLogUpsertArgs<ExtArgs>>): Prisma__SeedingBotActivityLogClient<$Result.GetResult<Prisma.$SeedingBotActivityLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SeedingBotActivityLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogCountArgs} args - Arguments to filter SeedingBotActivityLogs to count.
+     * @example
+     * // Count the number of SeedingBotActivityLogs
+     * const count = await prisma.seedingBotActivityLog.count({
+     *   where: {
+     *     // ... the filter for the SeedingBotActivityLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends SeedingBotActivityLogCountArgs>(
+      args?: Subset<T, SeedingBotActivityLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SeedingBotActivityLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SeedingBotActivityLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SeedingBotActivityLogAggregateArgs>(args: Subset<T, SeedingBotActivityLogAggregateArgs>): Prisma.PrismaPromise<GetSeedingBotActivityLogAggregateType<T>>
+
+    /**
+     * Group by SeedingBotActivityLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingBotActivityLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SeedingBotActivityLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SeedingBotActivityLogGroupByArgs['orderBy'] }
+        : { orderBy?: SeedingBotActivityLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SeedingBotActivityLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSeedingBotActivityLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SeedingBotActivityLog model
+   */
+  readonly fields: SeedingBotActivityLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SeedingBotActivityLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SeedingBotActivityLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bot<T extends SeedingBotDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotDefaultArgs<ExtArgs>>): Prisma__SeedingBotClient<$Result.GetResult<Prisma.$SeedingBotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    botAccount<T extends SeedingBotActivityLog$botAccountArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotActivityLog$botAccountArgs<ExtArgs>>): Prisma__SeedingBotAccountClient<$Result.GetResult<Prisma.$SeedingBotAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    task<T extends SeedingBotActivityLog$taskArgs<ExtArgs> = {}>(args?: Subset<T, SeedingBotActivityLog$taskArgs<ExtArgs>>): Prisma__SeedingBotTaskClient<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SeedingBotActivityLog model
+   */
+  interface SeedingBotActivityLogFieldRefs {
+    readonly id: FieldRef<"SeedingBotActivityLog", 'String'>
+    readonly organizationId: FieldRef<"SeedingBotActivityLog", 'String'>
+    readonly botId: FieldRef<"SeedingBotActivityLog", 'String'>
+    readonly botAccountId: FieldRef<"SeedingBotActivityLog", 'String'>
+    readonly taskId: FieldRef<"SeedingBotActivityLog", 'String'>
+    readonly action: FieldRef<"SeedingBotActivityLog", 'String'>
+    readonly detail: FieldRef<"SeedingBotActivityLog", 'Json'>
+    readonly createdAt: FieldRef<"SeedingBotActivityLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SeedingBotActivityLog findUnique
+   */
+  export type SeedingBotActivityLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotActivityLog to fetch.
+     */
+    where: SeedingBotActivityLogWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotActivityLog findUniqueOrThrow
+   */
+  export type SeedingBotActivityLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotActivityLog to fetch.
+     */
+    where: SeedingBotActivityLogWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotActivityLog findFirst
+   */
+  export type SeedingBotActivityLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotActivityLog to fetch.
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotActivityLogs to fetch.
+     */
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotActivityLogs.
+     */
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotActivityLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotActivityLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotActivityLogs.
+     */
+    distinct?: SeedingBotActivityLogScalarFieldEnum | SeedingBotActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotActivityLog findFirstOrThrow
+   */
+  export type SeedingBotActivityLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotActivityLog to fetch.
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotActivityLogs to fetch.
+     */
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingBotActivityLogs.
+     */
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotActivityLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotActivityLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingBotActivityLogs.
+     */
+    distinct?: SeedingBotActivityLogScalarFieldEnum | SeedingBotActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotActivityLog findMany
+   */
+  export type SeedingBotActivityLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingBotActivityLogs to fetch.
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingBotActivityLogs to fetch.
+     */
+    orderBy?: SeedingBotActivityLogOrderByWithRelationInput | SeedingBotActivityLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SeedingBotActivityLogs.
+     */
+    cursor?: SeedingBotActivityLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingBotActivityLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingBotActivityLogs.
+     */
+    skip?: number
+    distinct?: SeedingBotActivityLogScalarFieldEnum | SeedingBotActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingBotActivityLog create
+   */
+  export type SeedingBotActivityLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SeedingBotActivityLog.
+     */
+    data: XOR<SeedingBotActivityLogCreateInput, SeedingBotActivityLogUncheckedCreateInput>
+  }
+
+  /**
+   * SeedingBotActivityLog createMany
+   */
+  export type SeedingBotActivityLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SeedingBotActivityLogs.
+     */
+    data: SeedingBotActivityLogCreateManyInput | SeedingBotActivityLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SeedingBotActivityLog createManyAndReturn
+   */
+  export type SeedingBotActivityLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many SeedingBotActivityLogs.
+     */
+    data: SeedingBotActivityLogCreateManyInput | SeedingBotActivityLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotActivityLog update
+   */
+  export type SeedingBotActivityLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SeedingBotActivityLog.
+     */
+    data: XOR<SeedingBotActivityLogUpdateInput, SeedingBotActivityLogUncheckedUpdateInput>
+    /**
+     * Choose, which SeedingBotActivityLog to update.
+     */
+    where: SeedingBotActivityLogWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotActivityLog updateMany
+   */
+  export type SeedingBotActivityLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SeedingBotActivityLogs.
+     */
+    data: XOR<SeedingBotActivityLogUpdateManyMutationInput, SeedingBotActivityLogUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotActivityLogs to update
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * Limit how many SeedingBotActivityLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotActivityLog updateManyAndReturn
+   */
+  export type SeedingBotActivityLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * The data used to update SeedingBotActivityLogs.
+     */
+    data: XOR<SeedingBotActivityLogUpdateManyMutationInput, SeedingBotActivityLogUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingBotActivityLogs to update
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * Limit how many SeedingBotActivityLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingBotActivityLog upsert
+   */
+  export type SeedingBotActivityLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SeedingBotActivityLog to update in case it exists.
+     */
+    where: SeedingBotActivityLogWhereUniqueInput
+    /**
+     * In case the SeedingBotActivityLog found by the `where` argument doesn't exist, create a new SeedingBotActivityLog with this data.
+     */
+    create: XOR<SeedingBotActivityLogCreateInput, SeedingBotActivityLogUncheckedCreateInput>
+    /**
+     * In case the SeedingBotActivityLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SeedingBotActivityLogUpdateInput, SeedingBotActivityLogUncheckedUpdateInput>
+  }
+
+  /**
+   * SeedingBotActivityLog delete
+   */
+  export type SeedingBotActivityLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+    /**
+     * Filter which SeedingBotActivityLog to delete.
+     */
+    where: SeedingBotActivityLogWhereUniqueInput
+  }
+
+  /**
+   * SeedingBotActivityLog deleteMany
+   */
+  export type SeedingBotActivityLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingBotActivityLogs to delete
+     */
+    where?: SeedingBotActivityLogWhereInput
+    /**
+     * Limit how many SeedingBotActivityLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingBotActivityLog.botAccount
+   */
+  export type SeedingBotActivityLog$botAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotAccount
+     */
+    select?: SeedingBotAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotAccount
+     */
+    omit?: SeedingBotAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotAccountInclude<ExtArgs> | null
+    where?: SeedingBotAccountWhereInput
+  }
+
+  /**
+   * SeedingBotActivityLog.task
+   */
+  export type SeedingBotActivityLog$taskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotTask
+     */
+    select?: SeedingBotTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotTask
+     */
+    omit?: SeedingBotTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotTaskInclude<ExtArgs> | null
+    where?: SeedingBotTaskWhereInput
+  }
+
+  /**
+   * SeedingBotActivityLog without action
+   */
+  export type SeedingBotActivityLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingBotActivityLog
+     */
+    select?: SeedingBotActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingBotActivityLog
+     */
+    omit?: SeedingBotActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingBotActivityLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -28375,6 +35350,97 @@ export namespace Prisma {
   export type AIUsageLogScalarFieldEnum = (typeof AIUsageLogScalarFieldEnum)[keyof typeof AIUsageLogScalarFieldEnum]
 
 
+  export const SeedingBotScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    name: 'name',
+    displayName: 'displayName',
+    avatarUrl: 'avatarUrl',
+    brandVoice: 'brandVoice',
+    maturityLevel: 'maturityLevel',
+    status: 'status',
+    notes: 'notes',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    deletedAt: 'deletedAt'
+  };
+
+  export type SeedingBotScalarFieldEnum = (typeof SeedingBotScalarFieldEnum)[keyof typeof SeedingBotScalarFieldEnum]
+
+
+  export const SeedingBotAccountScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    botId: 'botId',
+    platform: 'platform',
+    accountLabel: 'accountLabel',
+    profileUrl: 'profileUrl',
+    avatarUrl: 'avatarUrl',
+    accountStatus: 'accountStatus',
+    accountCreatedAt: 'accountCreatedAt',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SeedingBotAccountScalarFieldEnum = (typeof SeedingBotAccountScalarFieldEnum)[keyof typeof SeedingBotAccountScalarFieldEnum]
+
+
+  export const SeedingBotLocationScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    botId: 'botId',
+    businessId: 'businessId',
+    businessLocationId: 'businessLocationId',
+    isPrimary: 'isPrimary',
+    createdAt: 'createdAt'
+  };
+
+  export type SeedingBotLocationScalarFieldEnum = (typeof SeedingBotLocationScalarFieldEnum)[keyof typeof SeedingBotLocationScalarFieldEnum]
+
+
+  export const SeedingBotTaskScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    botId: 'botId',
+    botAccountId: 'botAccountId',
+    businessId: 'businessId',
+    businessLocationId: 'businessLocationId',
+    analysisSessionId: 'analysisSessionId',
+    strategyVersionId: 'strategyVersionId',
+    taskType: 'taskType',
+    status: 'status',
+    title: 'title',
+    content: 'content',
+    scheduledAt: 'scheduledAt',
+    externalRef: 'externalRef',
+    completedBy: 'completedBy',
+    completedAt: 'completedAt',
+    failureReason: 'failureReason',
+    notes: 'notes',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SeedingBotTaskScalarFieldEnum = (typeof SeedingBotTaskScalarFieldEnum)[keyof typeof SeedingBotTaskScalarFieldEnum]
+
+
+  export const SeedingBotActivityLogScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    botId: 'botId',
+    botAccountId: 'botAccountId',
+    taskId: 'taskId',
+    action: 'action',
+    detail: 'detail',
+    createdAt: 'createdAt'
+  };
+
+  export type SeedingBotActivityLogScalarFieldEnum = (typeof SeedingBotActivityLogScalarFieldEnum)[keyof typeof SeedingBotActivityLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -28727,6 +35793,76 @@ export namespace Prisma {
    */
   export type ListEnumStrategyVersionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StrategyVersionStatus[]'>
     
+
+
+  /**
+   * Reference to a field of type 'BotStatus'
+   */
+  export type EnumBotStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotStatus[]'
+   */
+  export type ListEnumBotStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotPlatform'
+   */
+  export type EnumBotPlatformFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotPlatform'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotPlatform[]'
+   */
+  export type ListEnumBotPlatformFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotPlatform[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotAccountStatus'
+   */
+  export type EnumBotAccountStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotAccountStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotAccountStatus[]'
+   */
+  export type ListEnumBotAccountStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotAccountStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotTaskType'
+   */
+  export type EnumBotTaskTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotTaskType'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotTaskType[]'
+   */
+  export type ListEnumBotTaskTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotTaskType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotTaskStatus'
+   */
+  export type EnumBotTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotTaskStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BotTaskStatus[]'
+   */
+  export type ListEnumBotTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BotTaskStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -28830,6 +35966,7 @@ export namespace Prisma {
     members?: OrganizationMemberListRelationFilter
     businesses?: BusinessListRelationFilter
     analysisSessions?: AnalysisSessionListRelationFilter
+    seedingBots?: SeedingBotListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -28844,6 +35981,7 @@ export namespace Prisma {
     members?: OrganizationMemberOrderByRelationAggregateInput
     businesses?: BusinessOrderByRelationAggregateInput
     analysisSessions?: AnalysisSessionOrderByRelationAggregateInput
+    seedingBots?: SeedingBotOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -28861,6 +35999,7 @@ export namespace Prisma {
     members?: OrganizationMemberListRelationFilter
     businesses?: BusinessListRelationFilter
     analysisSessions?: AnalysisSessionListRelationFilter
+    seedingBots?: SeedingBotListRelationFilter
   }, "id" | "slug">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -29196,6 +36335,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BusinessLocation"> | Date | string
     business?: XOR<BusinessScalarRelationFilter, BusinessWhereInput>
     dataSources?: DataSourceListRelationFilter
+    botAssignments?: SeedingBotLocationListRelationFilter
+    botTasks?: SeedingBotTaskListRelationFilter
   }
 
   export type BusinessLocationOrderByWithRelationInput = {
@@ -29219,6 +36360,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     business?: BusinessOrderByWithRelationInput
     dataSources?: DataSourceOrderByRelationAggregateInput
+    botAssignments?: SeedingBotLocationOrderByRelationAggregateInput
+    botTasks?: SeedingBotTaskOrderByRelationAggregateInput
   }
 
   export type BusinessLocationWhereUniqueInput = Prisma.AtLeast<{
@@ -29246,6 +36389,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BusinessLocation"> | Date | string
     business?: XOR<BusinessScalarRelationFilter, BusinessWhereInput>
     dataSources?: DataSourceListRelationFilter
+    botAssignments?: SeedingBotLocationListRelationFilter
+    botTasks?: SeedingBotTaskListRelationFilter
   }, "id" | "serpapiPlaceId" | "serpapiLocationId" | "id_businessId">
 
   export type BusinessLocationOrderByWithAggregationInput = {
@@ -29395,6 +36540,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobListRelationFilter
     insights?: InsightListRelationFilter
     strategies?: StrategyListRelationFilter
+    botTasks?: SeedingBotTaskListRelationFilter
   }
 
   export type AnalysisSessionOrderByWithRelationInput = {
@@ -29421,6 +36567,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobOrderByRelationAggregateInput
     insights?: InsightOrderByRelationAggregateInput
     strategies?: StrategyOrderByRelationAggregateInput
+    botTasks?: SeedingBotTaskOrderByRelationAggregateInput
   }
 
   export type AnalysisSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -29451,6 +36598,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobListRelationFilter
     insights?: InsightListRelationFilter
     strategies?: StrategyListRelationFilter
+    botTasks?: SeedingBotTaskListRelationFilter
   }, "id" | "id_businessId">
 
   export type AnalysisSessionOrderByWithAggregationInput = {
@@ -30534,6 +37682,7 @@ export namespace Prisma {
     strategy?: XOR<StrategyScalarRelationFilter, StrategyWhereInput>
     activeForStrategy?: XOR<StrategyNullableScalarRelationFilter, StrategyWhereInput> | null
     insights?: StrategyInsightListRelationFilter
+    botTasks?: SeedingBotTaskListRelationFilter
   }
 
   export type StrategyVersionOrderByWithRelationInput = {
@@ -30567,6 +37716,7 @@ export namespace Prisma {
     strategy?: StrategyOrderByWithRelationInput
     activeForStrategy?: StrategyOrderByWithRelationInput
     insights?: StrategyInsightOrderByRelationAggregateInput
+    botTasks?: SeedingBotTaskOrderByRelationAggregateInput
   }
 
   export type StrategyVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -30606,6 +37756,7 @@ export namespace Prisma {
     strategy?: XOR<StrategyScalarRelationFilter, StrategyWhereInput>
     activeForStrategy?: XOR<StrategyNullableScalarRelationFilter, StrategyWhereInput> | null
     insights?: StrategyInsightListRelationFilter
+    botTasks?: SeedingBotTaskListRelationFilter
   }, "id" | "strategyId_versionNo" | "id_strategyId" | "id_analysisSessionId">
 
   export type StrategyVersionOrderByWithAggregationInput = {
@@ -30861,6 +38012,510 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AIUsageLog"> | Date | string
   }
 
+  export type SeedingBotWhereInput = {
+    AND?: SeedingBotWhereInput | SeedingBotWhereInput[]
+    OR?: SeedingBotWhereInput[]
+    NOT?: SeedingBotWhereInput | SeedingBotWhereInput[]
+    id?: StringFilter<"SeedingBot"> | string
+    organizationId?: StringFilter<"SeedingBot"> | string
+    name?: StringFilter<"SeedingBot"> | string
+    displayName?: StringFilter<"SeedingBot"> | string
+    avatarUrl?: StringNullableFilter<"SeedingBot"> | string | null
+    brandVoice?: StringNullableFilter<"SeedingBot"> | string | null
+    maturityLevel?: IntFilter<"SeedingBot"> | number
+    status?: EnumBotStatusFilter<"SeedingBot"> | $Enums.BotStatus
+    notes?: StringNullableFilter<"SeedingBot"> | string | null
+    createdBy?: StringNullableFilter<"SeedingBot"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBot"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBot"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"SeedingBot"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    accounts?: SeedingBotAccountListRelationFilter
+    locations?: SeedingBotLocationListRelationFilter
+    tasks?: SeedingBotTaskListRelationFilter
+    activityLogs?: SeedingBotActivityLogListRelationFilter
+  }
+
+  export type SeedingBotOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    displayName?: SortOrder
+    avatarUrl?: SortOrderInput | SortOrder
+    brandVoice?: SortOrderInput | SortOrder
+    maturityLevel?: SortOrder
+    status?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    accounts?: SeedingBotAccountOrderByRelationAggregateInput
+    locations?: SeedingBotLocationOrderByRelationAggregateInput
+    tasks?: SeedingBotTaskOrderByRelationAggregateInput
+    activityLogs?: SeedingBotActivityLogOrderByRelationAggregateInput
+  }
+
+  export type SeedingBotWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    id_organizationId?: SeedingBotIdOrganizationIdCompoundUniqueInput
+    AND?: SeedingBotWhereInput | SeedingBotWhereInput[]
+    OR?: SeedingBotWhereInput[]
+    NOT?: SeedingBotWhereInput | SeedingBotWhereInput[]
+    organizationId?: StringFilter<"SeedingBot"> | string
+    name?: StringFilter<"SeedingBot"> | string
+    displayName?: StringFilter<"SeedingBot"> | string
+    avatarUrl?: StringNullableFilter<"SeedingBot"> | string | null
+    brandVoice?: StringNullableFilter<"SeedingBot"> | string | null
+    maturityLevel?: IntFilter<"SeedingBot"> | number
+    status?: EnumBotStatusFilter<"SeedingBot"> | $Enums.BotStatus
+    notes?: StringNullableFilter<"SeedingBot"> | string | null
+    createdBy?: StringNullableFilter<"SeedingBot"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBot"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBot"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"SeedingBot"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    accounts?: SeedingBotAccountListRelationFilter
+    locations?: SeedingBotLocationListRelationFilter
+    tasks?: SeedingBotTaskListRelationFilter
+    activityLogs?: SeedingBotActivityLogListRelationFilter
+  }, "id" | "id_organizationId">
+
+  export type SeedingBotOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    displayName?: SortOrder
+    avatarUrl?: SortOrderInput | SortOrder
+    brandVoice?: SortOrderInput | SortOrder
+    maturityLevel?: SortOrder
+    status?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    _count?: SeedingBotCountOrderByAggregateInput
+    _avg?: SeedingBotAvgOrderByAggregateInput
+    _max?: SeedingBotMaxOrderByAggregateInput
+    _min?: SeedingBotMinOrderByAggregateInput
+    _sum?: SeedingBotSumOrderByAggregateInput
+  }
+
+  export type SeedingBotScalarWhereWithAggregatesInput = {
+    AND?: SeedingBotScalarWhereWithAggregatesInput | SeedingBotScalarWhereWithAggregatesInput[]
+    OR?: SeedingBotScalarWhereWithAggregatesInput[]
+    NOT?: SeedingBotScalarWhereWithAggregatesInput | SeedingBotScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SeedingBot"> | string
+    organizationId?: StringWithAggregatesFilter<"SeedingBot"> | string
+    name?: StringWithAggregatesFilter<"SeedingBot"> | string
+    displayName?: StringWithAggregatesFilter<"SeedingBot"> | string
+    avatarUrl?: StringNullableWithAggregatesFilter<"SeedingBot"> | string | null
+    brandVoice?: StringNullableWithAggregatesFilter<"SeedingBot"> | string | null
+    maturityLevel?: IntWithAggregatesFilter<"SeedingBot"> | number
+    status?: EnumBotStatusWithAggregatesFilter<"SeedingBot"> | $Enums.BotStatus
+    notes?: StringNullableWithAggregatesFilter<"SeedingBot"> | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"SeedingBot"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SeedingBot"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SeedingBot"> | Date | string
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"SeedingBot"> | Date | string | null
+  }
+
+  export type SeedingBotAccountWhereInput = {
+    AND?: SeedingBotAccountWhereInput | SeedingBotAccountWhereInput[]
+    OR?: SeedingBotAccountWhereInput[]
+    NOT?: SeedingBotAccountWhereInput | SeedingBotAccountWhereInput[]
+    id?: StringFilter<"SeedingBotAccount"> | string
+    organizationId?: StringFilter<"SeedingBotAccount"> | string
+    botId?: StringFilter<"SeedingBotAccount"> | string
+    platform?: EnumBotPlatformFilter<"SeedingBotAccount"> | $Enums.BotPlatform
+    accountLabel?: StringFilter<"SeedingBotAccount"> | string
+    profileUrl?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    avatarUrl?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    accountStatus?: EnumBotAccountStatusFilter<"SeedingBotAccount"> | $Enums.BotAccountStatus
+    accountCreatedAt?: DateTimeNullableFilter<"SeedingBotAccount"> | Date | string | null
+    notes?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBotAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBotAccount"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    tasks?: SeedingBotTaskListRelationFilter
+    activityLogs?: SeedingBotActivityLogListRelationFilter
+  }
+
+  export type SeedingBotAccountOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    platform?: SortOrder
+    accountLabel?: SortOrder
+    profileUrl?: SortOrderInput | SortOrder
+    avatarUrl?: SortOrderInput | SortOrder
+    accountStatus?: SortOrder
+    accountCreatedAt?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    bot?: SeedingBotOrderByWithRelationInput
+    tasks?: SeedingBotTaskOrderByRelationAggregateInput
+    activityLogs?: SeedingBotActivityLogOrderByRelationAggregateInput
+  }
+
+  export type SeedingBotAccountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    botId_platform_accountLabel?: SeedingBotAccountBotIdPlatformAccountLabelCompoundUniqueInput
+    id_organizationId?: SeedingBotAccountIdOrganizationIdCompoundUniqueInput
+    AND?: SeedingBotAccountWhereInput | SeedingBotAccountWhereInput[]
+    OR?: SeedingBotAccountWhereInput[]
+    NOT?: SeedingBotAccountWhereInput | SeedingBotAccountWhereInput[]
+    organizationId?: StringFilter<"SeedingBotAccount"> | string
+    botId?: StringFilter<"SeedingBotAccount"> | string
+    platform?: EnumBotPlatformFilter<"SeedingBotAccount"> | $Enums.BotPlatform
+    accountLabel?: StringFilter<"SeedingBotAccount"> | string
+    profileUrl?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    avatarUrl?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    accountStatus?: EnumBotAccountStatusFilter<"SeedingBotAccount"> | $Enums.BotAccountStatus
+    accountCreatedAt?: DateTimeNullableFilter<"SeedingBotAccount"> | Date | string | null
+    notes?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBotAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBotAccount"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    tasks?: SeedingBotTaskListRelationFilter
+    activityLogs?: SeedingBotActivityLogListRelationFilter
+  }, "id" | "botId_platform_accountLabel" | "id_organizationId">
+
+  export type SeedingBotAccountOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    platform?: SortOrder
+    accountLabel?: SortOrder
+    profileUrl?: SortOrderInput | SortOrder
+    avatarUrl?: SortOrderInput | SortOrder
+    accountStatus?: SortOrder
+    accountCreatedAt?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SeedingBotAccountCountOrderByAggregateInput
+    _max?: SeedingBotAccountMaxOrderByAggregateInput
+    _min?: SeedingBotAccountMinOrderByAggregateInput
+  }
+
+  export type SeedingBotAccountScalarWhereWithAggregatesInput = {
+    AND?: SeedingBotAccountScalarWhereWithAggregatesInput | SeedingBotAccountScalarWhereWithAggregatesInput[]
+    OR?: SeedingBotAccountScalarWhereWithAggregatesInput[]
+    NOT?: SeedingBotAccountScalarWhereWithAggregatesInput | SeedingBotAccountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SeedingBotAccount"> | string
+    organizationId?: StringWithAggregatesFilter<"SeedingBotAccount"> | string
+    botId?: StringWithAggregatesFilter<"SeedingBotAccount"> | string
+    platform?: EnumBotPlatformWithAggregatesFilter<"SeedingBotAccount"> | $Enums.BotPlatform
+    accountLabel?: StringWithAggregatesFilter<"SeedingBotAccount"> | string
+    profileUrl?: StringNullableWithAggregatesFilter<"SeedingBotAccount"> | string | null
+    avatarUrl?: StringNullableWithAggregatesFilter<"SeedingBotAccount"> | string | null
+    accountStatus?: EnumBotAccountStatusWithAggregatesFilter<"SeedingBotAccount"> | $Enums.BotAccountStatus
+    accountCreatedAt?: DateTimeNullableWithAggregatesFilter<"SeedingBotAccount"> | Date | string | null
+    notes?: StringNullableWithAggregatesFilter<"SeedingBotAccount"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SeedingBotAccount"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SeedingBotAccount"> | Date | string
+  }
+
+  export type SeedingBotLocationWhereInput = {
+    AND?: SeedingBotLocationWhereInput | SeedingBotLocationWhereInput[]
+    OR?: SeedingBotLocationWhereInput[]
+    NOT?: SeedingBotLocationWhereInput | SeedingBotLocationWhereInput[]
+    id?: StringFilter<"SeedingBotLocation"> | string
+    organizationId?: StringFilter<"SeedingBotLocation"> | string
+    botId?: StringFilter<"SeedingBotLocation"> | string
+    businessId?: StringFilter<"SeedingBotLocation"> | string
+    businessLocationId?: StringFilter<"SeedingBotLocation"> | string
+    isPrimary?: BoolFilter<"SeedingBotLocation"> | boolean
+    createdAt?: DateTimeFilter<"SeedingBotLocation"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    businessLocation?: XOR<BusinessLocationScalarRelationFilter, BusinessLocationWhereInput>
+  }
+
+  export type SeedingBotLocationOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+    bot?: SeedingBotOrderByWithRelationInput
+    businessLocation?: BusinessLocationOrderByWithRelationInput
+  }
+
+  export type SeedingBotLocationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    botId_businessLocationId?: SeedingBotLocationBotIdBusinessLocationIdCompoundUniqueInput
+    AND?: SeedingBotLocationWhereInput | SeedingBotLocationWhereInput[]
+    OR?: SeedingBotLocationWhereInput[]
+    NOT?: SeedingBotLocationWhereInput | SeedingBotLocationWhereInput[]
+    organizationId?: StringFilter<"SeedingBotLocation"> | string
+    botId?: StringFilter<"SeedingBotLocation"> | string
+    businessId?: StringFilter<"SeedingBotLocation"> | string
+    businessLocationId?: StringFilter<"SeedingBotLocation"> | string
+    isPrimary?: BoolFilter<"SeedingBotLocation"> | boolean
+    createdAt?: DateTimeFilter<"SeedingBotLocation"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    businessLocation?: XOR<BusinessLocationScalarRelationFilter, BusinessLocationWhereInput>
+  }, "id" | "botId_businessLocationId">
+
+  export type SeedingBotLocationOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+    _count?: SeedingBotLocationCountOrderByAggregateInput
+    _max?: SeedingBotLocationMaxOrderByAggregateInput
+    _min?: SeedingBotLocationMinOrderByAggregateInput
+  }
+
+  export type SeedingBotLocationScalarWhereWithAggregatesInput = {
+    AND?: SeedingBotLocationScalarWhereWithAggregatesInput | SeedingBotLocationScalarWhereWithAggregatesInput[]
+    OR?: SeedingBotLocationScalarWhereWithAggregatesInput[]
+    NOT?: SeedingBotLocationScalarWhereWithAggregatesInput | SeedingBotLocationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SeedingBotLocation"> | string
+    organizationId?: StringWithAggregatesFilter<"SeedingBotLocation"> | string
+    botId?: StringWithAggregatesFilter<"SeedingBotLocation"> | string
+    businessId?: StringWithAggregatesFilter<"SeedingBotLocation"> | string
+    businessLocationId?: StringWithAggregatesFilter<"SeedingBotLocation"> | string
+    isPrimary?: BoolWithAggregatesFilter<"SeedingBotLocation"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"SeedingBotLocation"> | Date | string
+  }
+
+  export type SeedingBotTaskWhereInput = {
+    AND?: SeedingBotTaskWhereInput | SeedingBotTaskWhereInput[]
+    OR?: SeedingBotTaskWhereInput[]
+    NOT?: SeedingBotTaskWhereInput | SeedingBotTaskWhereInput[]
+    id?: StringFilter<"SeedingBotTask"> | string
+    organizationId?: StringFilter<"SeedingBotTask"> | string
+    botId?: StringFilter<"SeedingBotTask"> | string
+    botAccountId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    businessId?: StringFilter<"SeedingBotTask"> | string
+    businessLocationId?: StringFilter<"SeedingBotTask"> | string
+    analysisSessionId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    strategyVersionId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    taskType?: EnumBotTaskTypeFilter<"SeedingBotTask"> | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFilter<"SeedingBotTask"> | $Enums.BotTaskStatus
+    title?: StringFilter<"SeedingBotTask"> | string
+    content?: StringNullableFilter<"SeedingBotTask"> | string | null
+    scheduledAt?: DateTimeNullableFilter<"SeedingBotTask"> | Date | string | null
+    externalRef?: StringNullableFilter<"SeedingBotTask"> | string | null
+    completedBy?: StringNullableFilter<"SeedingBotTask"> | string | null
+    completedAt?: DateTimeNullableFilter<"SeedingBotTask"> | Date | string | null
+    failureReason?: StringNullableFilter<"SeedingBotTask"> | string | null
+    notes?: StringNullableFilter<"SeedingBotTask"> | string | null
+    createdBy?: StringNullableFilter<"SeedingBotTask"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBotTask"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBotTask"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    botAccount?: XOR<SeedingBotAccountNullableScalarRelationFilter, SeedingBotAccountWhereInput> | null
+    businessLocation?: XOR<BusinessLocationScalarRelationFilter, BusinessLocationWhereInput>
+    analysisSession?: XOR<AnalysisSessionNullableScalarRelationFilter, AnalysisSessionWhereInput> | null
+    strategyVersion?: XOR<StrategyVersionNullableScalarRelationFilter, StrategyVersionWhereInput> | null
+    activityLogs?: SeedingBotActivityLogListRelationFilter
+  }
+
+  export type SeedingBotTaskOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrderInput | SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    analysisSessionId?: SortOrderInput | SortOrder
+    strategyVersionId?: SortOrderInput | SortOrder
+    taskType?: SortOrder
+    status?: SortOrder
+    title?: SortOrder
+    content?: SortOrderInput | SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    externalRef?: SortOrderInput | SortOrder
+    completedBy?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    bot?: SeedingBotOrderByWithRelationInput
+    botAccount?: SeedingBotAccountOrderByWithRelationInput
+    businessLocation?: BusinessLocationOrderByWithRelationInput
+    analysisSession?: AnalysisSessionOrderByWithRelationInput
+    strategyVersion?: StrategyVersionOrderByWithRelationInput
+    activityLogs?: SeedingBotActivityLogOrderByRelationAggregateInput
+  }
+
+  export type SeedingBotTaskWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    id_organizationId?: SeedingBotTaskIdOrganizationIdCompoundUniqueInput
+    AND?: SeedingBotTaskWhereInput | SeedingBotTaskWhereInput[]
+    OR?: SeedingBotTaskWhereInput[]
+    NOT?: SeedingBotTaskWhereInput | SeedingBotTaskWhereInput[]
+    organizationId?: StringFilter<"SeedingBotTask"> | string
+    botId?: StringFilter<"SeedingBotTask"> | string
+    botAccountId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    businessId?: StringFilter<"SeedingBotTask"> | string
+    businessLocationId?: StringFilter<"SeedingBotTask"> | string
+    analysisSessionId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    strategyVersionId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    taskType?: EnumBotTaskTypeFilter<"SeedingBotTask"> | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFilter<"SeedingBotTask"> | $Enums.BotTaskStatus
+    title?: StringFilter<"SeedingBotTask"> | string
+    content?: StringNullableFilter<"SeedingBotTask"> | string | null
+    scheduledAt?: DateTimeNullableFilter<"SeedingBotTask"> | Date | string | null
+    externalRef?: StringNullableFilter<"SeedingBotTask"> | string | null
+    completedBy?: StringNullableFilter<"SeedingBotTask"> | string | null
+    completedAt?: DateTimeNullableFilter<"SeedingBotTask"> | Date | string | null
+    failureReason?: StringNullableFilter<"SeedingBotTask"> | string | null
+    notes?: StringNullableFilter<"SeedingBotTask"> | string | null
+    createdBy?: StringNullableFilter<"SeedingBotTask"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBotTask"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBotTask"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    botAccount?: XOR<SeedingBotAccountNullableScalarRelationFilter, SeedingBotAccountWhereInput> | null
+    businessLocation?: XOR<BusinessLocationScalarRelationFilter, BusinessLocationWhereInput>
+    analysisSession?: XOR<AnalysisSessionNullableScalarRelationFilter, AnalysisSessionWhereInput> | null
+    strategyVersion?: XOR<StrategyVersionNullableScalarRelationFilter, StrategyVersionWhereInput> | null
+    activityLogs?: SeedingBotActivityLogListRelationFilter
+  }, "id" | "id_organizationId">
+
+  export type SeedingBotTaskOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrderInput | SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    analysisSessionId?: SortOrderInput | SortOrder
+    strategyVersionId?: SortOrderInput | SortOrder
+    taskType?: SortOrder
+    status?: SortOrder
+    title?: SortOrder
+    content?: SortOrderInput | SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    externalRef?: SortOrderInput | SortOrder
+    completedBy?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SeedingBotTaskCountOrderByAggregateInput
+    _max?: SeedingBotTaskMaxOrderByAggregateInput
+    _min?: SeedingBotTaskMinOrderByAggregateInput
+  }
+
+  export type SeedingBotTaskScalarWhereWithAggregatesInput = {
+    AND?: SeedingBotTaskScalarWhereWithAggregatesInput | SeedingBotTaskScalarWhereWithAggregatesInput[]
+    OR?: SeedingBotTaskScalarWhereWithAggregatesInput[]
+    NOT?: SeedingBotTaskScalarWhereWithAggregatesInput | SeedingBotTaskScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SeedingBotTask"> | string
+    organizationId?: StringWithAggregatesFilter<"SeedingBotTask"> | string
+    botId?: StringWithAggregatesFilter<"SeedingBotTask"> | string
+    botAccountId?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    businessId?: StringWithAggregatesFilter<"SeedingBotTask"> | string
+    businessLocationId?: StringWithAggregatesFilter<"SeedingBotTask"> | string
+    analysisSessionId?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    strategyVersionId?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    taskType?: EnumBotTaskTypeWithAggregatesFilter<"SeedingBotTask"> | $Enums.BotTaskType
+    status?: EnumBotTaskStatusWithAggregatesFilter<"SeedingBotTask"> | $Enums.BotTaskStatus
+    title?: StringWithAggregatesFilter<"SeedingBotTask"> | string
+    content?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    scheduledAt?: DateTimeNullableWithAggregatesFilter<"SeedingBotTask"> | Date | string | null
+    externalRef?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    completedBy?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"SeedingBotTask"> | Date | string | null
+    failureReason?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"SeedingBotTask"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SeedingBotTask"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SeedingBotTask"> | Date | string
+  }
+
+  export type SeedingBotActivityLogWhereInput = {
+    AND?: SeedingBotActivityLogWhereInput | SeedingBotActivityLogWhereInput[]
+    OR?: SeedingBotActivityLogWhereInput[]
+    NOT?: SeedingBotActivityLogWhereInput | SeedingBotActivityLogWhereInput[]
+    id?: StringFilter<"SeedingBotActivityLog"> | string
+    organizationId?: StringFilter<"SeedingBotActivityLog"> | string
+    botId?: StringFilter<"SeedingBotActivityLog"> | string
+    botAccountId?: StringNullableFilter<"SeedingBotActivityLog"> | string | null
+    taskId?: StringNullableFilter<"SeedingBotActivityLog"> | string | null
+    action?: StringFilter<"SeedingBotActivityLog"> | string
+    detail?: JsonNullableFilter<"SeedingBotActivityLog">
+    createdAt?: DateTimeFilter<"SeedingBotActivityLog"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    botAccount?: XOR<SeedingBotAccountNullableScalarRelationFilter, SeedingBotAccountWhereInput> | null
+    task?: XOR<SeedingBotTaskNullableScalarRelationFilter, SeedingBotTaskWhereInput> | null
+  }
+
+  export type SeedingBotActivityLogOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrderInput | SortOrder
+    taskId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    detail?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    bot?: SeedingBotOrderByWithRelationInput
+    botAccount?: SeedingBotAccountOrderByWithRelationInput
+    task?: SeedingBotTaskOrderByWithRelationInput
+  }
+
+  export type SeedingBotActivityLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SeedingBotActivityLogWhereInput | SeedingBotActivityLogWhereInput[]
+    OR?: SeedingBotActivityLogWhereInput[]
+    NOT?: SeedingBotActivityLogWhereInput | SeedingBotActivityLogWhereInput[]
+    organizationId?: StringFilter<"SeedingBotActivityLog"> | string
+    botId?: StringFilter<"SeedingBotActivityLog"> | string
+    botAccountId?: StringNullableFilter<"SeedingBotActivityLog"> | string | null
+    taskId?: StringNullableFilter<"SeedingBotActivityLog"> | string | null
+    action?: StringFilter<"SeedingBotActivityLog"> | string
+    detail?: JsonNullableFilter<"SeedingBotActivityLog">
+    createdAt?: DateTimeFilter<"SeedingBotActivityLog"> | Date | string
+    bot?: XOR<SeedingBotScalarRelationFilter, SeedingBotWhereInput>
+    botAccount?: XOR<SeedingBotAccountNullableScalarRelationFilter, SeedingBotAccountWhereInput> | null
+    task?: XOR<SeedingBotTaskNullableScalarRelationFilter, SeedingBotTaskWhereInput> | null
+  }, "id">
+
+  export type SeedingBotActivityLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrderInput | SortOrder
+    taskId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    detail?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: SeedingBotActivityLogCountOrderByAggregateInput
+    _max?: SeedingBotActivityLogMaxOrderByAggregateInput
+    _min?: SeedingBotActivityLogMinOrderByAggregateInput
+  }
+
+  export type SeedingBotActivityLogScalarWhereWithAggregatesInput = {
+    AND?: SeedingBotActivityLogScalarWhereWithAggregatesInput | SeedingBotActivityLogScalarWhereWithAggregatesInput[]
+    OR?: SeedingBotActivityLogScalarWhereWithAggregatesInput[]
+    NOT?: SeedingBotActivityLogScalarWhereWithAggregatesInput | SeedingBotActivityLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SeedingBotActivityLog"> | string
+    organizationId?: StringWithAggregatesFilter<"SeedingBotActivityLog"> | string
+    botId?: StringWithAggregatesFilter<"SeedingBotActivityLog"> | string
+    botAccountId?: StringNullableWithAggregatesFilter<"SeedingBotActivityLog"> | string | null
+    taskId?: StringNullableWithAggregatesFilter<"SeedingBotActivityLog"> | string | null
+    action?: StringWithAggregatesFilter<"SeedingBotActivityLog"> | string
+    detail?: JsonNullableWithAggregatesFilter<"SeedingBotActivityLog">
+    createdAt?: DateTimeWithAggregatesFilter<"SeedingBotActivityLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -30972,6 +38627,7 @@ export namespace Prisma {
     members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
     businesses?: BusinessCreateNestedManyWithoutOrganizationInput
     analysisSessions?: AnalysisSessionCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -30986,6 +38642,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
     businesses?: BusinessUncheckedCreateNestedManyWithoutOrganizationInput
     analysisSessions?: AnalysisSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -31000,6 +38657,7 @@ export namespace Prisma {
     members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
     businesses?: BusinessUpdateManyWithoutOrganizationNestedInput
     analysisSessions?: AnalysisSessionUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -31014,6 +38672,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
     businesses?: BusinessUncheckedUpdateManyWithoutOrganizationNestedInput
     analysisSessions?: AnalysisSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -31387,6 +39046,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     business: BusinessCreateNestedOneWithoutLocationsInput
     dataSources?: DataSourceCreateNestedManyWithoutBusinessLocationInput
+    botAssignments?: SeedingBotLocationCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutBusinessLocationInput
   }
 
   export type BusinessLocationUncheckedCreateInput = {
@@ -31409,6 +39070,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dataSources?: DataSourceUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botAssignments?: SeedingBotLocationUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBusinessLocationInput
   }
 
   export type BusinessLocationUpdateInput = {
@@ -31430,6 +39093,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: BusinessUpdateOneRequiredWithoutLocationsNestedInput
     dataSources?: DataSourceUpdateManyWithoutBusinessLocationNestedInput
+    botAssignments?: SeedingBotLocationUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutBusinessLocationNestedInput
   }
 
   export type BusinessLocationUncheckedUpdateInput = {
@@ -31452,6 +39117,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dataSources?: DataSourceUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botAssignments?: SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationNestedInput
   }
 
   export type BusinessLocationCreateManyInput = {
@@ -31614,6 +39281,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateInput = {
@@ -31638,6 +39306,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUpdateInput = {
@@ -31662,6 +39331,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateInput = {
@@ -31686,6 +39356,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionCreateManyInput = {
@@ -32890,6 +40561,7 @@ export namespace Prisma {
     strategy: StrategyCreateNestedOneWithoutVersionsInput
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateInput = {
@@ -32922,6 +40594,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUpdateInput = {
@@ -32953,6 +40626,7 @@ export namespace Prisma {
     strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateInput = {
@@ -32985,6 +40659,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionCreateManyInput = {
@@ -33280,6 +40955,545 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SeedingBotCreateInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutSeedingBotsInput
+    accounts?: SeedingBotAccountCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    accounts?: SeedingBotAccountUncheckedCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationUncheckedCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutSeedingBotsNestedInput
+    accounts?: SeedingBotAccountUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accounts?: SeedingBotAccountUncheckedUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUncheckedUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotCreateManyInput = {
+    id?: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type SeedingBotUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SeedingBotUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SeedingBotAccountCreateInput = {
+    id?: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutAccountsInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotAccountInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotAccountInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutAccountsNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotAccountNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotAccountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotAccountNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotAccountCreateManyInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotAccountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotAccountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationCreateInput = {
+    id?: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutLocationsInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotAssignmentsInput
+  }
+
+  export type SeedingBotLocationUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    businessId: string
+    businessLocationId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotLocationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutLocationsNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotAssignmentsNestedInput
+  }
+
+  export type SeedingBotLocationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationCreateManyInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    businessId: string
+    businessLocationId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotLocationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotTaskCreateInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutTasksInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutTasksInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotTasksInput
+    analysisSession?: AnalysisSessionCreateNestedOneWithoutBotTasksInput
+    strategyVersion?: StrategyVersionCreateNestedOneWithoutBotTasksInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutTasksNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutTasksNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput
+    analysisSession?: AnalysisSessionUpdateOneWithoutBotTasksNestedInput
+    strategyVersion?: StrategyVersionUpdateOneWithoutBotTasksNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskCreateManyInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotTaskUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogCreateInput = {
+    id?: string
+    organizationId: string
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutActivityLogsInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutActivityLogsInput
+    task?: SeedingBotTaskCreateNestedOneWithoutActivityLogsInput
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    taskId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutActivityLogsNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutActivityLogsNestedInput
+    task?: SeedingBotTaskUpdateOneWithoutActivityLogsNestedInput
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogCreateManyInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    taskId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -33485,11 +41699,21 @@ export namespace Prisma {
     none?: AnalysisSessionWhereInput
   }
 
+  export type SeedingBotListRelationFilter = {
+    every?: SeedingBotWhereInput
+    some?: SeedingBotWhereInput
+    none?: SeedingBotWhereInput
+  }
+
   export type BusinessOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type AnalysisSessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingBotOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -33790,7 +42014,27 @@ export namespace Prisma {
     none?: DataSourceWhereInput
   }
 
+  export type SeedingBotLocationListRelationFilter = {
+    every?: SeedingBotLocationWhereInput
+    some?: SeedingBotLocationWhereInput
+    none?: SeedingBotLocationWhereInput
+  }
+
+  export type SeedingBotTaskListRelationFilter = {
+    every?: SeedingBotTaskWhereInput
+    some?: SeedingBotTaskWhereInput
+    none?: SeedingBotTaskWhereInput
+  }
+
   export type DataSourceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingBotLocationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingBotTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -35334,6 +43578,396 @@ export namespace Prisma {
     durationMs?: SortOrder
   }
 
+  export type EnumBotStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotStatus | EnumBotStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotStatusFilter<$PrismaModel> | $Enums.BotStatus
+  }
+
+  export type SeedingBotAccountListRelationFilter = {
+    every?: SeedingBotAccountWhereInput
+    some?: SeedingBotAccountWhereInput
+    none?: SeedingBotAccountWhereInput
+  }
+
+  export type SeedingBotActivityLogListRelationFilter = {
+    every?: SeedingBotActivityLogWhereInput
+    some?: SeedingBotActivityLogWhereInput
+    none?: SeedingBotActivityLogWhereInput
+  }
+
+  export type SeedingBotAccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingBotActivityLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingBotIdOrganizationIdCompoundUniqueInput = {
+    id: string
+    organizationId: string
+  }
+
+  export type SeedingBotCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    displayName?: SortOrder
+    avatarUrl?: SortOrder
+    brandVoice?: SortOrder
+    maturityLevel?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrder
+  }
+
+  export type SeedingBotAvgOrderByAggregateInput = {
+    maturityLevel?: SortOrder
+  }
+
+  export type SeedingBotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    displayName?: SortOrder
+    avatarUrl?: SortOrder
+    brandVoice?: SortOrder
+    maturityLevel?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrder
+  }
+
+  export type SeedingBotMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    displayName?: SortOrder
+    avatarUrl?: SortOrder
+    brandVoice?: SortOrder
+    maturityLevel?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrder
+  }
+
+  export type SeedingBotSumOrderByAggregateInput = {
+    maturityLevel?: SortOrder
+  }
+
+  export type EnumBotStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotStatus | EnumBotStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotStatusWithAggregatesFilter<$PrismaModel> | $Enums.BotStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotStatusFilter<$PrismaModel>
+    _max?: NestedEnumBotStatusFilter<$PrismaModel>
+  }
+
+  export type EnumBotPlatformFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotPlatform | EnumBotPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotPlatformFilter<$PrismaModel> | $Enums.BotPlatform
+  }
+
+  export type EnumBotAccountStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotAccountStatus | EnumBotAccountStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotAccountStatusFilter<$PrismaModel> | $Enums.BotAccountStatus
+  }
+
+  export type SeedingBotScalarRelationFilter = {
+    is?: SeedingBotWhereInput
+    isNot?: SeedingBotWhereInput
+  }
+
+  export type SeedingBotAccountBotIdPlatformAccountLabelCompoundUniqueInput = {
+    botId: string
+    platform: $Enums.BotPlatform
+    accountLabel: string
+  }
+
+  export type SeedingBotAccountIdOrganizationIdCompoundUniqueInput = {
+    id: string
+    organizationId: string
+  }
+
+  export type SeedingBotAccountCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    platform?: SortOrder
+    accountLabel?: SortOrder
+    profileUrl?: SortOrder
+    avatarUrl?: SortOrder
+    accountStatus?: SortOrder
+    accountCreatedAt?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SeedingBotAccountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    platform?: SortOrder
+    accountLabel?: SortOrder
+    profileUrl?: SortOrder
+    avatarUrl?: SortOrder
+    accountStatus?: SortOrder
+    accountCreatedAt?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SeedingBotAccountMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    platform?: SortOrder
+    accountLabel?: SortOrder
+    profileUrl?: SortOrder
+    avatarUrl?: SortOrder
+    accountStatus?: SortOrder
+    accountCreatedAt?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumBotPlatformWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotPlatform | EnumBotPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotPlatformWithAggregatesFilter<$PrismaModel> | $Enums.BotPlatform
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotPlatformFilter<$PrismaModel>
+    _max?: NestedEnumBotPlatformFilter<$PrismaModel>
+  }
+
+  export type EnumBotAccountStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotAccountStatus | EnumBotAccountStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotAccountStatusWithAggregatesFilter<$PrismaModel> | $Enums.BotAccountStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotAccountStatusFilter<$PrismaModel>
+    _max?: NestedEnumBotAccountStatusFilter<$PrismaModel>
+  }
+
+  export type BusinessLocationScalarRelationFilter = {
+    is?: BusinessLocationWhereInput
+    isNot?: BusinessLocationWhereInput
+  }
+
+  export type SeedingBotLocationBotIdBusinessLocationIdCompoundUniqueInput = {
+    botId: string
+    businessLocationId: string
+  }
+
+  export type SeedingBotLocationCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SeedingBotLocationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SeedingBotLocationMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumBotTaskTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskType | EnumBotTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskTypeFilter<$PrismaModel> | $Enums.BotTaskType
+  }
+
+  export type EnumBotTaskStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskStatus | EnumBotTaskStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskStatusFilter<$PrismaModel> | $Enums.BotTaskStatus
+  }
+
+  export type SeedingBotAccountNullableScalarRelationFilter = {
+    is?: SeedingBotAccountWhereInput | null
+    isNot?: SeedingBotAccountWhereInput | null
+  }
+
+  export type AnalysisSessionNullableScalarRelationFilter = {
+    is?: AnalysisSessionWhereInput | null
+    isNot?: AnalysisSessionWhereInput | null
+  }
+
+  export type SeedingBotTaskIdOrganizationIdCompoundUniqueInput = {
+    id: string
+    organizationId: string
+  }
+
+  export type SeedingBotTaskCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    taskType?: SortOrder
+    status?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    scheduledAt?: SortOrder
+    externalRef?: SortOrder
+    completedBy?: SortOrder
+    completedAt?: SortOrder
+    failureReason?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SeedingBotTaskMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    taskType?: SortOrder
+    status?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    scheduledAt?: SortOrder
+    externalRef?: SortOrder
+    completedBy?: SortOrder
+    completedAt?: SortOrder
+    failureReason?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SeedingBotTaskMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrder
+    businessId?: SortOrder
+    businessLocationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    taskType?: SortOrder
+    status?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    scheduledAt?: SortOrder
+    externalRef?: SortOrder
+    completedBy?: SortOrder
+    completedAt?: SortOrder
+    failureReason?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumBotTaskTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskType | EnumBotTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskTypeWithAggregatesFilter<$PrismaModel> | $Enums.BotTaskType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotTaskTypeFilter<$PrismaModel>
+    _max?: NestedEnumBotTaskTypeFilter<$PrismaModel>
+  }
+
+  export type EnumBotTaskStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskStatus | EnumBotTaskStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskStatusWithAggregatesFilter<$PrismaModel> | $Enums.BotTaskStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotTaskStatusFilter<$PrismaModel>
+    _max?: NestedEnumBotTaskStatusFilter<$PrismaModel>
+  }
+
+  export type SeedingBotTaskNullableScalarRelationFilter = {
+    is?: SeedingBotTaskWhereInput | null
+    isNot?: SeedingBotTaskWhereInput | null
+  }
+
+  export type SeedingBotActivityLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrder
+    taskId?: SortOrder
+    action?: SortOrder
+    detail?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SeedingBotActivityLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrder
+    taskId?: SortOrder
+    action?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SeedingBotActivityLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    botId?: SortOrder
+    botAccountId?: SortOrder
+    taskId?: SortOrder
+    action?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type OrganizationMemberCreateNestedManyWithoutUserInput = {
     create?: XOR<OrganizationMemberCreateWithoutUserInput, OrganizationMemberUncheckedCreateWithoutUserInput> | OrganizationMemberCreateWithoutUserInput[] | OrganizationMemberUncheckedCreateWithoutUserInput[]
     connectOrCreate?: OrganizationMemberCreateOrConnectWithoutUserInput | OrganizationMemberCreateOrConnectWithoutUserInput[]
@@ -35459,6 +44093,13 @@ export namespace Prisma {
     connect?: AnalysisSessionWhereUniqueInput | AnalysisSessionWhereUniqueInput[]
   }
 
+  export type SeedingBotCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<SeedingBotCreateWithoutOrganizationInput, SeedingBotUncheckedCreateWithoutOrganizationInput> | SeedingBotCreateWithoutOrganizationInput[] | SeedingBotUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutOrganizationInput | SeedingBotCreateOrConnectWithoutOrganizationInput[]
+    createMany?: SeedingBotCreateManyOrganizationInputEnvelope
+    connect?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+  }
+
   export type OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<OrganizationMemberCreateWithoutOrganizationInput, OrganizationMemberUncheckedCreateWithoutOrganizationInput> | OrganizationMemberCreateWithoutOrganizationInput[] | OrganizationMemberUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: OrganizationMemberCreateOrConnectWithoutOrganizationInput | OrganizationMemberCreateOrConnectWithoutOrganizationInput[]
@@ -35478,6 +44119,13 @@ export namespace Prisma {
     connectOrCreate?: AnalysisSessionCreateOrConnectWithoutOrganizationInput | AnalysisSessionCreateOrConnectWithoutOrganizationInput[]
     createMany?: AnalysisSessionCreateManyOrganizationInputEnvelope
     connect?: AnalysisSessionWhereUniqueInput | AnalysisSessionWhereUniqueInput[]
+  }
+
+  export type SeedingBotUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<SeedingBotCreateWithoutOrganizationInput, SeedingBotUncheckedCreateWithoutOrganizationInput> | SeedingBotCreateWithoutOrganizationInput[] | SeedingBotUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutOrganizationInput | SeedingBotCreateOrConnectWithoutOrganizationInput[]
+    createMany?: SeedingBotCreateManyOrganizationInputEnvelope
+    connect?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
   }
 
   export type OrganizationMemberUpdateManyWithoutOrganizationNestedInput = {
@@ -35522,6 +44170,20 @@ export namespace Prisma {
     deleteMany?: AnalysisSessionScalarWhereInput | AnalysisSessionScalarWhereInput[]
   }
 
+  export type SeedingBotUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<SeedingBotCreateWithoutOrganizationInput, SeedingBotUncheckedCreateWithoutOrganizationInput> | SeedingBotCreateWithoutOrganizationInput[] | SeedingBotUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutOrganizationInput | SeedingBotCreateOrConnectWithoutOrganizationInput[]
+    upsert?: SeedingBotUpsertWithWhereUniqueWithoutOrganizationInput | SeedingBotUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: SeedingBotCreateManyOrganizationInputEnvelope
+    set?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    disconnect?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    delete?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    connect?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    update?: SeedingBotUpdateWithWhereUniqueWithoutOrganizationInput | SeedingBotUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: SeedingBotUpdateManyWithWhereWithoutOrganizationInput | SeedingBotUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: SeedingBotScalarWhereInput | SeedingBotScalarWhereInput[]
+  }
+
   export type OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<OrganizationMemberCreateWithoutOrganizationInput, OrganizationMemberUncheckedCreateWithoutOrganizationInput> | OrganizationMemberCreateWithoutOrganizationInput[] | OrganizationMemberUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: OrganizationMemberCreateOrConnectWithoutOrganizationInput | OrganizationMemberCreateOrConnectWithoutOrganizationInput[]
@@ -35562,6 +44224,20 @@ export namespace Prisma {
     update?: AnalysisSessionUpdateWithWhereUniqueWithoutOrganizationInput | AnalysisSessionUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: AnalysisSessionUpdateManyWithWhereWithoutOrganizationInput | AnalysisSessionUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: AnalysisSessionScalarWhereInput | AnalysisSessionScalarWhereInput[]
+  }
+
+  export type SeedingBotUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<SeedingBotCreateWithoutOrganizationInput, SeedingBotUncheckedCreateWithoutOrganizationInput> | SeedingBotCreateWithoutOrganizationInput[] | SeedingBotUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutOrganizationInput | SeedingBotCreateOrConnectWithoutOrganizationInput[]
+    upsert?: SeedingBotUpsertWithWhereUniqueWithoutOrganizationInput | SeedingBotUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: SeedingBotCreateManyOrganizationInputEnvelope
+    set?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    disconnect?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    delete?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    connect?: SeedingBotWhereUniqueInput | SeedingBotWhereUniqueInput[]
+    update?: SeedingBotUpdateWithWhereUniqueWithoutOrganizationInput | SeedingBotUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: SeedingBotUpdateManyWithWhereWithoutOrganizationInput | SeedingBotUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: SeedingBotScalarWhereInput | SeedingBotScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutMembersInput = {
@@ -35721,11 +44397,39 @@ export namespace Prisma {
     connect?: DataSourceWhereUniqueInput | DataSourceWhereUniqueInput[]
   }
 
+  export type SeedingBotLocationCreateNestedManyWithoutBusinessLocationInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBusinessLocationInput, SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput> | SeedingBotLocationCreateWithoutBusinessLocationInput[] | SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput | SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput[]
+    createMany?: SeedingBotLocationCreateManyBusinessLocationInputEnvelope
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskCreateNestedManyWithoutBusinessLocationInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBusinessLocationInput, SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput> | SeedingBotTaskCreateWithoutBusinessLocationInput[] | SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput | SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput[]
+    createMany?: SeedingBotTaskCreateManyBusinessLocationInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
   export type DataSourceUncheckedCreateNestedManyWithoutBusinessLocationInput = {
     create?: XOR<DataSourceCreateWithoutBusinessLocationInput, DataSourceUncheckedCreateWithoutBusinessLocationInput> | DataSourceCreateWithoutBusinessLocationInput[] | DataSourceUncheckedCreateWithoutBusinessLocationInput[]
     connectOrCreate?: DataSourceCreateOrConnectWithoutBusinessLocationInput | DataSourceCreateOrConnectWithoutBusinessLocationInput[]
     createMany?: DataSourceCreateManyBusinessLocationInputEnvelope
     connect?: DataSourceWhereUniqueInput | DataSourceWhereUniqueInput[]
+  }
+
+  export type SeedingBotLocationUncheckedCreateNestedManyWithoutBusinessLocationInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBusinessLocationInput, SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput> | SeedingBotLocationCreateWithoutBusinessLocationInput[] | SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput | SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput[]
+    createMany?: SeedingBotLocationCreateManyBusinessLocationInputEnvelope
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskUncheckedCreateNestedManyWithoutBusinessLocationInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBusinessLocationInput, SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput> | SeedingBotTaskCreateWithoutBusinessLocationInput[] | SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput | SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput[]
+    createMany?: SeedingBotTaskCreateManyBusinessLocationInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
   }
 
   export type NullableEnumSerpApiLinkStatusFieldUpdateOperationsInput = {
@@ -35774,6 +44478,34 @@ export namespace Prisma {
     deleteMany?: DataSourceScalarWhereInput | DataSourceScalarWhereInput[]
   }
 
+  export type SeedingBotLocationUpdateManyWithoutBusinessLocationNestedInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBusinessLocationInput, SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput> | SeedingBotLocationCreateWithoutBusinessLocationInput[] | SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput | SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput[]
+    upsert?: SeedingBotLocationUpsertWithWhereUniqueWithoutBusinessLocationInput | SeedingBotLocationUpsertWithWhereUniqueWithoutBusinessLocationInput[]
+    createMany?: SeedingBotLocationCreateManyBusinessLocationInputEnvelope
+    set?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    disconnect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    delete?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    update?: SeedingBotLocationUpdateWithWhereUniqueWithoutBusinessLocationInput | SeedingBotLocationUpdateWithWhereUniqueWithoutBusinessLocationInput[]
+    updateMany?: SeedingBotLocationUpdateManyWithWhereWithoutBusinessLocationInput | SeedingBotLocationUpdateManyWithWhereWithoutBusinessLocationInput[]
+    deleteMany?: SeedingBotLocationScalarWhereInput | SeedingBotLocationScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUpdateManyWithoutBusinessLocationNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBusinessLocationInput, SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput> | SeedingBotTaskCreateWithoutBusinessLocationInput[] | SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput | SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutBusinessLocationInput | SeedingBotTaskUpsertWithWhereUniqueWithoutBusinessLocationInput[]
+    createMany?: SeedingBotTaskCreateManyBusinessLocationInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutBusinessLocationInput | SeedingBotTaskUpdateWithWhereUniqueWithoutBusinessLocationInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutBusinessLocationInput | SeedingBotTaskUpdateManyWithWhereWithoutBusinessLocationInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
   export type DataSourceUncheckedUpdateManyWithoutBusinessLocationNestedInput = {
     create?: XOR<DataSourceCreateWithoutBusinessLocationInput, DataSourceUncheckedCreateWithoutBusinessLocationInput> | DataSourceCreateWithoutBusinessLocationInput[] | DataSourceUncheckedCreateWithoutBusinessLocationInput[]
     connectOrCreate?: DataSourceCreateOrConnectWithoutBusinessLocationInput | DataSourceCreateOrConnectWithoutBusinessLocationInput[]
@@ -35786,6 +44518,34 @@ export namespace Prisma {
     update?: DataSourceUpdateWithWhereUniqueWithoutBusinessLocationInput | DataSourceUpdateWithWhereUniqueWithoutBusinessLocationInput[]
     updateMany?: DataSourceUpdateManyWithWhereWithoutBusinessLocationInput | DataSourceUpdateManyWithWhereWithoutBusinessLocationInput[]
     deleteMany?: DataSourceScalarWhereInput | DataSourceScalarWhereInput[]
+  }
+
+  export type SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationNestedInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBusinessLocationInput, SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput> | SeedingBotLocationCreateWithoutBusinessLocationInput[] | SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput | SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput[]
+    upsert?: SeedingBotLocationUpsertWithWhereUniqueWithoutBusinessLocationInput | SeedingBotLocationUpsertWithWhereUniqueWithoutBusinessLocationInput[]
+    createMany?: SeedingBotLocationCreateManyBusinessLocationInputEnvelope
+    set?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    disconnect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    delete?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    update?: SeedingBotLocationUpdateWithWhereUniqueWithoutBusinessLocationInput | SeedingBotLocationUpdateWithWhereUniqueWithoutBusinessLocationInput[]
+    updateMany?: SeedingBotLocationUpdateManyWithWhereWithoutBusinessLocationInput | SeedingBotLocationUpdateManyWithWhereWithoutBusinessLocationInput[]
+    deleteMany?: SeedingBotLocationScalarWhereInput | SeedingBotLocationScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBusinessLocationInput, SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput> | SeedingBotTaskCreateWithoutBusinessLocationInput[] | SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput | SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutBusinessLocationInput | SeedingBotTaskUpsertWithWhereUniqueWithoutBusinessLocationInput[]
+    createMany?: SeedingBotTaskCreateManyBusinessLocationInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutBusinessLocationInput | SeedingBotTaskUpdateWithWhereUniqueWithoutBusinessLocationInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutBusinessLocationInput | SeedingBotTaskUpdateManyWithWhereWithoutBusinessLocationInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -35843,6 +44603,13 @@ export namespace Prisma {
     connect?: StrategyWhereUniqueInput | StrategyWhereUniqueInput[]
   }
 
+  export type SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput> | SeedingBotTaskCreateWithoutAnalysisSessionInput[] | SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput | SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput[]
+    createMany?: SeedingBotTaskCreateManyAnalysisSessionInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
   export type DataSourceUncheckedCreateNestedManyWithoutAnalysisSessionInput = {
     create?: XOR<DataSourceCreateWithoutAnalysisSessionInput, DataSourceUncheckedCreateWithoutAnalysisSessionInput> | DataSourceCreateWithoutAnalysisSessionInput[] | DataSourceUncheckedCreateWithoutAnalysisSessionInput[]
     connectOrCreate?: DataSourceCreateOrConnectWithoutAnalysisSessionInput | DataSourceCreateOrConnectWithoutAnalysisSessionInput[]
@@ -35876,6 +44643,13 @@ export namespace Prisma {
     connectOrCreate?: StrategyCreateOrConnectWithoutAnalysisSessionInput | StrategyCreateOrConnectWithoutAnalysisSessionInput[]
     createMany?: StrategyCreateManyAnalysisSessionInputEnvelope
     connect?: StrategyWhereUniqueInput | StrategyWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput> | SeedingBotTaskCreateWithoutAnalysisSessionInput[] | SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput | SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput[]
+    createMany?: SeedingBotTaskCreateManyAnalysisSessionInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
   }
 
   export type EnumAnalysisSessionStatusFieldUpdateOperationsInput = {
@@ -35968,6 +44742,20 @@ export namespace Prisma {
     deleteMany?: StrategyScalarWhereInput | StrategyScalarWhereInput[]
   }
 
+  export type SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput> | SeedingBotTaskCreateWithoutAnalysisSessionInput[] | SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput | SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutAnalysisSessionInput | SeedingBotTaskUpsertWithWhereUniqueWithoutAnalysisSessionInput[]
+    createMany?: SeedingBotTaskCreateManyAnalysisSessionInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput | SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput | SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
   export type DataSourceUncheckedUpdateManyWithoutAnalysisSessionNestedInput = {
     create?: XOR<DataSourceCreateWithoutAnalysisSessionInput, DataSourceUncheckedCreateWithoutAnalysisSessionInput> | DataSourceCreateWithoutAnalysisSessionInput[] | DataSourceUncheckedCreateWithoutAnalysisSessionInput[]
     connectOrCreate?: DataSourceCreateOrConnectWithoutAnalysisSessionInput | DataSourceCreateOrConnectWithoutAnalysisSessionInput[]
@@ -36036,6 +44824,20 @@ export namespace Prisma {
     update?: StrategyUpdateWithWhereUniqueWithoutAnalysisSessionInput | StrategyUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
     updateMany?: StrategyUpdateManyWithWhereWithoutAnalysisSessionInput | StrategyUpdateManyWithWhereWithoutAnalysisSessionInput[]
     deleteMany?: StrategyScalarWhereInput | StrategyScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput> | SeedingBotTaskCreateWithoutAnalysisSessionInput[] | SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput | SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutAnalysisSessionInput | SeedingBotTaskUpsertWithWhereUniqueWithoutAnalysisSessionInput[]
+    createMany?: SeedingBotTaskCreateManyAnalysisSessionInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput | SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput | SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
   }
 
   export type AnalysisSessionCreateNestedOneWithoutDataSourcesInput = {
@@ -36867,6 +45669,13 @@ export namespace Prisma {
     connect?: StrategyInsightWhereUniqueInput | StrategyInsightWhereUniqueInput[]
   }
 
+  export type SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutStrategyVersionInput, SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput> | SeedingBotTaskCreateWithoutStrategyVersionInput[] | SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput | SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput[]
+    createMany?: SeedingBotTaskCreateManyStrategyVersionInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
   export type StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput = {
     create?: XOR<StrategyCreateWithoutCurrentVersionInput, StrategyUncheckedCreateWithoutCurrentVersionInput>
     connectOrCreate?: StrategyCreateOrConnectWithoutCurrentVersionInput
@@ -36878,6 +45687,13 @@ export namespace Prisma {
     connectOrCreate?: StrategyInsightCreateOrConnectWithoutStrategyVersionInput | StrategyInsightCreateOrConnectWithoutStrategyVersionInput[]
     createMany?: StrategyInsightCreateManyStrategyVersionInputEnvelope
     connect?: StrategyInsightWhereUniqueInput | StrategyInsightWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutStrategyVersionInput, SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput> | SeedingBotTaskCreateWithoutStrategyVersionInput[] | SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput | SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput[]
+    createMany?: SeedingBotTaskCreateManyStrategyVersionInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
   }
 
   export type EnumStrategyVersionStatusFieldUpdateOperationsInput = {
@@ -36916,6 +45732,20 @@ export namespace Prisma {
     deleteMany?: StrategyInsightScalarWhereInput | StrategyInsightScalarWhereInput[]
   }
 
+  export type SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutStrategyVersionInput, SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput> | SeedingBotTaskCreateWithoutStrategyVersionInput[] | SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput | SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutStrategyVersionInput | SeedingBotTaskUpsertWithWhereUniqueWithoutStrategyVersionInput[]
+    createMany?: SeedingBotTaskCreateManyStrategyVersionInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutStrategyVersionInput | SeedingBotTaskUpdateWithWhereUniqueWithoutStrategyVersionInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutStrategyVersionInput | SeedingBotTaskUpdateManyWithWhereWithoutStrategyVersionInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
   export type StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput = {
     create?: XOR<StrategyCreateWithoutCurrentVersionInput, StrategyUncheckedCreateWithoutCurrentVersionInput>
     connectOrCreate?: StrategyCreateOrConnectWithoutCurrentVersionInput
@@ -36938,6 +45768,20 @@ export namespace Prisma {
     update?: StrategyInsightUpdateWithWhereUniqueWithoutStrategyVersionInput | StrategyInsightUpdateWithWhereUniqueWithoutStrategyVersionInput[]
     updateMany?: StrategyInsightUpdateManyWithWhereWithoutStrategyVersionInput | StrategyInsightUpdateManyWithWhereWithoutStrategyVersionInput[]
     deleteMany?: StrategyInsightScalarWhereInput | StrategyInsightScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutStrategyVersionInput, SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput> | SeedingBotTaskCreateWithoutStrategyVersionInput[] | SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput | SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutStrategyVersionInput | SeedingBotTaskUpsertWithWhereUniqueWithoutStrategyVersionInput[]
+    createMany?: SeedingBotTaskCreateManyStrategyVersionInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutStrategyVersionInput | SeedingBotTaskUpdateWithWhereUniqueWithoutStrategyVersionInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutStrategyVersionInput | SeedingBotTaskUpdateManyWithWhereWithoutStrategyVersionInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
   }
 
   export type StrategyVersionCreateNestedOneWithoutInsightsInput = {
@@ -36966,6 +45810,498 @@ export namespace Prisma {
     upsert?: InsightUpsertWithoutStrategyLinksInput
     connect?: InsightWhereUniqueInput
     update?: XOR<XOR<InsightUpdateToOneWithWhereWithoutStrategyLinksInput, InsightUpdateWithoutStrategyLinksInput>, InsightUncheckedUpdateWithoutStrategyLinksInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutSeedingBotsInput = {
+    create?: XOR<OrganizationCreateWithoutSeedingBotsInput, OrganizationUncheckedCreateWithoutSeedingBotsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutSeedingBotsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type SeedingBotAccountCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutBotInput, SeedingBotAccountUncheckedCreateWithoutBotInput> | SeedingBotAccountCreateWithoutBotInput[] | SeedingBotAccountUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutBotInput | SeedingBotAccountCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotAccountCreateManyBotInputEnvelope
+    connect?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+  }
+
+  export type SeedingBotLocationCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBotInput, SeedingBotLocationUncheckedCreateWithoutBotInput> | SeedingBotLocationCreateWithoutBotInput[] | SeedingBotLocationUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBotInput | SeedingBotLocationCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotLocationCreateManyBotInputEnvelope
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotInput, SeedingBotTaskUncheckedCreateWithoutBotInput> | SeedingBotTaskCreateWithoutBotInput[] | SeedingBotTaskUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotInput | SeedingBotTaskCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotTaskCreateManyBotInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
+  export type SeedingBotActivityLogCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotInput, SeedingBotActivityLogUncheckedCreateWithoutBotInput> | SeedingBotActivityLogCreateWithoutBotInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotInput | SeedingBotActivityLogCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotInputEnvelope
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+  }
+
+  export type SeedingBotAccountUncheckedCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutBotInput, SeedingBotAccountUncheckedCreateWithoutBotInput> | SeedingBotAccountCreateWithoutBotInput[] | SeedingBotAccountUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutBotInput | SeedingBotAccountCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotAccountCreateManyBotInputEnvelope
+    connect?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+  }
+
+  export type SeedingBotLocationUncheckedCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBotInput, SeedingBotLocationUncheckedCreateWithoutBotInput> | SeedingBotLocationCreateWithoutBotInput[] | SeedingBotLocationUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBotInput | SeedingBotLocationCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotLocationCreateManyBotInputEnvelope
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskUncheckedCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotInput, SeedingBotTaskUncheckedCreateWithoutBotInput> | SeedingBotTaskCreateWithoutBotInput[] | SeedingBotTaskUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotInput | SeedingBotTaskCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotTaskCreateManyBotInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotInput, SeedingBotActivityLogUncheckedCreateWithoutBotInput> | SeedingBotActivityLogCreateWithoutBotInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotInput | SeedingBotActivityLogCreateOrConnectWithoutBotInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotInputEnvelope
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+  }
+
+  export type EnumBotStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BotStatus
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutSeedingBotsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutSeedingBotsInput, OrganizationUncheckedCreateWithoutSeedingBotsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutSeedingBotsInput
+    upsert?: OrganizationUpsertWithoutSeedingBotsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutSeedingBotsInput, OrganizationUpdateWithoutSeedingBotsInput>, OrganizationUncheckedUpdateWithoutSeedingBotsInput>
+  }
+
+  export type SeedingBotAccountUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutBotInput, SeedingBotAccountUncheckedCreateWithoutBotInput> | SeedingBotAccountCreateWithoutBotInput[] | SeedingBotAccountUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutBotInput | SeedingBotAccountCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotAccountUpsertWithWhereUniqueWithoutBotInput | SeedingBotAccountUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotAccountCreateManyBotInputEnvelope
+    set?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    disconnect?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    delete?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    connect?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    update?: SeedingBotAccountUpdateWithWhereUniqueWithoutBotInput | SeedingBotAccountUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotAccountUpdateManyWithWhereWithoutBotInput | SeedingBotAccountUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotAccountScalarWhereInput | SeedingBotAccountScalarWhereInput[]
+  }
+
+  export type SeedingBotLocationUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBotInput, SeedingBotLocationUncheckedCreateWithoutBotInput> | SeedingBotLocationCreateWithoutBotInput[] | SeedingBotLocationUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBotInput | SeedingBotLocationCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotLocationUpsertWithWhereUniqueWithoutBotInput | SeedingBotLocationUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotLocationCreateManyBotInputEnvelope
+    set?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    disconnect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    delete?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    update?: SeedingBotLocationUpdateWithWhereUniqueWithoutBotInput | SeedingBotLocationUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotLocationUpdateManyWithWhereWithoutBotInput | SeedingBotLocationUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotLocationScalarWhereInput | SeedingBotLocationScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotInput, SeedingBotTaskUncheckedCreateWithoutBotInput> | SeedingBotTaskCreateWithoutBotInput[] | SeedingBotTaskUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotInput | SeedingBotTaskCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutBotInput | SeedingBotTaskUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotTaskCreateManyBotInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutBotInput | SeedingBotTaskUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutBotInput | SeedingBotTaskUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
+  export type SeedingBotActivityLogUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotInput, SeedingBotActivityLogUncheckedCreateWithoutBotInput> | SeedingBotActivityLogCreateWithoutBotInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotInput | SeedingBotActivityLogCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotInput | SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotInputEnvelope
+    set?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    disconnect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    delete?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    update?: SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotInput | SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotActivityLogUpdateManyWithWhereWithoutBotInput | SeedingBotActivityLogUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+  }
+
+  export type SeedingBotAccountUncheckedUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutBotInput, SeedingBotAccountUncheckedCreateWithoutBotInput> | SeedingBotAccountCreateWithoutBotInput[] | SeedingBotAccountUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutBotInput | SeedingBotAccountCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotAccountUpsertWithWhereUniqueWithoutBotInput | SeedingBotAccountUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotAccountCreateManyBotInputEnvelope
+    set?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    disconnect?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    delete?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    connect?: SeedingBotAccountWhereUniqueInput | SeedingBotAccountWhereUniqueInput[]
+    update?: SeedingBotAccountUpdateWithWhereUniqueWithoutBotInput | SeedingBotAccountUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotAccountUpdateManyWithWhereWithoutBotInput | SeedingBotAccountUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotAccountScalarWhereInput | SeedingBotAccountScalarWhereInput[]
+  }
+
+  export type SeedingBotLocationUncheckedUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotLocationCreateWithoutBotInput, SeedingBotLocationUncheckedCreateWithoutBotInput> | SeedingBotLocationCreateWithoutBotInput[] | SeedingBotLocationUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotLocationCreateOrConnectWithoutBotInput | SeedingBotLocationCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotLocationUpsertWithWhereUniqueWithoutBotInput | SeedingBotLocationUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotLocationCreateManyBotInputEnvelope
+    set?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    disconnect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    delete?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    connect?: SeedingBotLocationWhereUniqueInput | SeedingBotLocationWhereUniqueInput[]
+    update?: SeedingBotLocationUpdateWithWhereUniqueWithoutBotInput | SeedingBotLocationUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotLocationUpdateManyWithWhereWithoutBotInput | SeedingBotLocationUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotLocationScalarWhereInput | SeedingBotLocationScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotInput, SeedingBotTaskUncheckedCreateWithoutBotInput> | SeedingBotTaskCreateWithoutBotInput[] | SeedingBotTaskUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotInput | SeedingBotTaskCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutBotInput | SeedingBotTaskUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotTaskCreateManyBotInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutBotInput | SeedingBotTaskUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutBotInput | SeedingBotTaskUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyWithoutBotNestedInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotInput, SeedingBotActivityLogUncheckedCreateWithoutBotInput> | SeedingBotActivityLogCreateWithoutBotInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotInput | SeedingBotActivityLogCreateOrConnectWithoutBotInput[]
+    upsert?: SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotInput | SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotInputEnvelope
+    set?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    disconnect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    delete?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    update?: SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotInput | SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: SeedingBotActivityLogUpdateManyWithWhereWithoutBotInput | SeedingBotActivityLogUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+  }
+
+  export type SeedingBotCreateNestedOneWithoutAccountsInput = {
+    create?: XOR<SeedingBotCreateWithoutAccountsInput, SeedingBotUncheckedCreateWithoutAccountsInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutAccountsInput
+    connect?: SeedingBotWhereUniqueInput
+  }
+
+  export type SeedingBotTaskCreateNestedManyWithoutBotAccountInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotAccountInput, SeedingBotTaskUncheckedCreateWithoutBotAccountInput> | SeedingBotTaskCreateWithoutBotAccountInput[] | SeedingBotTaskUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotAccountInput | SeedingBotTaskCreateOrConnectWithoutBotAccountInput[]
+    createMany?: SeedingBotTaskCreateManyBotAccountInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
+  export type SeedingBotActivityLogCreateNestedManyWithoutBotAccountInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotAccountInput, SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput> | SeedingBotActivityLogCreateWithoutBotAccountInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput | SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotAccountInputEnvelope
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+  }
+
+  export type SeedingBotTaskUncheckedCreateNestedManyWithoutBotAccountInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotAccountInput, SeedingBotTaskUncheckedCreateWithoutBotAccountInput> | SeedingBotTaskCreateWithoutBotAccountInput[] | SeedingBotTaskUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotAccountInput | SeedingBotTaskCreateOrConnectWithoutBotAccountInput[]
+    createMany?: SeedingBotTaskCreateManyBotAccountInputEnvelope
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotAccountInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotAccountInput, SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput> | SeedingBotActivityLogCreateWithoutBotAccountInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput | SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotAccountInputEnvelope
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+  }
+
+  export type EnumBotPlatformFieldUpdateOperationsInput = {
+    set?: $Enums.BotPlatform
+  }
+
+  export type EnumBotAccountStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BotAccountStatus
+  }
+
+  export type SeedingBotUpdateOneRequiredWithoutAccountsNestedInput = {
+    create?: XOR<SeedingBotCreateWithoutAccountsInput, SeedingBotUncheckedCreateWithoutAccountsInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutAccountsInput
+    upsert?: SeedingBotUpsertWithoutAccountsInput
+    connect?: SeedingBotWhereUniqueInput
+    update?: XOR<XOR<SeedingBotUpdateToOneWithWhereWithoutAccountsInput, SeedingBotUpdateWithoutAccountsInput>, SeedingBotUncheckedUpdateWithoutAccountsInput>
+  }
+
+  export type SeedingBotTaskUpdateManyWithoutBotAccountNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotAccountInput, SeedingBotTaskUncheckedCreateWithoutBotAccountInput> | SeedingBotTaskCreateWithoutBotAccountInput[] | SeedingBotTaskUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotAccountInput | SeedingBotTaskCreateOrConnectWithoutBotAccountInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutBotAccountInput | SeedingBotTaskUpsertWithWhereUniqueWithoutBotAccountInput[]
+    createMany?: SeedingBotTaskCreateManyBotAccountInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutBotAccountInput | SeedingBotTaskUpdateWithWhereUniqueWithoutBotAccountInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutBotAccountInput | SeedingBotTaskUpdateManyWithWhereWithoutBotAccountInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
+  export type SeedingBotActivityLogUpdateManyWithoutBotAccountNestedInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotAccountInput, SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput> | SeedingBotActivityLogCreateWithoutBotAccountInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput | SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput[]
+    upsert?: SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotAccountInput | SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotAccountInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotAccountInputEnvelope
+    set?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    disconnect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    delete?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    update?: SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotAccountInput | SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotAccountInput[]
+    updateMany?: SeedingBotActivityLogUpdateManyWithWhereWithoutBotAccountInput | SeedingBotActivityLogUpdateManyWithWhereWithoutBotAccountInput[]
+    deleteMany?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutBotAccountNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutBotAccountInput, SeedingBotTaskUncheckedCreateWithoutBotAccountInput> | SeedingBotTaskCreateWithoutBotAccountInput[] | SeedingBotTaskUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutBotAccountInput | SeedingBotTaskCreateOrConnectWithoutBotAccountInput[]
+    upsert?: SeedingBotTaskUpsertWithWhereUniqueWithoutBotAccountInput | SeedingBotTaskUpsertWithWhereUniqueWithoutBotAccountInput[]
+    createMany?: SeedingBotTaskCreateManyBotAccountInputEnvelope
+    set?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    disconnect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    delete?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+    update?: SeedingBotTaskUpdateWithWhereUniqueWithoutBotAccountInput | SeedingBotTaskUpdateWithWhereUniqueWithoutBotAccountInput[]
+    updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutBotAccountInput | SeedingBotTaskUpdateManyWithWhereWithoutBotAccountInput[]
+    deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyWithoutBotAccountNestedInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutBotAccountInput, SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput> | SeedingBotActivityLogCreateWithoutBotAccountInput[] | SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput | SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput[]
+    upsert?: SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotAccountInput | SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotAccountInput[]
+    createMany?: SeedingBotActivityLogCreateManyBotAccountInputEnvelope
+    set?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    disconnect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    delete?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    update?: SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotAccountInput | SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotAccountInput[]
+    updateMany?: SeedingBotActivityLogUpdateManyWithWhereWithoutBotAccountInput | SeedingBotActivityLogUpdateManyWithWhereWithoutBotAccountInput[]
+    deleteMany?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+  }
+
+  export type SeedingBotCreateNestedOneWithoutLocationsInput = {
+    create?: XOR<SeedingBotCreateWithoutLocationsInput, SeedingBotUncheckedCreateWithoutLocationsInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutLocationsInput
+    connect?: SeedingBotWhereUniqueInput
+  }
+
+  export type BusinessLocationCreateNestedOneWithoutBotAssignmentsInput = {
+    create?: XOR<BusinessLocationCreateWithoutBotAssignmentsInput, BusinessLocationUncheckedCreateWithoutBotAssignmentsInput>
+    connectOrCreate?: BusinessLocationCreateOrConnectWithoutBotAssignmentsInput
+    connect?: BusinessLocationWhereUniqueInput
+  }
+
+  export type SeedingBotUpdateOneRequiredWithoutLocationsNestedInput = {
+    create?: XOR<SeedingBotCreateWithoutLocationsInput, SeedingBotUncheckedCreateWithoutLocationsInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutLocationsInput
+    upsert?: SeedingBotUpsertWithoutLocationsInput
+    connect?: SeedingBotWhereUniqueInput
+    update?: XOR<XOR<SeedingBotUpdateToOneWithWhereWithoutLocationsInput, SeedingBotUpdateWithoutLocationsInput>, SeedingBotUncheckedUpdateWithoutLocationsInput>
+  }
+
+  export type BusinessLocationUpdateOneRequiredWithoutBotAssignmentsNestedInput = {
+    create?: XOR<BusinessLocationCreateWithoutBotAssignmentsInput, BusinessLocationUncheckedCreateWithoutBotAssignmentsInput>
+    connectOrCreate?: BusinessLocationCreateOrConnectWithoutBotAssignmentsInput
+    upsert?: BusinessLocationUpsertWithoutBotAssignmentsInput
+    connect?: BusinessLocationWhereUniqueInput
+    update?: XOR<XOR<BusinessLocationUpdateToOneWithWhereWithoutBotAssignmentsInput, BusinessLocationUpdateWithoutBotAssignmentsInput>, BusinessLocationUncheckedUpdateWithoutBotAssignmentsInput>
+  }
+
+  export type SeedingBotCreateNestedOneWithoutTasksInput = {
+    create?: XOR<SeedingBotCreateWithoutTasksInput, SeedingBotUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutTasksInput
+    connect?: SeedingBotWhereUniqueInput
+  }
+
+  export type SeedingBotAccountCreateNestedOneWithoutTasksInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutTasksInput, SeedingBotAccountUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutTasksInput
+    connect?: SeedingBotAccountWhereUniqueInput
+  }
+
+  export type BusinessLocationCreateNestedOneWithoutBotTasksInput = {
+    create?: XOR<BusinessLocationCreateWithoutBotTasksInput, BusinessLocationUncheckedCreateWithoutBotTasksInput>
+    connectOrCreate?: BusinessLocationCreateOrConnectWithoutBotTasksInput
+    connect?: BusinessLocationWhereUniqueInput
+  }
+
+  export type AnalysisSessionCreateNestedOneWithoutBotTasksInput = {
+    create?: XOR<AnalysisSessionCreateWithoutBotTasksInput, AnalysisSessionUncheckedCreateWithoutBotTasksInput>
+    connectOrCreate?: AnalysisSessionCreateOrConnectWithoutBotTasksInput
+    connect?: AnalysisSessionWhereUniqueInput
+  }
+
+  export type StrategyVersionCreateNestedOneWithoutBotTasksInput = {
+    create?: XOR<StrategyVersionCreateWithoutBotTasksInput, StrategyVersionUncheckedCreateWithoutBotTasksInput>
+    connectOrCreate?: StrategyVersionCreateOrConnectWithoutBotTasksInput
+    connect?: StrategyVersionWhereUniqueInput
+  }
+
+  export type SeedingBotActivityLogCreateNestedManyWithoutTaskInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutTaskInput, SeedingBotActivityLogUncheckedCreateWithoutTaskInput> | SeedingBotActivityLogCreateWithoutTaskInput[] | SeedingBotActivityLogUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutTaskInput | SeedingBotActivityLogCreateOrConnectWithoutTaskInput[]
+    createMany?: SeedingBotActivityLogCreateManyTaskInputEnvelope
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutTaskInput, SeedingBotActivityLogUncheckedCreateWithoutTaskInput> | SeedingBotActivityLogCreateWithoutTaskInput[] | SeedingBotActivityLogUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutTaskInput | SeedingBotActivityLogCreateOrConnectWithoutTaskInput[]
+    createMany?: SeedingBotActivityLogCreateManyTaskInputEnvelope
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+  }
+
+  export type EnumBotTaskTypeFieldUpdateOperationsInput = {
+    set?: $Enums.BotTaskType
+  }
+
+  export type EnumBotTaskStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BotTaskStatus
+  }
+
+  export type SeedingBotUpdateOneRequiredWithoutTasksNestedInput = {
+    create?: XOR<SeedingBotCreateWithoutTasksInput, SeedingBotUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutTasksInput
+    upsert?: SeedingBotUpsertWithoutTasksInput
+    connect?: SeedingBotWhereUniqueInput
+    update?: XOR<XOR<SeedingBotUpdateToOneWithWhereWithoutTasksInput, SeedingBotUpdateWithoutTasksInput>, SeedingBotUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type SeedingBotAccountUpdateOneWithoutTasksNestedInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutTasksInput, SeedingBotAccountUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutTasksInput
+    upsert?: SeedingBotAccountUpsertWithoutTasksInput
+    disconnect?: SeedingBotAccountWhereInput | boolean
+    delete?: SeedingBotAccountWhereInput | boolean
+    connect?: SeedingBotAccountWhereUniqueInput
+    update?: XOR<XOR<SeedingBotAccountUpdateToOneWithWhereWithoutTasksInput, SeedingBotAccountUpdateWithoutTasksInput>, SeedingBotAccountUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput = {
+    create?: XOR<BusinessLocationCreateWithoutBotTasksInput, BusinessLocationUncheckedCreateWithoutBotTasksInput>
+    connectOrCreate?: BusinessLocationCreateOrConnectWithoutBotTasksInput
+    upsert?: BusinessLocationUpsertWithoutBotTasksInput
+    connect?: BusinessLocationWhereUniqueInput
+    update?: XOR<XOR<BusinessLocationUpdateToOneWithWhereWithoutBotTasksInput, BusinessLocationUpdateWithoutBotTasksInput>, BusinessLocationUncheckedUpdateWithoutBotTasksInput>
+  }
+
+  export type AnalysisSessionUpdateOneWithoutBotTasksNestedInput = {
+    create?: XOR<AnalysisSessionCreateWithoutBotTasksInput, AnalysisSessionUncheckedCreateWithoutBotTasksInput>
+    connectOrCreate?: AnalysisSessionCreateOrConnectWithoutBotTasksInput
+    upsert?: AnalysisSessionUpsertWithoutBotTasksInput
+    disconnect?: AnalysisSessionWhereInput | boolean
+    delete?: AnalysisSessionWhereInput | boolean
+    connect?: AnalysisSessionWhereUniqueInput
+    update?: XOR<XOR<AnalysisSessionUpdateToOneWithWhereWithoutBotTasksInput, AnalysisSessionUpdateWithoutBotTasksInput>, AnalysisSessionUncheckedUpdateWithoutBotTasksInput>
+  }
+
+  export type StrategyVersionUpdateOneWithoutBotTasksNestedInput = {
+    create?: XOR<StrategyVersionCreateWithoutBotTasksInput, StrategyVersionUncheckedCreateWithoutBotTasksInput>
+    connectOrCreate?: StrategyVersionCreateOrConnectWithoutBotTasksInput
+    upsert?: StrategyVersionUpsertWithoutBotTasksInput
+    disconnect?: StrategyVersionWhereInput | boolean
+    delete?: StrategyVersionWhereInput | boolean
+    connect?: StrategyVersionWhereUniqueInput
+    update?: XOR<XOR<StrategyVersionUpdateToOneWithWhereWithoutBotTasksInput, StrategyVersionUpdateWithoutBotTasksInput>, StrategyVersionUncheckedUpdateWithoutBotTasksInput>
+  }
+
+  export type SeedingBotActivityLogUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutTaskInput, SeedingBotActivityLogUncheckedCreateWithoutTaskInput> | SeedingBotActivityLogCreateWithoutTaskInput[] | SeedingBotActivityLogUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutTaskInput | SeedingBotActivityLogCreateOrConnectWithoutTaskInput[]
+    upsert?: SeedingBotActivityLogUpsertWithWhereUniqueWithoutTaskInput | SeedingBotActivityLogUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: SeedingBotActivityLogCreateManyTaskInputEnvelope
+    set?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    disconnect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    delete?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    update?: SeedingBotActivityLogUpdateWithWhereUniqueWithoutTaskInput | SeedingBotActivityLogUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: SeedingBotActivityLogUpdateManyWithWhereWithoutTaskInput | SeedingBotActivityLogUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<SeedingBotActivityLogCreateWithoutTaskInput, SeedingBotActivityLogUncheckedCreateWithoutTaskInput> | SeedingBotActivityLogCreateWithoutTaskInput[] | SeedingBotActivityLogUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: SeedingBotActivityLogCreateOrConnectWithoutTaskInput | SeedingBotActivityLogCreateOrConnectWithoutTaskInput[]
+    upsert?: SeedingBotActivityLogUpsertWithWhereUniqueWithoutTaskInput | SeedingBotActivityLogUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: SeedingBotActivityLogCreateManyTaskInputEnvelope
+    set?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    disconnect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    delete?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    connect?: SeedingBotActivityLogWhereUniqueInput | SeedingBotActivityLogWhereUniqueInput[]
+    update?: SeedingBotActivityLogUpdateWithWhereUniqueWithoutTaskInput | SeedingBotActivityLogUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: SeedingBotActivityLogUpdateManyWithWhereWithoutTaskInput | SeedingBotActivityLogUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+  }
+
+  export type SeedingBotCreateNestedOneWithoutActivityLogsInput = {
+    create?: XOR<SeedingBotCreateWithoutActivityLogsInput, SeedingBotUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutActivityLogsInput
+    connect?: SeedingBotWhereUniqueInput
+  }
+
+  export type SeedingBotAccountCreateNestedOneWithoutActivityLogsInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutActivityLogsInput, SeedingBotAccountUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutActivityLogsInput
+    connect?: SeedingBotAccountWhereUniqueInput
+  }
+
+  export type SeedingBotTaskCreateNestedOneWithoutActivityLogsInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutActivityLogsInput, SeedingBotTaskUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutActivityLogsInput
+    connect?: SeedingBotTaskWhereUniqueInput
+  }
+
+  export type SeedingBotUpdateOneRequiredWithoutActivityLogsNestedInput = {
+    create?: XOR<SeedingBotCreateWithoutActivityLogsInput, SeedingBotUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: SeedingBotCreateOrConnectWithoutActivityLogsInput
+    upsert?: SeedingBotUpsertWithoutActivityLogsInput
+    connect?: SeedingBotWhereUniqueInput
+    update?: XOR<XOR<SeedingBotUpdateToOneWithWhereWithoutActivityLogsInput, SeedingBotUpdateWithoutActivityLogsInput>, SeedingBotUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotAccountUpdateOneWithoutActivityLogsNestedInput = {
+    create?: XOR<SeedingBotAccountCreateWithoutActivityLogsInput, SeedingBotAccountUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: SeedingBotAccountCreateOrConnectWithoutActivityLogsInput
+    upsert?: SeedingBotAccountUpsertWithoutActivityLogsInput
+    disconnect?: SeedingBotAccountWhereInput | boolean
+    delete?: SeedingBotAccountWhereInput | boolean
+    connect?: SeedingBotAccountWhereUniqueInput
+    update?: XOR<XOR<SeedingBotAccountUpdateToOneWithWhereWithoutActivityLogsInput, SeedingBotAccountUpdateWithoutActivityLogsInput>, SeedingBotAccountUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotTaskUpdateOneWithoutActivityLogsNestedInput = {
+    create?: XOR<SeedingBotTaskCreateWithoutActivityLogsInput, SeedingBotTaskUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutActivityLogsInput
+    upsert?: SeedingBotTaskUpsertWithoutActivityLogsInput
+    disconnect?: SeedingBotTaskWhereInput | boolean
+    delete?: SeedingBotTaskWhereInput | boolean
+    connect?: SeedingBotTaskWhereUniqueInput
+    update?: XOR<XOR<SeedingBotTaskUpdateToOneWithWhereWithoutActivityLogsInput, SeedingBotTaskUpdateWithoutActivityLogsInput>, SeedingBotTaskUncheckedUpdateWithoutActivityLogsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -37536,6 +46872,91 @@ export namespace Prisma {
     _max?: NestedEnumStrategyVersionStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumBotStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotStatus | EnumBotStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotStatusFilter<$PrismaModel> | $Enums.BotStatus
+  }
+
+  export type NestedEnumBotStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotStatus | EnumBotStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotStatusWithAggregatesFilter<$PrismaModel> | $Enums.BotStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotStatusFilter<$PrismaModel>
+    _max?: NestedEnumBotStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBotPlatformFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotPlatform | EnumBotPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotPlatformFilter<$PrismaModel> | $Enums.BotPlatform
+  }
+
+  export type NestedEnumBotAccountStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotAccountStatus | EnumBotAccountStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotAccountStatusFilter<$PrismaModel> | $Enums.BotAccountStatus
+  }
+
+  export type NestedEnumBotPlatformWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotPlatform | EnumBotPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotPlatform[] | ListEnumBotPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotPlatformWithAggregatesFilter<$PrismaModel> | $Enums.BotPlatform
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotPlatformFilter<$PrismaModel>
+    _max?: NestedEnumBotPlatformFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBotAccountStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotAccountStatus | EnumBotAccountStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotAccountStatus[] | ListEnumBotAccountStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotAccountStatusWithAggregatesFilter<$PrismaModel> | $Enums.BotAccountStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotAccountStatusFilter<$PrismaModel>
+    _max?: NestedEnumBotAccountStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBotTaskTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskType | EnumBotTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskTypeFilter<$PrismaModel> | $Enums.BotTaskType
+  }
+
+  export type NestedEnumBotTaskStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskStatus | EnumBotTaskStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskStatusFilter<$PrismaModel> | $Enums.BotTaskStatus
+  }
+
+  export type NestedEnumBotTaskTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskType | EnumBotTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskType[] | ListEnumBotTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskTypeWithAggregatesFilter<$PrismaModel> | $Enums.BotTaskType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotTaskTypeFilter<$PrismaModel>
+    _max?: NestedEnumBotTaskTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBotTaskStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BotTaskStatus | EnumBotTaskStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BotTaskStatus[] | ListEnumBotTaskStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBotTaskStatusWithAggregatesFilter<$PrismaModel> | $Enums.BotTaskStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBotTaskStatusFilter<$PrismaModel>
+    _max?: NestedEnumBotTaskStatusFilter<$PrismaModel>
+  }
+
   export type OrganizationMemberCreateWithoutUserInput = {
     id?: string
     role: $Enums.OrgRole
@@ -37758,6 +47179,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutOrganizationInput = {
@@ -37781,6 +47203,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutOrganizationInput = {
@@ -37790,6 +47213,54 @@ export namespace Prisma {
 
   export type AnalysisSessionCreateManyOrganizationInputEnvelope = {
     data: AnalysisSessionCreateManyOrganizationInput | AnalysisSessionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    accounts?: SeedingBotAccountCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    accounts?: SeedingBotAccountUncheckedCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationUncheckedCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotCreateOrConnectWithoutOrganizationInput = {
+    where: SeedingBotWhereUniqueInput
+    create: XOR<SeedingBotCreateWithoutOrganizationInput, SeedingBotUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type SeedingBotCreateManyOrganizationInputEnvelope = {
+    data: SeedingBotCreateManyOrganizationInput | SeedingBotCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -37892,6 +47363,41 @@ export namespace Prisma {
     archivedAt?: DateTimeNullableFilter<"AnalysisSession"> | Date | string | null
   }
 
+  export type SeedingBotUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: SeedingBotWhereUniqueInput
+    update: XOR<SeedingBotUpdateWithoutOrganizationInput, SeedingBotUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<SeedingBotCreateWithoutOrganizationInput, SeedingBotUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type SeedingBotUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: SeedingBotWhereUniqueInput
+    data: XOR<SeedingBotUpdateWithoutOrganizationInput, SeedingBotUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type SeedingBotUpdateManyWithWhereWithoutOrganizationInput = {
+    where: SeedingBotScalarWhereInput
+    data: XOR<SeedingBotUpdateManyMutationInput, SeedingBotUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type SeedingBotScalarWhereInput = {
+    AND?: SeedingBotScalarWhereInput | SeedingBotScalarWhereInput[]
+    OR?: SeedingBotScalarWhereInput[]
+    NOT?: SeedingBotScalarWhereInput | SeedingBotScalarWhereInput[]
+    id?: StringFilter<"SeedingBot"> | string
+    organizationId?: StringFilter<"SeedingBot"> | string
+    name?: StringFilter<"SeedingBot"> | string
+    displayName?: StringFilter<"SeedingBot"> | string
+    avatarUrl?: StringNullableFilter<"SeedingBot"> | string | null
+    brandVoice?: StringNullableFilter<"SeedingBot"> | string | null
+    maturityLevel?: IntFilter<"SeedingBot"> | number
+    status?: EnumBotStatusFilter<"SeedingBot"> | $Enums.BotStatus
+    notes?: StringNullableFilter<"SeedingBot"> | string | null
+    createdBy?: StringNullableFilter<"SeedingBot"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBot"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBot"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"SeedingBot"> | Date | string | null
+  }
+
   export type OrganizationCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -37903,6 +47409,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     businesses?: BusinessCreateNestedManyWithoutOrganizationInput
     analysisSessions?: AnalysisSessionCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -37916,6 +47423,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     businesses?: BusinessUncheckedCreateNestedManyWithoutOrganizationInput
     analysisSessions?: AnalysisSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -37978,6 +47486,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     businesses?: BusinessUpdateManyWithoutOrganizationNestedInput
     analysisSessions?: AnalysisSessionUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -37991,6 +47500,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     businesses?: BusinessUncheckedUpdateManyWithoutOrganizationNestedInput
     analysisSessions?: AnalysisSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutMembershipsInput = {
@@ -38115,6 +47625,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
     analysisSessions?: AnalysisSessionCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutBusinessesInput = {
@@ -38128,6 +47639,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
     analysisSessions?: AnalysisSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutBusinessesInput = {
@@ -38153,6 +47665,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dataSources?: DataSourceCreateNestedManyWithoutBusinessLocationInput
+    botAssignments?: SeedingBotLocationCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutBusinessLocationInput
   }
 
   export type BusinessLocationUncheckedCreateWithoutBusinessInput = {
@@ -38173,6 +47687,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dataSources?: DataSourceUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botAssignments?: SeedingBotLocationUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBusinessLocationInput
   }
 
   export type BusinessLocationCreateOrConnectWithoutBusinessInput = {
@@ -38206,6 +47722,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutBusinessInput = {
@@ -38228,6 +47745,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutBusinessInput = {
@@ -38262,6 +47780,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
     analysisSessions?: AnalysisSessionUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutBusinessesInput = {
@@ -38275,6 +47794,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
     analysisSessions?: AnalysisSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BusinessLocationUpsertWithWhereUniqueWithoutBusinessInput = {
@@ -38436,6 +47956,89 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SeedingBotLocationCreateWithoutBusinessLocationInput = {
+    id?: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutLocationsInput
+  }
+
+  export type SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotLocationCreateOrConnectWithoutBusinessLocationInput = {
+    where: SeedingBotLocationWhereUniqueInput
+    create: XOR<SeedingBotLocationCreateWithoutBusinessLocationInput, SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotLocationCreateManyBusinessLocationInputEnvelope = {
+    data: SeedingBotLocationCreateManyBusinessLocationInput | SeedingBotLocationCreateManyBusinessLocationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotTaskCreateWithoutBusinessLocationInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutTasksInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutTasksInput
+    analysisSession?: AnalysisSessionCreateNestedOneWithoutBotTasksInput
+    strategyVersion?: StrategyVersionCreateNestedOneWithoutBotTasksInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskCreateOrConnectWithoutBusinessLocationInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    create: XOR<SeedingBotTaskCreateWithoutBusinessLocationInput, SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotTaskCreateManyBusinessLocationInputEnvelope = {
+    data: SeedingBotTaskCreateManyBusinessLocationInput | SeedingBotTaskCreateManyBusinessLocationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BusinessUpsertWithoutLocationsInput = {
     update: XOR<BusinessUpdateWithoutLocationsInput, BusinessUncheckedUpdateWithoutLocationsInput>
     create: XOR<BusinessCreateWithoutLocationsInput, BusinessUncheckedCreateWithoutLocationsInput>
@@ -38536,6 +48139,78 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"DataSource"> | Date | string
   }
 
+  export type SeedingBotLocationUpsertWithWhereUniqueWithoutBusinessLocationInput = {
+    where: SeedingBotLocationWhereUniqueInput
+    update: XOR<SeedingBotLocationUpdateWithoutBusinessLocationInput, SeedingBotLocationUncheckedUpdateWithoutBusinessLocationInput>
+    create: XOR<SeedingBotLocationCreateWithoutBusinessLocationInput, SeedingBotLocationUncheckedCreateWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotLocationUpdateWithWhereUniqueWithoutBusinessLocationInput = {
+    where: SeedingBotLocationWhereUniqueInput
+    data: XOR<SeedingBotLocationUpdateWithoutBusinessLocationInput, SeedingBotLocationUncheckedUpdateWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotLocationUpdateManyWithWhereWithoutBusinessLocationInput = {
+    where: SeedingBotLocationScalarWhereInput
+    data: XOR<SeedingBotLocationUpdateManyMutationInput, SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotLocationScalarWhereInput = {
+    AND?: SeedingBotLocationScalarWhereInput | SeedingBotLocationScalarWhereInput[]
+    OR?: SeedingBotLocationScalarWhereInput[]
+    NOT?: SeedingBotLocationScalarWhereInput | SeedingBotLocationScalarWhereInput[]
+    id?: StringFilter<"SeedingBotLocation"> | string
+    organizationId?: StringFilter<"SeedingBotLocation"> | string
+    botId?: StringFilter<"SeedingBotLocation"> | string
+    businessId?: StringFilter<"SeedingBotLocation"> | string
+    businessLocationId?: StringFilter<"SeedingBotLocation"> | string
+    isPrimary?: BoolFilter<"SeedingBotLocation"> | boolean
+    createdAt?: DateTimeFilter<"SeedingBotLocation"> | Date | string
+  }
+
+  export type SeedingBotTaskUpsertWithWhereUniqueWithoutBusinessLocationInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    update: XOR<SeedingBotTaskUpdateWithoutBusinessLocationInput, SeedingBotTaskUncheckedUpdateWithoutBusinessLocationInput>
+    create: XOR<SeedingBotTaskCreateWithoutBusinessLocationInput, SeedingBotTaskUncheckedCreateWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotTaskUpdateWithWhereUniqueWithoutBusinessLocationInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    data: XOR<SeedingBotTaskUpdateWithoutBusinessLocationInput, SeedingBotTaskUncheckedUpdateWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotTaskUpdateManyWithWhereWithoutBusinessLocationInput = {
+    where: SeedingBotTaskScalarWhereInput
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationInput>
+  }
+
+  export type SeedingBotTaskScalarWhereInput = {
+    AND?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+    OR?: SeedingBotTaskScalarWhereInput[]
+    NOT?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+    id?: StringFilter<"SeedingBotTask"> | string
+    organizationId?: StringFilter<"SeedingBotTask"> | string
+    botId?: StringFilter<"SeedingBotTask"> | string
+    botAccountId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    businessId?: StringFilter<"SeedingBotTask"> | string
+    businessLocationId?: StringFilter<"SeedingBotTask"> | string
+    analysisSessionId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    strategyVersionId?: StringNullableFilter<"SeedingBotTask"> | string | null
+    taskType?: EnumBotTaskTypeFilter<"SeedingBotTask"> | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFilter<"SeedingBotTask"> | $Enums.BotTaskStatus
+    title?: StringFilter<"SeedingBotTask"> | string
+    content?: StringNullableFilter<"SeedingBotTask"> | string | null
+    scheduledAt?: DateTimeNullableFilter<"SeedingBotTask"> | Date | string | null
+    externalRef?: StringNullableFilter<"SeedingBotTask"> | string | null
+    completedBy?: StringNullableFilter<"SeedingBotTask"> | string | null
+    completedAt?: DateTimeNullableFilter<"SeedingBotTask"> | Date | string | null
+    failureReason?: StringNullableFilter<"SeedingBotTask"> | string | null
+    notes?: StringNullableFilter<"SeedingBotTask"> | string | null
+    createdBy?: StringNullableFilter<"SeedingBotTask"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBotTask"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBotTask"> | Date | string
+  }
+
   export type OrganizationCreateWithoutAnalysisSessionsInput = {
     id?: string
     name: string
@@ -38547,6 +48222,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
     businesses?: BusinessCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAnalysisSessionsInput = {
@@ -38560,6 +48236,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
     businesses?: BusinessUncheckedCreateNestedManyWithoutOrganizationInput
+    seedingBots?: SeedingBotUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAnalysisSessionsInput = {
@@ -38865,6 +48542,64 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SeedingBotTaskCreateWithoutAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutTasksInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutTasksInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotTasksInput
+    strategyVersion?: StrategyVersionCreateNestedOneWithoutBotTasksInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    create: XOR<SeedingBotTaskCreateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingBotTaskCreateManyAnalysisSessionInputEnvelope = {
+    data: SeedingBotTaskCreateManyAnalysisSessionInput | SeedingBotTaskCreateManyAnalysisSessionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutAnalysisSessionsInput = {
     update: XOR<OrganizationUpdateWithoutAnalysisSessionsInput, OrganizationUncheckedUpdateWithoutAnalysisSessionsInput>
     create: XOR<OrganizationCreateWithoutAnalysisSessionsInput, OrganizationUncheckedCreateWithoutAnalysisSessionsInput>
@@ -38887,6 +48622,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
     businesses?: BusinessUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAnalysisSessionsInput = {
@@ -38900,6 +48636,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
     businesses?: BusinessUncheckedUpdateManyWithoutOrganizationNestedInput
+    seedingBots?: SeedingBotUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BusinessUpsertWithoutAnalysisSessionsInput = {
@@ -39133,6 +48870,22 @@ export namespace Prisma {
     archivedAt?: DateTimeNullableFilter<"Strategy"> | Date | string | null
   }
 
+  export type SeedingBotTaskUpsertWithWhereUniqueWithoutAnalysisSessionInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    update: XOR<SeedingBotTaskUpdateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedUpdateWithoutAnalysisSessionInput>
+    create: XOR<SeedingBotTaskCreateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedCreateWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    data: XOR<SeedingBotTaskUpdateWithoutAnalysisSessionInput, SeedingBotTaskUncheckedUpdateWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput = {
+    where: SeedingBotTaskScalarWhereInput
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionInput>
+  }
+
   export type AnalysisSessionCreateWithoutDataSourcesInput = {
     id?: string
     name: string
@@ -39154,6 +48907,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutDataSourcesInput = {
@@ -39177,6 +48931,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutDataSourcesInput = {
@@ -39202,6 +48957,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     business: BusinessCreateNestedOneWithoutLocationsInput
+    botAssignments?: SeedingBotLocationCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutBusinessLocationInput
   }
 
   export type BusinessLocationUncheckedCreateWithoutDataSourcesInput = {
@@ -39223,6 +48980,8 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    botAssignments?: SeedingBotLocationUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBusinessLocationInput
   }
 
   export type BusinessLocationCreateOrConnectWithoutDataSourcesInput = {
@@ -39416,6 +49175,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutDataSourcesInput = {
@@ -39439,6 +49199,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type BusinessLocationUpsertWithoutDataSourcesInput = {
@@ -39470,6 +49231,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: BusinessUpdateOneRequiredWithoutLocationsNestedInput
+    botAssignments?: SeedingBotLocationUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutBusinessLocationNestedInput
   }
 
   export type BusinessLocationUncheckedUpdateWithoutDataSourcesInput = {
@@ -39491,6 +49254,8 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    botAssignments?: SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationNestedInput
   }
 
   export type CustomerFeedbackUpsertWithWhereUniqueWithoutDataSourceInput = {
@@ -39586,6 +49351,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutFeedbacksInput = {
@@ -39609,6 +49375,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutFeedbacksInput = {
@@ -39868,6 +49635,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutFeedbacksInput = {
@@ -39891,6 +49659,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type DataSourceUpsertWithoutFeedbacksInput = {
@@ -40205,6 +49974,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutProcessingJobsInput = {
@@ -40228,6 +49998,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutProcessingJobsInput = {
@@ -40354,6 +50125,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutProcessingJobsInput = {
@@ -40377,6 +50149,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type DataSourceUpsertWithoutProcessingJobsInput = {
@@ -40650,6 +50423,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackCreateNestedManyWithoutAnalysisSessionInput
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutInsightsInput = {
@@ -40673,6 +50447,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUncheckedCreateNestedManyWithoutAnalysisSessionInput
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutInsightsInput = {
@@ -40913,6 +50688,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUpdateManyWithoutAnalysisSessionNestedInput
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutInsightsInput = {
@@ -40936,6 +50712,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type InsightUpsertWithoutChildrenInput = {
@@ -41450,6 +51227,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackCreateNestedManyWithoutAnalysisSessionInput
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutStrategiesInput = {
@@ -41473,6 +51251,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUncheckedCreateNestedManyWithoutAnalysisSessionInput
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutStrategiesInput = {
@@ -41508,6 +51287,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     strategy: StrategyCreateNestedOneWithoutVersionsInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutActiveForStrategyInput = {
@@ -41539,6 +51319,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutActiveForStrategyInput = {
@@ -41574,6 +51355,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutStrategyInput = {
@@ -41604,6 +51386,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutStrategyInput = {
@@ -41648,6 +51431,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUpdateManyWithoutAnalysisSessionNestedInput
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutStrategiesInput = {
@@ -41671,6 +51455,7 @@ export namespace Prisma {
     feedbacks?: CustomerFeedbackUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type StrategyVersionUpsertWithoutActiveForStrategyInput = {
@@ -41712,6 +51497,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutActiveForStrategyInput = {
@@ -41743,6 +51529,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUpsertWithWhereUniqueWithoutStrategyInput = {
@@ -41871,6 +51658,64 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SeedingBotTaskCreateWithoutStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutTasksInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutTasksInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotTasksInput
+    analysisSession?: AnalysisSessionCreateNestedOneWithoutBotTasksInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    create: XOR<SeedingBotTaskCreateWithoutStrategyVersionInput, SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput>
+  }
+
+  export type SeedingBotTaskCreateManyStrategyVersionInputEnvelope = {
+    data: SeedingBotTaskCreateManyStrategyVersionInput | SeedingBotTaskCreateManyStrategyVersionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StrategyUpsertWithoutVersionsInput = {
     update: XOR<StrategyUpdateWithoutVersionsInput, StrategyUncheckedUpdateWithoutVersionsInput>
     create: XOR<StrategyCreateWithoutVersionsInput, StrategyUncheckedCreateWithoutVersionsInput>
@@ -41950,6 +51795,22 @@ export namespace Prisma {
     data: XOR<StrategyInsightUpdateManyMutationInput, StrategyInsightUncheckedUpdateManyWithoutStrategyVersionInput>
   }
 
+  export type SeedingBotTaskUpsertWithWhereUniqueWithoutStrategyVersionInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    update: XOR<SeedingBotTaskUpdateWithoutStrategyVersionInput, SeedingBotTaskUncheckedUpdateWithoutStrategyVersionInput>
+    create: XOR<SeedingBotTaskCreateWithoutStrategyVersionInput, SeedingBotTaskUncheckedCreateWithoutStrategyVersionInput>
+  }
+
+  export type SeedingBotTaskUpdateWithWhereUniqueWithoutStrategyVersionInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    data: XOR<SeedingBotTaskUpdateWithoutStrategyVersionInput, SeedingBotTaskUncheckedUpdateWithoutStrategyVersionInput>
+  }
+
+  export type SeedingBotTaskUpdateManyWithWhereWithoutStrategyVersionInput = {
+    where: SeedingBotTaskScalarWhereInput
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionInput>
+  }
+
   export type StrategyVersionCreateWithoutInsightsInput = {
     id?: string
     versionNo: number
@@ -41978,6 +51839,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     strategy: StrategyCreateNestedOneWithoutVersionsInput
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutInsightsInput = {
@@ -42009,6 +51871,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutInsightsInput = {
@@ -42110,6 +51973,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutInsightsInput = {
@@ -42141,6 +52005,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type InsightUpsertWithoutStrategyLinksInput = {
@@ -42202,6 +52067,1595 @@ export namespace Prisma {
     children?: InsightUncheckedUpdateManyWithoutParentNestedInput
     evidences?: InsightEvidenceUncheckedUpdateManyWithoutInsightNestedInput
     reviewLogs?: InsightReviewLogUncheckedUpdateManyWithoutInsightNestedInput
+  }
+
+  export type OrganizationCreateWithoutSeedingBotsInput = {
+    id?: string
+    name: string
+    slug: string
+    logoUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
+    businesses?: BusinessCreateNestedManyWithoutOrganizationInput
+    analysisSessions?: AnalysisSessionCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutSeedingBotsInput = {
+    id?: string
+    name: string
+    slug: string
+    logoUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+    businesses?: BusinessUncheckedCreateNestedManyWithoutOrganizationInput
+    analysisSessions?: AnalysisSessionUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutSeedingBotsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutSeedingBotsInput, OrganizationUncheckedCreateWithoutSeedingBotsInput>
+  }
+
+  export type SeedingBotAccountCreateWithoutBotInput = {
+    id?: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotAccountInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountUncheckedCreateWithoutBotInput = {
+    id?: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotAccountInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountCreateOrConnectWithoutBotInput = {
+    where: SeedingBotAccountWhereUniqueInput
+    create: XOR<SeedingBotAccountCreateWithoutBotInput, SeedingBotAccountUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotAccountCreateManyBotInputEnvelope = {
+    data: SeedingBotAccountCreateManyBotInput | SeedingBotAccountCreateManyBotInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotLocationCreateWithoutBotInput = {
+    id?: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotAssignmentsInput
+  }
+
+  export type SeedingBotLocationUncheckedCreateWithoutBotInput = {
+    id?: string
+    businessId: string
+    businessLocationId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotLocationCreateOrConnectWithoutBotInput = {
+    where: SeedingBotLocationWhereUniqueInput
+    create: XOR<SeedingBotLocationCreateWithoutBotInput, SeedingBotLocationUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotLocationCreateManyBotInputEnvelope = {
+    data: SeedingBotLocationCreateManyBotInput | SeedingBotLocationCreateManyBotInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotTaskCreateWithoutBotInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutTasksInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotTasksInput
+    analysisSession?: AnalysisSessionCreateNestedOneWithoutBotTasksInput
+    strategyVersion?: StrategyVersionCreateNestedOneWithoutBotTasksInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateWithoutBotInput = {
+    id?: string
+    organizationId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskCreateOrConnectWithoutBotInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    create: XOR<SeedingBotTaskCreateWithoutBotInput, SeedingBotTaskUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotTaskCreateManyBotInputEnvelope = {
+    data: SeedingBotTaskCreateManyBotInput | SeedingBotTaskCreateManyBotInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotActivityLogCreateWithoutBotInput = {
+    id?: string
+    organizationId: string
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutActivityLogsInput
+    task?: SeedingBotTaskCreateNestedOneWithoutActivityLogsInput
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateWithoutBotInput = {
+    id?: string
+    organizationId: string
+    botAccountId?: string | null
+    taskId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogCreateOrConnectWithoutBotInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    create: XOR<SeedingBotActivityLogCreateWithoutBotInput, SeedingBotActivityLogUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotActivityLogCreateManyBotInputEnvelope = {
+    data: SeedingBotActivityLogCreateManyBotInput | SeedingBotActivityLogCreateManyBotInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationUpsertWithoutSeedingBotsInput = {
+    update: XOR<OrganizationUpdateWithoutSeedingBotsInput, OrganizationUncheckedUpdateWithoutSeedingBotsInput>
+    create: XOR<OrganizationCreateWithoutSeedingBotsInput, OrganizationUncheckedCreateWithoutSeedingBotsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutSeedingBotsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutSeedingBotsInput, OrganizationUncheckedUpdateWithoutSeedingBotsInput>
+  }
+
+  export type OrganizationUpdateWithoutSeedingBotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+    businesses?: BusinessUpdateManyWithoutOrganizationNestedInput
+    analysisSessions?: AnalysisSessionUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutSeedingBotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+    businesses?: BusinessUncheckedUpdateManyWithoutOrganizationNestedInput
+    analysisSessions?: AnalysisSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type SeedingBotAccountUpsertWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotAccountWhereUniqueInput
+    update: XOR<SeedingBotAccountUpdateWithoutBotInput, SeedingBotAccountUncheckedUpdateWithoutBotInput>
+    create: XOR<SeedingBotAccountCreateWithoutBotInput, SeedingBotAccountUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotAccountUpdateWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotAccountWhereUniqueInput
+    data: XOR<SeedingBotAccountUpdateWithoutBotInput, SeedingBotAccountUncheckedUpdateWithoutBotInput>
+  }
+
+  export type SeedingBotAccountUpdateManyWithWhereWithoutBotInput = {
+    where: SeedingBotAccountScalarWhereInput
+    data: XOR<SeedingBotAccountUpdateManyMutationInput, SeedingBotAccountUncheckedUpdateManyWithoutBotInput>
+  }
+
+  export type SeedingBotAccountScalarWhereInput = {
+    AND?: SeedingBotAccountScalarWhereInput | SeedingBotAccountScalarWhereInput[]
+    OR?: SeedingBotAccountScalarWhereInput[]
+    NOT?: SeedingBotAccountScalarWhereInput | SeedingBotAccountScalarWhereInput[]
+    id?: StringFilter<"SeedingBotAccount"> | string
+    organizationId?: StringFilter<"SeedingBotAccount"> | string
+    botId?: StringFilter<"SeedingBotAccount"> | string
+    platform?: EnumBotPlatformFilter<"SeedingBotAccount"> | $Enums.BotPlatform
+    accountLabel?: StringFilter<"SeedingBotAccount"> | string
+    profileUrl?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    avatarUrl?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    accountStatus?: EnumBotAccountStatusFilter<"SeedingBotAccount"> | $Enums.BotAccountStatus
+    accountCreatedAt?: DateTimeNullableFilter<"SeedingBotAccount"> | Date | string | null
+    notes?: StringNullableFilter<"SeedingBotAccount"> | string | null
+    createdAt?: DateTimeFilter<"SeedingBotAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingBotAccount"> | Date | string
+  }
+
+  export type SeedingBotLocationUpsertWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotLocationWhereUniqueInput
+    update: XOR<SeedingBotLocationUpdateWithoutBotInput, SeedingBotLocationUncheckedUpdateWithoutBotInput>
+    create: XOR<SeedingBotLocationCreateWithoutBotInput, SeedingBotLocationUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotLocationUpdateWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotLocationWhereUniqueInput
+    data: XOR<SeedingBotLocationUpdateWithoutBotInput, SeedingBotLocationUncheckedUpdateWithoutBotInput>
+  }
+
+  export type SeedingBotLocationUpdateManyWithWhereWithoutBotInput = {
+    where: SeedingBotLocationScalarWhereInput
+    data: XOR<SeedingBotLocationUpdateManyMutationInput, SeedingBotLocationUncheckedUpdateManyWithoutBotInput>
+  }
+
+  export type SeedingBotTaskUpsertWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    update: XOR<SeedingBotTaskUpdateWithoutBotInput, SeedingBotTaskUncheckedUpdateWithoutBotInput>
+    create: XOR<SeedingBotTaskCreateWithoutBotInput, SeedingBotTaskUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotTaskUpdateWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    data: XOR<SeedingBotTaskUpdateWithoutBotInput, SeedingBotTaskUncheckedUpdateWithoutBotInput>
+  }
+
+  export type SeedingBotTaskUpdateManyWithWhereWithoutBotInput = {
+    where: SeedingBotTaskScalarWhereInput
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutBotInput>
+  }
+
+  export type SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    update: XOR<SeedingBotActivityLogUpdateWithoutBotInput, SeedingBotActivityLogUncheckedUpdateWithoutBotInput>
+    create: XOR<SeedingBotActivityLogCreateWithoutBotInput, SeedingBotActivityLogUncheckedCreateWithoutBotInput>
+  }
+
+  export type SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    data: XOR<SeedingBotActivityLogUpdateWithoutBotInput, SeedingBotActivityLogUncheckedUpdateWithoutBotInput>
+  }
+
+  export type SeedingBotActivityLogUpdateManyWithWhereWithoutBotInput = {
+    where: SeedingBotActivityLogScalarWhereInput
+    data: XOR<SeedingBotActivityLogUpdateManyMutationInput, SeedingBotActivityLogUncheckedUpdateManyWithoutBotInput>
+  }
+
+  export type SeedingBotActivityLogScalarWhereInput = {
+    AND?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+    OR?: SeedingBotActivityLogScalarWhereInput[]
+    NOT?: SeedingBotActivityLogScalarWhereInput | SeedingBotActivityLogScalarWhereInput[]
+    id?: StringFilter<"SeedingBotActivityLog"> | string
+    organizationId?: StringFilter<"SeedingBotActivityLog"> | string
+    botId?: StringFilter<"SeedingBotActivityLog"> | string
+    botAccountId?: StringNullableFilter<"SeedingBotActivityLog"> | string | null
+    taskId?: StringNullableFilter<"SeedingBotActivityLog"> | string | null
+    action?: StringFilter<"SeedingBotActivityLog"> | string
+    detail?: JsonNullableFilter<"SeedingBotActivityLog">
+    createdAt?: DateTimeFilter<"SeedingBotActivityLog"> | Date | string
+  }
+
+  export type SeedingBotCreateWithoutAccountsInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutSeedingBotsInput
+    locations?: SeedingBotLocationCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUncheckedCreateWithoutAccountsInput = {
+    id?: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    locations?: SeedingBotLocationUncheckedCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotCreateOrConnectWithoutAccountsInput = {
+    where: SeedingBotWhereUniqueInput
+    create: XOR<SeedingBotCreateWithoutAccountsInput, SeedingBotUncheckedCreateWithoutAccountsInput>
+  }
+
+  export type SeedingBotTaskCreateWithoutBotAccountInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutTasksInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotTasksInput
+    analysisSession?: AnalysisSessionCreateNestedOneWithoutBotTasksInput
+    strategyVersion?: StrategyVersionCreateNestedOneWithoutBotTasksInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateWithoutBotAccountInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type SeedingBotTaskCreateOrConnectWithoutBotAccountInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    create: XOR<SeedingBotTaskCreateWithoutBotAccountInput, SeedingBotTaskUncheckedCreateWithoutBotAccountInput>
+  }
+
+  export type SeedingBotTaskCreateManyBotAccountInputEnvelope = {
+    data: SeedingBotTaskCreateManyBotAccountInput | SeedingBotTaskCreateManyBotAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotActivityLogCreateWithoutBotAccountInput = {
+    id?: string
+    organizationId: string
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutActivityLogsInput
+    task?: SeedingBotTaskCreateNestedOneWithoutActivityLogsInput
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    taskId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogCreateOrConnectWithoutBotAccountInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    create: XOR<SeedingBotActivityLogCreateWithoutBotAccountInput, SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput>
+  }
+
+  export type SeedingBotActivityLogCreateManyBotAccountInputEnvelope = {
+    data: SeedingBotActivityLogCreateManyBotAccountInput | SeedingBotActivityLogCreateManyBotAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotUpsertWithoutAccountsInput = {
+    update: XOR<SeedingBotUpdateWithoutAccountsInput, SeedingBotUncheckedUpdateWithoutAccountsInput>
+    create: XOR<SeedingBotCreateWithoutAccountsInput, SeedingBotUncheckedCreateWithoutAccountsInput>
+    where?: SeedingBotWhereInput
+  }
+
+  export type SeedingBotUpdateToOneWithWhereWithoutAccountsInput = {
+    where?: SeedingBotWhereInput
+    data: XOR<SeedingBotUpdateWithoutAccountsInput, SeedingBotUncheckedUpdateWithoutAccountsInput>
+  }
+
+  export type SeedingBotUpdateWithoutAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutSeedingBotsNestedInput
+    locations?: SeedingBotLocationUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateWithoutAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    locations?: SeedingBotLocationUncheckedUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotTaskUpsertWithWhereUniqueWithoutBotAccountInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    update: XOR<SeedingBotTaskUpdateWithoutBotAccountInput, SeedingBotTaskUncheckedUpdateWithoutBotAccountInput>
+    create: XOR<SeedingBotTaskCreateWithoutBotAccountInput, SeedingBotTaskUncheckedCreateWithoutBotAccountInput>
+  }
+
+  export type SeedingBotTaskUpdateWithWhereUniqueWithoutBotAccountInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    data: XOR<SeedingBotTaskUpdateWithoutBotAccountInput, SeedingBotTaskUncheckedUpdateWithoutBotAccountInput>
+  }
+
+  export type SeedingBotTaskUpdateManyWithWhereWithoutBotAccountInput = {
+    where: SeedingBotTaskScalarWhereInput
+    data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutBotAccountInput>
+  }
+
+  export type SeedingBotActivityLogUpsertWithWhereUniqueWithoutBotAccountInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    update: XOR<SeedingBotActivityLogUpdateWithoutBotAccountInput, SeedingBotActivityLogUncheckedUpdateWithoutBotAccountInput>
+    create: XOR<SeedingBotActivityLogCreateWithoutBotAccountInput, SeedingBotActivityLogUncheckedCreateWithoutBotAccountInput>
+  }
+
+  export type SeedingBotActivityLogUpdateWithWhereUniqueWithoutBotAccountInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    data: XOR<SeedingBotActivityLogUpdateWithoutBotAccountInput, SeedingBotActivityLogUncheckedUpdateWithoutBotAccountInput>
+  }
+
+  export type SeedingBotActivityLogUpdateManyWithWhereWithoutBotAccountInput = {
+    where: SeedingBotActivityLogScalarWhereInput
+    data: XOR<SeedingBotActivityLogUpdateManyMutationInput, SeedingBotActivityLogUncheckedUpdateManyWithoutBotAccountInput>
+  }
+
+  export type SeedingBotCreateWithoutLocationsInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutSeedingBotsInput
+    accounts?: SeedingBotAccountCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUncheckedCreateWithoutLocationsInput = {
+    id?: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    accounts?: SeedingBotAccountUncheckedCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotCreateOrConnectWithoutLocationsInput = {
+    where: SeedingBotWhereUniqueInput
+    create: XOR<SeedingBotCreateWithoutLocationsInput, SeedingBotUncheckedCreateWithoutLocationsInput>
+  }
+
+  export type BusinessLocationCreateWithoutBotAssignmentsInput = {
+    id?: string
+    name: string
+    address?: string | null
+    phone?: string | null
+    website?: string | null
+    primaryType?: string | null
+    serpapiPlaceId?: string | null
+    serpapiLocationId?: string | null
+    serpapiPlaceLinkStatus?: $Enums.SerpApiLinkStatus | null
+    mapsUrl?: string | null
+    rating?: number | null
+    userRatingCount?: number | null
+    source?: $Enums.BusinessLocationSource
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    business: BusinessCreateNestedOneWithoutLocationsInput
+    dataSources?: DataSourceCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutBusinessLocationInput
+  }
+
+  export type BusinessLocationUncheckedCreateWithoutBotAssignmentsInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    name: string
+    address?: string | null
+    phone?: string | null
+    website?: string | null
+    primaryType?: string | null
+    serpapiPlaceId?: string | null
+    serpapiLocationId?: string | null
+    serpapiPlaceLinkStatus?: $Enums.SerpApiLinkStatus | null
+    mapsUrl?: string | null
+    rating?: number | null
+    userRatingCount?: number | null
+    source?: $Enums.BusinessLocationSource
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dataSources?: DataSourceUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBusinessLocationInput
+  }
+
+  export type BusinessLocationCreateOrConnectWithoutBotAssignmentsInput = {
+    where: BusinessLocationWhereUniqueInput
+    create: XOR<BusinessLocationCreateWithoutBotAssignmentsInput, BusinessLocationUncheckedCreateWithoutBotAssignmentsInput>
+  }
+
+  export type SeedingBotUpsertWithoutLocationsInput = {
+    update: XOR<SeedingBotUpdateWithoutLocationsInput, SeedingBotUncheckedUpdateWithoutLocationsInput>
+    create: XOR<SeedingBotCreateWithoutLocationsInput, SeedingBotUncheckedCreateWithoutLocationsInput>
+    where?: SeedingBotWhereInput
+  }
+
+  export type SeedingBotUpdateToOneWithWhereWithoutLocationsInput = {
+    where?: SeedingBotWhereInput
+    data: XOR<SeedingBotUpdateWithoutLocationsInput, SeedingBotUncheckedUpdateWithoutLocationsInput>
+  }
+
+  export type SeedingBotUpdateWithoutLocationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutSeedingBotsNestedInput
+    accounts?: SeedingBotAccountUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateWithoutLocationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accounts?: SeedingBotAccountUncheckedUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotNestedInput
+  }
+
+  export type BusinessLocationUpsertWithoutBotAssignmentsInput = {
+    update: XOR<BusinessLocationUpdateWithoutBotAssignmentsInput, BusinessLocationUncheckedUpdateWithoutBotAssignmentsInput>
+    create: XOR<BusinessLocationCreateWithoutBotAssignmentsInput, BusinessLocationUncheckedCreateWithoutBotAssignmentsInput>
+    where?: BusinessLocationWhereInput
+  }
+
+  export type BusinessLocationUpdateToOneWithWhereWithoutBotAssignmentsInput = {
+    where?: BusinessLocationWhereInput
+    data: XOR<BusinessLocationUpdateWithoutBotAssignmentsInput, BusinessLocationUncheckedUpdateWithoutBotAssignmentsInput>
+  }
+
+  export type BusinessLocationUpdateWithoutBotAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryType?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiLocationId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceLinkStatus?: NullableEnumSerpApiLinkStatusFieldUpdateOperationsInput | $Enums.SerpApiLinkStatus | null
+    mapsUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    source?: EnumBusinessLocationSourceFieldUpdateOperationsInput | $Enums.BusinessLocationSource
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    business?: BusinessUpdateOneRequiredWithoutLocationsNestedInput
+    dataSources?: DataSourceUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutBusinessLocationNestedInput
+  }
+
+  export type BusinessLocationUncheckedUpdateWithoutBotAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryType?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiLocationId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceLinkStatus?: NullableEnumSerpApiLinkStatusFieldUpdateOperationsInput | $Enums.SerpApiLinkStatus | null
+    mapsUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    source?: EnumBusinessLocationSourceFieldUpdateOperationsInput | $Enums.BusinessLocationSource
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dataSources?: DataSourceUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationNestedInput
+  }
+
+  export type SeedingBotCreateWithoutTasksInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutSeedingBotsInput
+    accounts?: SeedingBotAccountCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUncheckedCreateWithoutTasksInput = {
+    id?: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    accounts?: SeedingBotAccountUncheckedCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationUncheckedCreateNestedManyWithoutBotInput
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotCreateOrConnectWithoutTasksInput = {
+    where: SeedingBotWhereUniqueInput
+    create: XOR<SeedingBotCreateWithoutTasksInput, SeedingBotUncheckedCreateWithoutTasksInput>
+  }
+
+  export type SeedingBotAccountCreateWithoutTasksInput = {
+    id?: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutAccountsInput
+    activityLogs?: SeedingBotActivityLogCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountUncheckedCreateWithoutTasksInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountCreateOrConnectWithoutTasksInput = {
+    where: SeedingBotAccountWhereUniqueInput
+    create: XOR<SeedingBotAccountCreateWithoutTasksInput, SeedingBotAccountUncheckedCreateWithoutTasksInput>
+  }
+
+  export type BusinessLocationCreateWithoutBotTasksInput = {
+    id?: string
+    name: string
+    address?: string | null
+    phone?: string | null
+    website?: string | null
+    primaryType?: string | null
+    serpapiPlaceId?: string | null
+    serpapiLocationId?: string | null
+    serpapiPlaceLinkStatus?: $Enums.SerpApiLinkStatus | null
+    mapsUrl?: string | null
+    rating?: number | null
+    userRatingCount?: number | null
+    source?: $Enums.BusinessLocationSource
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    business: BusinessCreateNestedOneWithoutLocationsInput
+    dataSources?: DataSourceCreateNestedManyWithoutBusinessLocationInput
+    botAssignments?: SeedingBotLocationCreateNestedManyWithoutBusinessLocationInput
+  }
+
+  export type BusinessLocationUncheckedCreateWithoutBotTasksInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    name: string
+    address?: string | null
+    phone?: string | null
+    website?: string | null
+    primaryType?: string | null
+    serpapiPlaceId?: string | null
+    serpapiLocationId?: string | null
+    serpapiPlaceLinkStatus?: $Enums.SerpApiLinkStatus | null
+    mapsUrl?: string | null
+    rating?: number | null
+    userRatingCount?: number | null
+    source?: $Enums.BusinessLocationSource
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dataSources?: DataSourceUncheckedCreateNestedManyWithoutBusinessLocationInput
+    botAssignments?: SeedingBotLocationUncheckedCreateNestedManyWithoutBusinessLocationInput
+  }
+
+  export type BusinessLocationCreateOrConnectWithoutBotTasksInput = {
+    where: BusinessLocationWhereUniqueInput
+    create: XOR<BusinessLocationCreateWithoutBotTasksInput, BusinessLocationUncheckedCreateWithoutBotTasksInput>
+  }
+
+  export type AnalysisSessionCreateWithoutBotTasksInput = {
+    id?: string
+    name: string
+    objective?: string | null
+    focusProduct?: string | null
+    dateFrom?: Date | string | null
+    dateTo?: Date | string | null
+    status?: $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: Date | string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    completedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutAnalysisSessionsInput
+    business: BusinessCreateNestedOneWithoutAnalysisSessionsInput
+    dataSources?: DataSourceCreateNestedManyWithoutAnalysisSessionInput
+    feedbacks?: CustomerFeedbackCreateNestedManyWithoutAnalysisSessionInput
+    processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
+    insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
+    strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+  }
+
+  export type AnalysisSessionUncheckedCreateWithoutBotTasksInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    name: string
+    objective?: string | null
+    focusProduct?: string | null
+    dateFrom?: Date | string | null
+    dateTo?: Date | string | null
+    status?: $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: Date | string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    completedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    dataSources?: DataSourceUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    feedbacks?: CustomerFeedbackUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+  }
+
+  export type AnalysisSessionCreateOrConnectWithoutBotTasksInput = {
+    where: AnalysisSessionWhereUniqueInput
+    create: XOR<AnalysisSessionCreateWithoutBotTasksInput, AnalysisSessionUncheckedCreateWithoutBotTasksInput>
+  }
+
+  export type StrategyVersionCreateWithoutBotTasksInput = {
+    id?: string
+    versionNo: number
+    status?: $Enums.StrategyVersionStatus
+    context?: string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: string | null
+    aiModel?: string | null
+    promptVersion?: string | null
+    editedBy?: string | null
+    editReason?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    strategy: StrategyCreateNestedOneWithoutVersionsInput
+    activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
+    insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+  }
+
+  export type StrategyVersionUncheckedCreateWithoutBotTasksInput = {
+    id?: string
+    strategyId: string
+    analysisSessionId: string
+    versionNo: number
+    status?: $Enums.StrategyVersionStatus
+    context?: string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: string | null
+    aiModel?: string | null
+    promptVersion?: string | null
+    editedBy?: string | null
+    editReason?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
+    insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+  }
+
+  export type StrategyVersionCreateOrConnectWithoutBotTasksInput = {
+    where: StrategyVersionWhereUniqueInput
+    create: XOR<StrategyVersionCreateWithoutBotTasksInput, StrategyVersionUncheckedCreateWithoutBotTasksInput>
+  }
+
+  export type SeedingBotActivityLogCreateWithoutTaskInput = {
+    id?: string
+    organizationId: string
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutActivityLogsInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutActivityLogsInput
+  }
+
+  export type SeedingBotActivityLogUncheckedCreateWithoutTaskInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogCreateOrConnectWithoutTaskInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    create: XOR<SeedingBotActivityLogCreateWithoutTaskInput, SeedingBotActivityLogUncheckedCreateWithoutTaskInput>
+  }
+
+  export type SeedingBotActivityLogCreateManyTaskInputEnvelope = {
+    data: SeedingBotActivityLogCreateManyTaskInput | SeedingBotActivityLogCreateManyTaskInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SeedingBotUpsertWithoutTasksInput = {
+    update: XOR<SeedingBotUpdateWithoutTasksInput, SeedingBotUncheckedUpdateWithoutTasksInput>
+    create: XOR<SeedingBotCreateWithoutTasksInput, SeedingBotUncheckedCreateWithoutTasksInput>
+    where?: SeedingBotWhereInput
+  }
+
+  export type SeedingBotUpdateToOneWithWhereWithoutTasksInput = {
+    where?: SeedingBotWhereInput
+    data: XOR<SeedingBotUpdateWithoutTasksInput, SeedingBotUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type SeedingBotUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutSeedingBotsNestedInput
+    accounts?: SeedingBotAccountUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accounts?: SeedingBotAccountUncheckedUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUncheckedUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotAccountUpsertWithoutTasksInput = {
+    update: XOR<SeedingBotAccountUpdateWithoutTasksInput, SeedingBotAccountUncheckedUpdateWithoutTasksInput>
+    create: XOR<SeedingBotAccountCreateWithoutTasksInput, SeedingBotAccountUncheckedCreateWithoutTasksInput>
+    where?: SeedingBotAccountWhereInput
+  }
+
+  export type SeedingBotAccountUpdateToOneWithWhereWithoutTasksInput = {
+    where?: SeedingBotAccountWhereInput
+    data: XOR<SeedingBotAccountUpdateWithoutTasksInput, SeedingBotAccountUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type SeedingBotAccountUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutAccountsNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotAccountUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type BusinessLocationUpsertWithoutBotTasksInput = {
+    update: XOR<BusinessLocationUpdateWithoutBotTasksInput, BusinessLocationUncheckedUpdateWithoutBotTasksInput>
+    create: XOR<BusinessLocationCreateWithoutBotTasksInput, BusinessLocationUncheckedCreateWithoutBotTasksInput>
+    where?: BusinessLocationWhereInput
+  }
+
+  export type BusinessLocationUpdateToOneWithWhereWithoutBotTasksInput = {
+    where?: BusinessLocationWhereInput
+    data: XOR<BusinessLocationUpdateWithoutBotTasksInput, BusinessLocationUncheckedUpdateWithoutBotTasksInput>
+  }
+
+  export type BusinessLocationUpdateWithoutBotTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryType?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiLocationId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceLinkStatus?: NullableEnumSerpApiLinkStatusFieldUpdateOperationsInput | $Enums.SerpApiLinkStatus | null
+    mapsUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    source?: EnumBusinessLocationSourceFieldUpdateOperationsInput | $Enums.BusinessLocationSource
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    business?: BusinessUpdateOneRequiredWithoutLocationsNestedInput
+    dataSources?: DataSourceUpdateManyWithoutBusinessLocationNestedInput
+    botAssignments?: SeedingBotLocationUpdateManyWithoutBusinessLocationNestedInput
+  }
+
+  export type BusinessLocationUncheckedUpdateWithoutBotTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryType?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiLocationId?: NullableStringFieldUpdateOperationsInput | string | null
+    serpapiPlaceLinkStatus?: NullableEnumSerpApiLinkStatusFieldUpdateOperationsInput | $Enums.SerpApiLinkStatus | null
+    mapsUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    userRatingCount?: NullableIntFieldUpdateOperationsInput | number | null
+    source?: EnumBusinessLocationSourceFieldUpdateOperationsInput | $Enums.BusinessLocationSource
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dataSources?: DataSourceUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botAssignments?: SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationNestedInput
+  }
+
+  export type AnalysisSessionUpsertWithoutBotTasksInput = {
+    update: XOR<AnalysisSessionUpdateWithoutBotTasksInput, AnalysisSessionUncheckedUpdateWithoutBotTasksInput>
+    create: XOR<AnalysisSessionCreateWithoutBotTasksInput, AnalysisSessionUncheckedCreateWithoutBotTasksInput>
+    where?: AnalysisSessionWhereInput
+  }
+
+  export type AnalysisSessionUpdateToOneWithWhereWithoutBotTasksInput = {
+    where?: AnalysisSessionWhereInput
+    data: XOR<AnalysisSessionUpdateWithoutBotTasksInput, AnalysisSessionUncheckedUpdateWithoutBotTasksInput>
+  }
+
+  export type AnalysisSessionUpdateWithoutBotTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    focusProduct?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAnalysisSessionStatusFieldUpdateOperationsInput | $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutAnalysisSessionsNestedInput
+    business?: BusinessUpdateOneRequiredWithoutAnalysisSessionsNestedInput
+    dataSources?: DataSourceUpdateManyWithoutAnalysisSessionNestedInput
+    feedbacks?: CustomerFeedbackUpdateManyWithoutAnalysisSessionNestedInput
+    processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
+    insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
+    strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+  }
+
+  export type AnalysisSessionUncheckedUpdateWithoutBotTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    focusProduct?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAnalysisSessionStatusFieldUpdateOperationsInput | $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dataSources?: DataSourceUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    feedbacks?: CustomerFeedbackUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+  }
+
+  export type StrategyVersionUpsertWithoutBotTasksInput = {
+    update: XOR<StrategyVersionUpdateWithoutBotTasksInput, StrategyVersionUncheckedUpdateWithoutBotTasksInput>
+    create: XOR<StrategyVersionCreateWithoutBotTasksInput, StrategyVersionUncheckedCreateWithoutBotTasksInput>
+    where?: StrategyVersionWhereInput
+  }
+
+  export type StrategyVersionUpdateToOneWithWhereWithoutBotTasksInput = {
+    where?: StrategyVersionWhereInput
+    data: XOR<StrategyVersionUpdateWithoutBotTasksInput, StrategyVersionUncheckedUpdateWithoutBotTasksInput>
+  }
+
+  export type StrategyVersionUpdateWithoutBotTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNo?: IntFieldUpdateOperationsInput | number
+    status?: EnumStrategyVersionStatusFieldUpdateOperationsInput | $Enums.StrategyVersionStatus
+    context?: NullableStringFieldUpdateOperationsInput | string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModel?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
+    activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
+    insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+  }
+
+  export type StrategyVersionUncheckedUpdateWithoutBotTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    strategyId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    versionNo?: IntFieldUpdateOperationsInput | number
+    status?: EnumStrategyVersionStatusFieldUpdateOperationsInput | $Enums.StrategyVersionStatus
+    context?: NullableStringFieldUpdateOperationsInput | string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModel?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
+    insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+  }
+
+  export type SeedingBotActivityLogUpsertWithWhereUniqueWithoutTaskInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    update: XOR<SeedingBotActivityLogUpdateWithoutTaskInput, SeedingBotActivityLogUncheckedUpdateWithoutTaskInput>
+    create: XOR<SeedingBotActivityLogCreateWithoutTaskInput, SeedingBotActivityLogUncheckedCreateWithoutTaskInput>
+  }
+
+  export type SeedingBotActivityLogUpdateWithWhereUniqueWithoutTaskInput = {
+    where: SeedingBotActivityLogWhereUniqueInput
+    data: XOR<SeedingBotActivityLogUpdateWithoutTaskInput, SeedingBotActivityLogUncheckedUpdateWithoutTaskInput>
+  }
+
+  export type SeedingBotActivityLogUpdateManyWithWhereWithoutTaskInput = {
+    where: SeedingBotActivityLogScalarWhereInput
+    data: XOR<SeedingBotActivityLogUpdateManyMutationInput, SeedingBotActivityLogUncheckedUpdateManyWithoutTaskInput>
+  }
+
+  export type SeedingBotCreateWithoutActivityLogsInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutSeedingBotsInput
+    accounts?: SeedingBotAccountCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotUncheckedCreateWithoutActivityLogsInput = {
+    id?: string
+    organizationId: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    accounts?: SeedingBotAccountUncheckedCreateNestedManyWithoutBotInput
+    locations?: SeedingBotLocationUncheckedCreateNestedManyWithoutBotInput
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotInput
+  }
+
+  export type SeedingBotCreateOrConnectWithoutActivityLogsInput = {
+    where: SeedingBotWhereUniqueInput
+    create: XOR<SeedingBotCreateWithoutActivityLogsInput, SeedingBotUncheckedCreateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotAccountCreateWithoutActivityLogsInput = {
+    id?: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutAccountsInput
+    tasks?: SeedingBotTaskCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountUncheckedCreateWithoutActivityLogsInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutBotAccountInput
+  }
+
+  export type SeedingBotAccountCreateOrConnectWithoutActivityLogsInput = {
+    where: SeedingBotAccountWhereUniqueInput
+    create: XOR<SeedingBotAccountCreateWithoutActivityLogsInput, SeedingBotAccountUncheckedCreateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotTaskCreateWithoutActivityLogsInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bot: SeedingBotCreateNestedOneWithoutTasksInput
+    botAccount?: SeedingBotAccountCreateNestedOneWithoutTasksInput
+    businessLocation: BusinessLocationCreateNestedOneWithoutBotTasksInput
+    analysisSession?: AnalysisSessionCreateNestedOneWithoutBotTasksInput
+    strategyVersion?: StrategyVersionCreateNestedOneWithoutBotTasksInput
+  }
+
+  export type SeedingBotTaskUncheckedCreateWithoutActivityLogsInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotTaskCreateOrConnectWithoutActivityLogsInput = {
+    where: SeedingBotTaskWhereUniqueInput
+    create: XOR<SeedingBotTaskCreateWithoutActivityLogsInput, SeedingBotTaskUncheckedCreateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotUpsertWithoutActivityLogsInput = {
+    update: XOR<SeedingBotUpdateWithoutActivityLogsInput, SeedingBotUncheckedUpdateWithoutActivityLogsInput>
+    create: XOR<SeedingBotCreateWithoutActivityLogsInput, SeedingBotUncheckedCreateWithoutActivityLogsInput>
+    where?: SeedingBotWhereInput
+  }
+
+  export type SeedingBotUpdateToOneWithWhereWithoutActivityLogsInput = {
+    where?: SeedingBotWhereInput
+    data: XOR<SeedingBotUpdateWithoutActivityLogsInput, SeedingBotUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutSeedingBotsNestedInput
+    accounts?: SeedingBotAccountUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accounts?: SeedingBotAccountUncheckedUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUncheckedUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotAccountUpsertWithoutActivityLogsInput = {
+    update: XOR<SeedingBotAccountUpdateWithoutActivityLogsInput, SeedingBotAccountUncheckedUpdateWithoutActivityLogsInput>
+    create: XOR<SeedingBotAccountCreateWithoutActivityLogsInput, SeedingBotAccountUncheckedCreateWithoutActivityLogsInput>
+    where?: SeedingBotAccountWhereInput
+  }
+
+  export type SeedingBotAccountUpdateToOneWithWhereWithoutActivityLogsInput = {
+    where?: SeedingBotAccountWhereInput
+    data: XOR<SeedingBotAccountUpdateWithoutActivityLogsInput, SeedingBotAccountUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotAccountUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutAccountsNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotAccountUncheckedUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotTaskUpsertWithoutActivityLogsInput = {
+    update: XOR<SeedingBotTaskUpdateWithoutActivityLogsInput, SeedingBotTaskUncheckedUpdateWithoutActivityLogsInput>
+    create: XOR<SeedingBotTaskCreateWithoutActivityLogsInput, SeedingBotTaskUncheckedCreateWithoutActivityLogsInput>
+    where?: SeedingBotTaskWhereInput
+  }
+
+  export type SeedingBotTaskUpdateToOneWithWhereWithoutActivityLogsInput = {
+    where?: SeedingBotTaskWhereInput
+    data: XOR<SeedingBotTaskUpdateWithoutActivityLogsInput, SeedingBotTaskUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type SeedingBotTaskUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutTasksNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutTasksNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput
+    analysisSession?: AnalysisSessionUpdateOneWithoutBotTasksNestedInput
+    strategyVersion?: StrategyVersionUpdateOneWithoutBotTasksNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrganizationMemberCreateManyUserInput = {
@@ -42321,6 +53775,21 @@ export namespace Prisma {
     updatedAt?: Date | string
     completedAt?: Date | string | null
     archivedAt?: Date | string | null
+  }
+
+  export type SeedingBotCreateManyOrganizationInput = {
+    id?: string
+    name: string
+    displayName: string
+    avatarUrl?: string | null
+    brandVoice?: string | null
+    maturityLevel?: number
+    status?: $Enums.BotStatus
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type OrganizationMemberUpdateWithoutOrganizationInput = {
@@ -42447,6 +53916,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutOrganizationInput = {
@@ -42470,6 +53940,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateManyWithoutOrganizationInput = {
@@ -42488,6 +53959,59 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SeedingBotUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accounts?: SeedingBotAccountUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    accounts?: SeedingBotAccountUncheckedUpdateManyWithoutBotNestedInput
+    locations?: SeedingBotLocationUncheckedUpdateManyWithoutBotNestedInput
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotNestedInput
+  }
+
+  export type SeedingBotUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    brandVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    maturityLevel?: IntFieldUpdateOperationsInput | number
+    status?: EnumBotStatusFieldUpdateOperationsInput | $Enums.BotStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type BusinessLocationCreateManyBusinessInput = {
@@ -42544,6 +54068,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dataSources?: DataSourceUpdateManyWithoutBusinessLocationNestedInput
+    botAssignments?: SeedingBotLocationUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutBusinessLocationNestedInput
   }
 
   export type BusinessLocationUncheckedUpdateWithoutBusinessInput = {
@@ -42564,6 +54090,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dataSources?: DataSourceUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botAssignments?: SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationNestedInput
   }
 
   export type BusinessLocationUncheckedUpdateManyWithoutBusinessInput = {
@@ -42606,6 +54134,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutBusinessInput = {
@@ -42628,6 +54157,7 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateManyWithoutBusinessInput = {
@@ -42656,6 +54186,37 @@ export namespace Prisma {
     totalRecords?: number | null
     validRecords?: number | null
     errorRecords?: number | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotLocationCreateManyBusinessLocationInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotTaskCreateManyBusinessLocationInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -42704,6 +54265,100 @@ export namespace Prisma {
     totalRecords?: NullableIntFieldUpdateOperationsInput | number | null
     validRecords?: NullableIntFieldUpdateOperationsInput | number | null
     errorRecords?: NullableIntFieldUpdateOperationsInput | number | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationUpdateWithoutBusinessLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutLocationsNestedInput
+  }
+
+  export type SeedingBotLocationUncheckedUpdateWithoutBusinessLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationUncheckedUpdateManyWithoutBusinessLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotTaskUpdateWithoutBusinessLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutTasksNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutTasksNestedInput
+    analysisSession?: AnalysisSessionUpdateOneWithoutBotTasksNestedInput
+    strategyVersion?: StrategyVersionUpdateOneWithoutBotTasksNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateWithoutBusinessLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutBusinessLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42791,6 +54446,29 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+  }
+
+  export type SeedingBotTaskCreateManyAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type DataSourceUpdateWithoutAnalysisSessionInput = {
@@ -43064,6 +54742,77 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SeedingBotTaskUpdateWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutTasksNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutTasksNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput
+    strategyVersion?: StrategyVersionUpdateOneWithoutBotTasksNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CustomerFeedbackCreateManyDataSourceInput = {
@@ -43836,6 +55585,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutStrategyInput = {
@@ -43866,6 +55616,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateManyWithoutStrategyInput = {
@@ -43904,6 +55655,29 @@ export namespace Prisma {
     linkedAt?: Date | string
   }
 
+  export type SeedingBotTaskCreateManyStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type StrategyInsightUpdateWithoutStrategyVersionInput = {
     id?: StringFieldUpdateOperationsInput | string
     insightSnapshot?: JsonNullValueInput | InputJsonValue
@@ -43926,6 +55700,472 @@ export namespace Prisma {
     insightSnapshot?: JsonNullValueInput | InputJsonValue
     orderIndex?: IntFieldUpdateOperationsInput | number
     linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotTaskUpdateWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutTasksNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutTasksNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput
+    analysisSession?: AnalysisSessionUpdateOneWithoutBotTasksNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotAccountCreateManyBotInput = {
+    id?: string
+    platform?: $Enums.BotPlatform
+    accountLabel: string
+    profileUrl?: string | null
+    avatarUrl?: string | null
+    accountStatus?: $Enums.BotAccountStatus
+    accountCreatedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotLocationCreateManyBotInput = {
+    id?: string
+    businessId: string
+    businessLocationId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotTaskCreateManyBotInput = {
+    id?: string
+    organizationId: string
+    botAccountId?: string | null
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogCreateManyBotInput = {
+    id?: string
+    organizationId: string
+    botAccountId?: string | null
+    taskId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotAccountUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: SeedingBotTaskUpdateManyWithoutBotAccountNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotAccountUncheckedUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: SeedingBotTaskUncheckedUpdateManyWithoutBotAccountNestedInput
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutBotAccountNestedInput
+  }
+
+  export type SeedingBotAccountUncheckedUpdateManyWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: EnumBotPlatformFieldUpdateOperationsInput | $Enums.BotPlatform
+    accountLabel?: StringFieldUpdateOperationsInput | string
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    accountStatus?: EnumBotAccountStatusFieldUpdateOperationsInput | $Enums.BotAccountStatus
+    accountCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotAssignmentsNestedInput
+  }
+
+  export type SeedingBotLocationUncheckedUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotLocationUncheckedUpdateManyWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotTaskUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    botAccount?: SeedingBotAccountUpdateOneWithoutTasksNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput
+    analysisSession?: AnalysisSessionUpdateOneWithoutBotTasksNestedInput
+    strategyVersion?: StrategyVersionUpdateOneWithoutBotTasksNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    botAccount?: SeedingBotAccountUpdateOneWithoutActivityLogsNestedInput
+    task?: SeedingBotTaskUpdateOneWithoutActivityLogsNestedInput
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotTaskCreateManyBotAccountInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    businessId: string
+    businessLocationId: string
+    analysisSessionId?: string | null
+    strategyVersionId?: string | null
+    taskType?: $Enums.BotTaskType
+    status?: $Enums.BotTaskStatus
+    title: string
+    content?: string | null
+    scheduledAt?: Date | string | null
+    externalRef?: string | null
+    completedBy?: string | null
+    completedAt?: Date | string | null
+    failureReason?: string | null
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogCreateManyBotAccountInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    taskId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotTaskUpdateWithoutBotAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutTasksNestedInput
+    businessLocation?: BusinessLocationUpdateOneRequiredWithoutBotTasksNestedInput
+    analysisSession?: AnalysisSessionUpdateOneWithoutBotTasksNestedInput
+    strategyVersion?: StrategyVersionUpdateOneWithoutBotTasksNestedInput
+    activityLogs?: SeedingBotActivityLogUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateWithoutBotAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: SeedingBotActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type SeedingBotTaskUncheckedUpdateManyWithoutBotAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    businessLocationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    strategyVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskType?: EnumBotTaskTypeFieldUpdateOperationsInput | $Enums.BotTaskType
+    status?: EnumBotTaskStatusFieldUpdateOperationsInput | $Enums.BotTaskStatus
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    externalRef?: NullableStringFieldUpdateOperationsInput | string | null
+    completedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogUpdateWithoutBotAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutActivityLogsNestedInput
+    task?: SeedingBotTaskUpdateOneWithoutActivityLogsNestedInput
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateWithoutBotAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyWithoutBotAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    taskId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogCreateManyTaskInput = {
+    id?: string
+    organizationId: string
+    botId: string
+    botAccountId?: string | null
+    action: string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SeedingBotActivityLogUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bot?: SeedingBotUpdateOneRequiredWithoutActivityLogsNestedInput
+    botAccount?: SeedingBotAccountUpdateOneWithoutActivityLogsNestedInput
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingBotActivityLogUncheckedUpdateManyWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    botId?: StringFieldUpdateOperationsInput | string
+    botAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

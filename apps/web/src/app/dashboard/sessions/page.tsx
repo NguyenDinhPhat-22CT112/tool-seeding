@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import { FileText, Search } from "lucide-react";
-import { useFetchSessions, useCreateSession, useArchiveSession } from "@/hooks/use-sessions";
+import {
+  useFetchSessions,
+  useCreateSession,
+  useArchiveSession,
+  useDeleteSession,
+} from "@/hooks/use-sessions";
 import { useFetchBusinesses } from "@/hooks/use-businesses";
 import { SessionCard } from "@/components/sessions/session-card";
 import { CreateSessionDialog } from "@/components/sessions/create-session-dialog";
@@ -25,21 +31,37 @@ const STATUS_OPTIONS: { value: AnalysisSessionStatus | ""; label: string }[] = [
 ];
 
 export default function SessionsPage() {
+  return (
+    <Suspense fallback={null}>
+      <SessionsPageInner />
+    </Suspense>
+  );
+}
+
+function SessionsPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlBusinessId = searchParams.get("businessId") ?? "";
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<AnalysisSessionStatus | "">("");
+  const [businessFilter, setBusinessFilter] = useState(urlBusinessId);
+  const [archiveSessionId, setArchiveSessionId] = useState<string | null>(null);
   const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
 
   const { data, isLoading } = useFetchSessions({
     keyword: keyword || undefined,
     status: statusFilter || undefined,
+    businessId: businessFilter || undefined,
   });
   const { data: businessesData } = useFetchBusinesses();
   const createMutation = useCreateSession();
   const archiveMutation = useArchiveSession();
+  const deleteMutation = useDeleteSession();
 
   const sessions = data?.items || [];
   const businesses = businessesData?.items || [];
+  const archiveTarget = sessions.find((s) => s.id === archiveSessionId);
   const deleteTarget = sessions.find((s) => s.id === deleteSessionId);
 
   const handleCreate = async (formData: {
@@ -55,10 +77,21 @@ export default function SessionsPage() {
     setShowCreateDialog(false);
   };
 
+  const handleBusinessChange = (value: string) => {
+    setBusinessFilter(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("businessId", value);
+    } else {
+      params.delete("businessId");
+    }
+    router.replace(`/dashboard/sessions?${params.toString()}`);
+  };
+
   const inputClass =
     "w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent";
 
-  if (sessions.length === 0 && !isLoading && !keyword && !statusFilter) {
+  if (sessions.length === 0 && !isLoading && !keyword && !statusFilter && !businessFilter) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -109,6 +142,18 @@ export default function SessionsPage() {
           />
         </div>
         <select
+          value={businessFilter}
+          onChange={(e) => handleBusinessChange(e.target.value)}
+          className={`${inputClass} sm:w-64`}
+        >
+          <option value="">Tất cả doanh nghiệp</option>
+          {businesses.map((business) => (
+            <option key={business.id} value={business.id}>
+              {business.name}
+            </option>
+          ))}
+        </select>
+        <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as AnalysisSessionStatus | "")}
           className={`${inputClass} sm:w-56`}
@@ -134,8 +179,10 @@ export default function SessionsPage() {
               <SessionCard
                 key={session.id}
                 session={session}
+                onArchive={(id) => setArchiveSessionId(id)}
                 onDelete={(id) => setDeleteSessionId(id)}
-                isDeletingId={archiveMutation.isPending ? deleteSessionId || undefined : undefined}
+                isArchiveId={archiveMutation.isPending ? archiveSessionId || undefined : undefined}
+                isDeletingId={deleteMutation.isPending ? deleteSessionId || undefined : undefined}
               />
             ))}
       </div>
@@ -155,17 +202,37 @@ export default function SessionsPage() {
       />
 
       <DeleteConfirmDialog
-        isOpen={!!deleteSessionId}
+        isOpen={!!archiveSessionId}
         title="Lưu trữ đợt phân tích"
         description={
-          deleteTarget
-            ? `Bạn có chắc chắn muốn lưu trữ đợt phân tích "${deleteTarget.name}"? Đợt phân tích sẽ chuyển sang trạng thái đã lưu trữ.`
+          archiveTarget
+            ? `Bạn có chắc chắn muốn lưu trữ đợt phân tích "${archiveTarget.name}"? Đợt phân tích sẽ chuyển sang trạng thái đã lưu trữ.`
             : "Bạn có chắc chắn muốn lưu trữ đợt phân tích này?"
         }
+        confirmLabel="Lưu trữ"
+        loadingLabel="Đang lưu trữ..."
         isLoading={archiveMutation.isPending}
         onConfirm={async () => {
+          if (archiveSessionId) {
+            await archiveMutation.mutateAsync(archiveSessionId);
+            setArchiveSessionId(null);
+          }
+        }}
+        onCancel={() => setArchiveSessionId(null)}
+      />
+
+      <DeleteConfirmDialog
+        isOpen={!!deleteSessionId}
+        title="Xóa đợt phân tích"
+        description={
+          deleteTarget
+            ? `Bạn có chắc chắn muốn xóa vĩnh viễn đợt phân tích "${deleteTarget.name}"? Toàn bộ dữ liệu (feedback, insight, chiến lược) sẽ bị xóa. Hành động này không thể hoàn tác.`
+            : "Bạn có chắc chắn muốn xóa vĩnh viễn đợt phân tích này? Hành động này không thể hoàn tác."
+        }
+        isLoading={deleteMutation.isPending}
+        onConfirm={async () => {
           if (deleteSessionId) {
-            await archiveMutation.mutateAsync(deleteSessionId);
+            await deleteMutation.mutateAsync(deleteSessionId);
             setDeleteSessionId(null);
           }
         }}

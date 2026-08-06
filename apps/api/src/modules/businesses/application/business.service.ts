@@ -208,4 +208,22 @@ export class BusinessService {
       return BusinessMapper.toDetail(updated!);
     });
   }
+
+  // ---------------------------------------------------------------------
+  // DeleteBusiness — xóa vĩnh viễn (cascade toàn bộ dữ liệu con, không khôi phục)
+  // ---------------------------------------------------------------------
+  async delete(
+    ctx: RequestContext,
+    id: string,
+  ): Promise<BusinessDetailResponse> {
+    this.policy.assertCanDelete(ctx);
+    return this.prisma.$transaction(async (tx) => {
+      const business = await this.repo.findByIdWithLock(id, ctx.organizationId, tx);
+      if (!business) {
+        throw new ResourceNotFoundError("doanh nghiệp", id);
+      }
+      await this.repo.hardDelete(id, ctx.organizationId, tx);
+      return BusinessMapper.toDetail(business);
+    });
+  }
 }

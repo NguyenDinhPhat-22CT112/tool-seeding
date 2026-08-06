@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -163,6 +164,22 @@ export class AnalysisSessionsController {
   @ApiBadRequestResponse({ type: ApiErrorResponseDto })
   archive(@Ctx() ctx: RequestContext, @Param("id", ResourceIdPipe) id: string) {
     return this.service.archive(ctx, id);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Xoá vĩnh viễn đợt phân tích (cascade toàn bộ dữ liệu liên quan)" })
+  @ApiOkResponse({ type: AnalysisSessionDetailResponse })
+  @ApiNotFoundResponse({
+    type: ApiErrorResponseDto,
+    description: "Không tìm thấy đợt phân tích",
+  })
+  @ApiForbiddenResponse({
+    type: ApiErrorResponseDto,
+    description: "Chỉ Org Admin được xóa",
+  })
+  delete(@Ctx() ctx: RequestContext, @Param("id", ResourceIdPipe) id: string) {
+    return this.service.delete(ctx, id);
   }
 }
 

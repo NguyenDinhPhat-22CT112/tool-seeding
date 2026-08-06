@@ -5,6 +5,7 @@ import { AnalysisSessionStatus } from "@/lib/types";
 
 interface SessionActionsProps {
   status: AnalysisSessionStatus;
+  feedbackCount?: number;
   onStartDataCollection?: () => void;
   onProcess?: () => void;
   onGenerateInsights?: () => void;
@@ -16,9 +17,9 @@ interface SessionActionsProps {
 
 const STAGE_ACTIONS: Record<
   AnalysisSessionStatus,
-  { label: string; handler: keyof Omit<SessionActionsProps, "status" | "isLoading">; stageLabel: string } | null
+  { label: string; handler: keyof Omit<SessionActionsProps, "status" | "isLoading" | "feedbackCount">; stageLabel: string } | null
 > = {
-  DRAFT: { label: "Bắt đầu thu thập dữ liệu", handler: "onStartDataCollection", stageLabel: "Giai đoạn 1/6" },
+  DRAFT: { label: "Thu thập đánh giá ngay", handler: "onStartDataCollection", stageLabel: "Giai đoạn 1/6" },
   DATA_COLLECTION: { label: "Xử lý dữ liệu", handler: "onProcess", stageLabel: "Giai đoạn 2/6" },
   PROCESSING: null,
   ANALYZING: { label: "Tạo insights", handler: "onGenerateInsights", stageLabel: "Giai đoạn 4/6" },
@@ -30,6 +31,7 @@ const STAGE_ACTIONS: Record<
 
 export function SessionActions({
   status,
+  feedbackCount = 0,
   onStartDataCollection,
   onProcess,
   onGenerateInsights,
@@ -51,7 +53,7 @@ export function SessionActions({
       <div className="rounded-lg border border-border bg-muted/40 px-4 py-3">
         <p className="text-sm font-medium text-foreground">Pipeline đang xử lý dữ liệu...</p>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Hệ thống đang chạy các công việc (thu thập, chuẩn hoá, phân tích AI). Xem tab &quot;Công việc&quot; để theo dõi tiến độ.
+          Hệ thống đang chạy các công việc (chuẩn hoá, loại trùng, phân tích AI). Xem tab &quot;Công việc&quot; để theo dõi tiến độ.
         </p>
       </div>
     );
@@ -71,13 +73,37 @@ export function SessionActions({
 
   const handler = handlers[action.handler];
 
+  // Bước 2 (DATA_COLLECTION) = thu thập feedback. Chặn xử lý khi chưa có dữ liệu.
+  const isDataCollection = status === "DATA_COLLECTION";
+  const blockedNoData = isDataCollection && feedbackCount === 0;
+
   return (
     <div className="flex flex-col gap-2">
+      {blockedNoData && (
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3">
+          <p className="text-sm font-medium text-foreground">
+            Chưa có dữ liệu đánh giá nào
+          </p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Hãy vào tab &quot;Thu thập đánh giá&quot; bên dưới, bấm <b>Cào đánh giá</b> cho địa điểm
+            của doanh nghiệp để thu về feedback trước khi xử lý.
+          </p>
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-muted-foreground">{action.stageLabel}</span>
+        {isDataCollection && (
+          <span className="text-xs text-muted-foreground">
+            ({feedbackCount} phản hồi đã thu thập)
+          </span>
+        )}
       </div>
       <div className="flex gap-2">
-        <Button onClick={handler} disabled={isLoading || !handler} className="flex-1">
+        <Button
+          onClick={handler}
+          disabled={isLoading || !handler || blockedNoData}
+          className="flex-1"
+        >
           {isLoading ? "Đang xử lý..." : action.label}
         </Button>
       </div>

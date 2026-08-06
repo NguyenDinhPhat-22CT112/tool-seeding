@@ -365,4 +365,81 @@ export class PrismaBusinessRepository implements BusinessRepository {
     });
     return toLocationEntity(row);
   }
+
+  async hardDelete(
+    id: string,
+    organizationId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+
+    // Bot gán/task tham chiếu tới địa điểm (FK Restrict) — phải xóa trước location.
+    // Bảng seeding_bot_* chưa được migrate vào DB nên phải kiểm tra trước khi xóa.
+    if (await tableExists(client, "seeding_bot_tasks")) {
+      await client.seedingBotTask.deleteMany({ where: { businessId: id } });
+    }
+    if (await tableExists(client, "seeding_bot_locations")) {
+      await client.seedingBotLocation.deleteMany({ where: { businessId: id } });
+    }
+
+    // Cascade toàn bộ session của doanh nghiệp.
+    const sessions = await client.analysisSession.findMany({
+      where: { businessId: id, organizationId },
+      select: { id: true },
+    });
+    for (const session of sessions) {
+      await hardDeleteSessionCascade(client, session.id);
+    }
+
+    await client.businessLocation.deleteMany({
+      where: { businessId: id, organizationId },
+    });
+    await client.business.deleteMany({ where: { id, organizationId } });
+  }
+}
+
+/**
+ * Xóa sạch mọi dữ liệu con của một AnalysisSession theo thứ tự FK (không có CASCADE cấp DB).
+ * Cùng thứ tự với PrismaAnalysisSessionRepository.hardDelete.
+ */
+export async function hardDeleteSessionCascade(
+  client: Prisma.TransactionClient,
+  sessionId: string,
+): Promise<void> {
+  await client.insightReviewLog.deleteMany({ where: { analysisSessionId: sessionId } });
+  await client.strategyInsight.deleteMany({ where: { analysisSessionId: sessionId } });
+  await client.insight.deleteMany({ where: { analysisSessionId: sessionId } });
+
+  await client.strategy.updateMany({
+    where: { analysisSessionId: sessionId },
+    data: { currentVersionId: null },
+  });
+  await client.strategyVersion.deleteMany({ where: { analysisSessionId: sessionId } });
+  await client.strategy.deleteMany({ where: { analysisSessionId: sessionId } });
+
+  await client.customerFeedback.updateMany({
+    where: { analysisSessionId: sessionId },
+    data: { duplicateOfId: null },
+  });
+  await client.customerFeedback.deleteMany({ where: { analysisSessionId: sessionId } });
+
+  await client.processingJob.deleteMany({ where: { analysisSessionId: sessionId } });
+  await client.importBatch.deleteMany({
+    where: { dataSource: { analysisSessionId: sessionId } },
+  });
+  await client.dataSource.deleteMany({ where: { analysisSessionId: sessionId } });
+  await client.analysisSession.deleteMany({ where: { id: sessionId } });
+}
+
+/**
+ * Kiểm tra bảng có tồn tại trong DB hay không (SeedingBot tables chưa được migrate).
+ */
+async function tableExists(
+  client: Prisma.TransactionClient,
+  table: string,
+): Promise<boolean> {
+  const rows = await client.$queryRawUnsafe<Array<{ t: boolean }>>(
+    `SELECT (to_regclass('public.${table}') IS NOT NULL) AS t`,
+  );
+  return rows[0]?.t ?? false;
 }

@@ -136,6 +136,7 @@ export class FeedbackAnalysisProcessor {
       if (i % 10 === 0 || i === total - 1) {
         const progress = total > 0 ? Math.round(((i + 1) / total) * 100) : 100;
         await job.updateProgress(progress);
+        await this.jobRepo.updateProgress(processingJobId, progress);
       }
     }
 

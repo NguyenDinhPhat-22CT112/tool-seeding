@@ -318,4 +318,19 @@ export class PrismaInsightRepository implements InsightRepository {
     const client = tx ?? this.prisma;
     await client.insightReviewLog.create({ data: log });
   }
+
+  async hardDelete(
+    id: string,
+    analysisSessionId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.insightReviewLog.deleteMany({
+      where: { insightId: id, analysisSessionId },
+    });
+    await client.strategyInsight.deleteMany({
+      where: { insightId: id, analysisSessionId },
+    });
+    await client.insight.deleteMany({ where: { id, analysisSessionId } });
+  }
 }

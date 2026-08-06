@@ -105,8 +105,8 @@ export class AnalysisSessionService {
     });
 
     return {
-      items: result.items.map(({ session, feedbackCount }) =>
-        AnalysisSessionMapper.toListItem(session, feedbackCount),
+      items: result.items.map(({ session, feedbackCount, businessName }) =>
+        AnalysisSessionMapper.toListItem(session, feedbackCount, businessName),
       ),
       total: result.total,
       page: result.page,
@@ -328,5 +328,20 @@ export class AnalysisSessionService {
         "dateFrom phải nhỏ hơn hoặc bằng dateTo",
       );
     }
+  }
+
+  async delete(
+    ctx: RequestContext,
+    id: string,
+  ): Promise<AnalysisSessionDetailResponse> {
+    this.policy.assertCanDelete(ctx);
+    const session = await this.repo.findByIdInOrg(id, ctx.organizationId);
+    if (!session) {
+      throw new ResourceNotFoundError("đợt phân tích", id);
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await this.repo.hardDelete(id, ctx.organizationId, tx);
+    });
+    return AnalysisSessionMapper.toDetail(session, 0);
   }
 }

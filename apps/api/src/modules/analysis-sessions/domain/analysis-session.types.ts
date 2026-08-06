@@ -76,6 +76,7 @@ export type Paginated<T> = PaginatedResponse<T>;
 export interface AnalysisSessionListRecord {
   session: AnalysisSessionEntity;
   feedbackCount: number;
+  businessName: string;
 }
 
 export interface AnalysisSessionRepository {
@@ -128,6 +129,13 @@ export interface AnalysisSessionRepository {
   countFeedbacks(sessionId: string, organizationId: string): Promise<number>;
 
   businessExistsInOrg(businessId: string, organizationId: string): Promise<boolean>;
+
+  /** Xóa vĩnh viễn session + cascade sạch toàn bộ dữ liệu con (insight, feedback, strategy, ...). */
+  hardDelete(
+    id: string,
+    organizationId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void>;
 }
 
 export const ANALYSIS_SESSION_REPOSITORY = Symbol("ANALYSIS_SESSION_REPOSITORY");

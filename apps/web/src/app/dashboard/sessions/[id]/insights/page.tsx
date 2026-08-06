@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useFetchInsights, useArchiveInsight } from "@/hooks/use-insights";
+import {
+  useFetchInsights,
+  useArchiveInsight,
+  useDeleteInsight,
+} from "@/hooks/use-insights";
 import { useFetchSession } from "@/hooks/use-sessions";
 import { InsightCard } from "@/components/insights/insight-card";
 import { EmptyState } from "@/components/common/empty-state";
@@ -37,6 +41,7 @@ export default function InsightsPage() {
   const [statusFilter, setStatusFilter] = useState<InsightStatus | "">("");
   const [originFilter, setOriginFilter] = useState("");
   const [archiveTarget, setArchiveTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const { data: sessionData } = useFetchSession(sessionId);
   const { data, isLoading } = useFetchInsights(sessionId, {
@@ -44,6 +49,7 @@ export default function InsightsPage() {
     origin: originFilter || undefined,
   });
   const archiveMutation = useArchiveInsight(sessionId);
+  const deleteMutation = useDeleteInsight(sessionId);
 
   const canManageInsights = ARCHIVABLE_SESSION_STATUSES.includes(
     sessionData?.status || "",
@@ -51,6 +57,7 @@ export default function InsightsPage() {
 
   const insights = data?.items || [];
   const archiveTargetInsight = insights.find((i) => i.id === archiveTarget);
+  const deleteTargetInsight = insights.find((i) => i.id === deleteTarget);
 
   const filteredInsights = insights.filter(
     (insight) =>
@@ -148,8 +155,10 @@ export default function InsightsPage() {
                 key={insight.id}
                 insight={insight}
                 sessionId={sessionId}
-                onDelete={(id) => setArchiveTarget(id)}
-                isDeletingId={archiveMutation.isPending ? archiveTarget || undefined : undefined}
+                onArchive={(id) => setArchiveTarget(id)}
+                onDelete={(id) => setDeleteTarget(id)}
+                isArchivingId={archiveMutation.isPending ? archiveTarget || undefined : undefined}
+                isDeletingId={deleteMutation.isPending ? deleteTarget || undefined : undefined}
                 canManage={canManageInsights}
               />
             ))}
@@ -169,6 +178,8 @@ export default function InsightsPage() {
             ? `Bạn có chắc chắn muốn lưu trữ insight "${archiveTargetInsight.title}"?`
             : "Bạn có chắc chắn muốn lưu trữ insight này?"
         }
+        confirmLabel="Lưu trữ"
+        loadingLabel="Đang lưu trữ..."
         isLoading={archiveMutation.isPending}
         onConfirm={async () => {
           if (archiveTarget) {
@@ -177,6 +188,24 @@ export default function InsightsPage() {
           }
         }}
         onCancel={() => setArchiveTarget(null)}
+      />
+
+      <DeleteConfirmDialog
+        isOpen={!!deleteTarget}
+        title="Xóa insight"
+        description={
+          deleteTargetInsight
+            ? `Bạn có chắc chắn muốn xóa vĩnh viễn insight "${deleteTargetInsight.title}"? Toàn bộ bằng chứng và lịch sử duyệt sẽ bị xóa. Hành động này không thể hoàn tác.`
+            : "Bạn có chắc chắn muốn xóa vĩnh viễn insight này? Hành động này không thể hoàn tác."
+        }
+        isLoading={deleteMutation.isPending}
+        onConfirm={async () => {
+          if (deleteTarget) {
+            await deleteMutation.mutateAsync(deleteTarget);
+            setDeleteTarget(null);
+          }
+        }}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );

@@ -85,8 +85,8 @@ export function SessionProgress({ status, className = "" }: SessionProgressProps
 
 export function getNextAction(status: AnalysisSessionStatus): string {
   const actions: Record<AnalysisSessionStatus, string> = {
-    DRAFT: "Bắt đầu thu thập dữ liệu",
-    DATA_COLLECTION: "Xử lý dữ liệu",
+    DRAFT: "Bắt đầu giai đoạn thu thập đánh giá",
+    DATA_COLLECTION: "Xử lý dữ liệu đã thu thập",
     PROCESSING: "Đang xử lý dữ liệu",
     ANALYZING: "Tạo insights",
     INSIGHT_REVIEW: "Tạo chiến lược",

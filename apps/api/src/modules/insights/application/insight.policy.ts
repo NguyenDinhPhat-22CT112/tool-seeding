@@ -50,4 +50,14 @@ export class InsightPolicy {
       );
     }
   }
+
+  canDelete(ctx: RequestContext): boolean {
+    return ctx.role === "ORG_ADMIN";
+  }
+
+  assertCanDelete(ctx: RequestContext): void {
+    if (!this.canDelete(ctx)) {
+      throw new ForbiddenActionError("Chỉ Org Admin được xóa insight");
+    }
+  }
 }

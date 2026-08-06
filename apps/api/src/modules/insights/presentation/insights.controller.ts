@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -205,5 +206,19 @@ export class InsightsController {
     @Body() dto: SplitInsightDto,
   ) {
     return this.service.split(ctx, sessionId, id, dto);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Xoá vĩnh viễn insight (cascade evidences, logs, strategy links)" })
+  @ApiOkResponse({ type: InsightResponse })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto })
+  @ApiForbiddenResponse({ type: ApiErrorResponseDto, description: "Chỉ Org Admin được xóa" })
+  delete(
+    @Ctx() ctx: RequestContext,
+    @Param("sessionId", ResourceIdPipe) sessionId: string,
+    @Param("id", ResourceIdPipe) id: string,
+  ) {
+    return this.service.delete(ctx, sessionId, id);
   }
 }

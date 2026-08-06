@@ -131,6 +131,9 @@ export class AnalysisSessionListItemResponse
   @ApiProperty()
   businessId!: string;
 
+  @ApiProperty()
+  businessName!: string;
+
   @ApiPropertyOptional({ nullable: true })
   objective!: string | null;
 
@@ -262,11 +265,13 @@ export class AnalysisSessionMapper {
   static toListItem(
     entity: AnalysisSessionEntity,
     feedbackCount: number,
+    businessName: string,
   ): AnalysisSessionListItemResponse {
     return {
       id: entity.id,
       name: entity.name,
       businessId: entity.businessId,
+      businessName,
       objective: entity.objective,
       status: entity.status,
       feedbackCount,

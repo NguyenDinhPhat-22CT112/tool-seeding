@@ -43,7 +43,12 @@ export function useFetchProcessingJobs(
       );
     },
     enabled: !!orgId,
-    staleTime: 30 * 1000,
+    staleTime: 5 * 1000,
+    refetchInterval: (query) => {
+      const jobs = query.state.data?.items ?? [];
+      const hasActive = jobs.some((j) => j.status === "PENDING" || j.status === "RUNNING");
+      return hasActive ? 3000 : false;
+    },
   });
 }
 

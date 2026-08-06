@@ -180,6 +180,13 @@ export interface BusinessRepository {
     tx?: Prisma.TransactionClient,
   ): Promise<BusinessEntity | null>;
 
+  /** Xóa vĩnh viễn doanh nghiệp + cascade sạch toàn bộ dữ liệu con (session, insight, feedback, ...). */
+  hardDelete(
+    id: string,
+    organizationId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void>;
+
   createWithLocation(
     business: CreateBusinessData,
     location: Omit<CreateBusinessLocationData, "businessId">,

@@ -156,12 +156,12 @@ export class BusinessesController {
 
   @Delete(":id")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Xoá doanh nghiệp" })
+  @ApiOperation({ summary: "Xoá vĩnh viễn doanh nghiệp (cascade toàn bộ dữ liệu liên quan)" })
   @ApiOkResponse({ type: BusinessDetailResponse })
   @ApiNotFoundResponse({ type: ApiErrorResponseDto })
   @ApiForbiddenResponse({ type: ApiErrorResponseDto })
   delete(@Ctx() ctx: RequestContext, @Param("id", ResourceIdPipe) id: string) {
-    return this.service.deactivate(ctx, id);
+    return this.service.delete(ctx, id);
   }
 
   // -------------------------------------------------------------------

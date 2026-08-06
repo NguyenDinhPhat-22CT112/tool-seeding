@@ -436,7 +436,7 @@ curl -X POST http://localhost:4000/api/analysis-sessions/session_xyz123/process 
 **Pipeline sẽ chạy tuần tự:**
 1. ✅ **Normalization** (1-2 phút) - Clean text, tạo hash
 2. ✅ **Deduplication** (30s-1m) - Mark duplicates
-3. ✅ **AI Feedback Analysis** (10-20 phút với Ollama) - Phân tích từng feedback
+3. ✅ **AI Feedback Analysis** (10-20 phút với Groq) - Phân tích từng feedback
 
 **State sau pipeline hoàn thành:** `ANALYZING`
 
@@ -823,8 +823,8 @@ curl -X POST http://localhost:4000/api/processing-jobs/job_abc123/cancel \
 | Crawl Reviews | 2-5 phút | SerpAPI |
 | Normalization | 1-2 phút | Logic |
 | Deduplication | 30s-1 phút | Logic |
-| **Feedback Analysis** | **10-20 phút** | **Ollama (qwen2.5:3b)** |
-| **Insight Generation** | **2-5 phút** | **DeepSeek API** |
+| **Feedback Analysis** | **10-20 phút** | **Groq (llama-3.3-70b)** |
+| **Insight Generation** | **2-5 phút** | **Groq (llama-3.3-70b)** |
 | Review Insights | Manual | User |
 | **Strategy Generation** | **2-5 phút** | **DeepSeek API** |
 | **TOTAL** | **~20-40 phút** | |
@@ -881,8 +881,8 @@ tail -f worker-*.log | grep -E "completed|provider|model|Duration"
 ### 4. Check AI Provider Config
 ```bash
 # In worker .env
-echo $AI_PROVIDER  # Should be: ollama
-echo $AI_INSIGHT_STRATEGY_PROVIDER  # Should be: deepseek
+echo $AI_PROVIDER  # Should be: groq
+echo $AI_INSIGHT_STRATEGY_PROVIDER  # Should be: groq
 ```
 
 ---

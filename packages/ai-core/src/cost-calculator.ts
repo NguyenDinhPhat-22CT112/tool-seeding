@@ -1,7 +1,7 @@
 const PRICING: Record<string, { input: number; output: number }> = {
-  "gpt-4o-mini": { input: 0.15 / 1_000_000, output: 0.6 / 1_000_000 },
-  "gpt-4o": { input: 2.5 / 1_000_000, output: 10.0 / 1_000_000 },
   "gemini-2.0-flash": { input: 0.1 / 1_000_000, output: 0.4 / 1_000_000 },
+  "llama-3.3-70b-versatile": { input: 0.59 / 1_000_000, output: 0.79 / 1_000_000 },
+  "openai/gpt-oss-20b": { input: 0.075 / 1_000_000, output: 0.3 / 1_000_000 },
 };
 
 export function calculateAICost(

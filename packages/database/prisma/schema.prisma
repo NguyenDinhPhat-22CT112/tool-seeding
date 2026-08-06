@@ -154,6 +154,32 @@ enum JobStatus {
   CANCELLED
 }
 
+enum BotPlatform {
+  GOOGLE_MAPS
+}
+
+enum BotStatus {
+  ACTIVE
+  PAUSED
+  DISABLED
+}
+
+enum BotAccountStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum BotTaskType {
+  REVIEW_SEEDING
+}
+
+enum BotTaskStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 // =============================================================================
 // NHÓM 1: IDENTITY
 // =============================================================================
@@ -193,6 +219,7 @@ model Organization {
   members          OrganizationMember[]
   businesses       Business[]
   analysisSessions AnalysisSession[]
+  seedingBots      SeedingBot[]
 
   @@map("organizations")
 }
@@ -298,6 +325,8 @@ model BusinessLocation {
   // Relations
   business    Business     @relation(fields: [businessId, organizationId], references: [id, organizationId], onDelete: Restrict)
   dataSources DataSource[]
+  botAssignments SeedingBotLocation[]
+  botTasks     SeedingBotTask[]
 
   @@unique([id, businessId])
   @@index([organizationId])
@@ -353,6 +382,7 @@ model AnalysisSession {
   processingJobs ProcessingJob[]
   insights       Insight[]
   strategies     Strategy[]
+  botTasks       SeedingBotTask[]
 
   @@unique([id, businessId])
   @@index([organizationId])
@@ -677,6 +707,7 @@ model StrategyVersion {
   strategy          Strategy          @relation("StrategyVersions", fields: [strategyId, analysisSessionId], references: [id, analysisSessionId], onDelete: Cascade)
   activeForStrategy Strategy?         @relation("CurrentStrategyVersion")
   insights          StrategyInsight[]
+  botTasks          SeedingBotTask[]
 
   @@unique([strategyId, versionNo])
   @@unique([id, strategyId])
@@ -734,4 +765,153 @@ model AIUsageLog {
   @@index([provider, model])
   @@index([requestedAt])
   @@map("ai_usage_logs")
+}
+
+// =============================================================================
+// NHÓM 8: BOT SEEDING
+// =============================================================================
+
+/// Nhân thân seeding (persona) – đại diện một "người" xuất hiện trên nền tảng.
+/// Bot là một persona có thể sở hữu nhiều tài khoản (SeedingBotAccount).
+/// KHÔNG lưu credential (mật khẩu/token) – chỉ lưu thông tin định danh an toàn.
+model SeedingBot {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String // tên hiện thân (persona)
+  displayName    String // tên hiển thị
+  avatarUrl      String?
+  brandVoice     String? // giọng văn đặc trưng khi seeding
+  maturityLevel  Int          @default(1) // mức độ "nuôi" 1-5
+  status         BotStatus    @default(ACTIVE)
+  notes          String?
+  createdBy      String?      @default("SYSTEM")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  // Relations
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  accounts     SeedingBotAccount[]
+  locations    SeedingBotLocation[]
+  tasks        SeedingBotTask[]
+  activityLogs SeedingBotActivityLog[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId])
+  @@index([status])
+  @@map("seeding_bots")
+}
+
+/// Tài khoản nền tảng của một bot. Chỉ lưu thông tin an toàn (email/handle, link profile)
+/// – tuyệt đối không lưu mật khẩu, token hay session.
+model SeedingBotAccount {
+  id               String            @id @default(cuid())
+  organizationId   String
+  botId            String
+  platform         BotPlatform       @default(GOOGLE_MAPS)
+  accountLabel     String // email tài khoản / handle – định danh an toàn
+  profileUrl       String?
+  avatarUrl        String?
+  accountStatus    BotAccountStatus  @default(ACTIVE)
+  accountCreatedAt DateTime? // thời điểm "nuôi" tài khoản
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  // Relations
+  bot          SeedingBot           @relation(fields: [botId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  tasks        SeedingBotTask[]
+  activityLogs SeedingBotActivityLog[]
+
+  @@unique([botId, platform, accountLabel])
+  @@unique([id, organizationId])
+  @@index([organizationId])
+  @@index([botId])
+  @@map("seeding_bot_accounts")
+}
+
+/// Gán bot (persona) phụ trách một địa điểm của doanh nghiệp
+model SeedingBotLocation {
+  id                 String   @id @default(cuid())
+  organizationId     String
+  botId              String
+  businessId         String
+  businessLocationId String
+  isPrimary          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  // Relations
+  bot              SeedingBot       @relation(fields: [botId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  businessLocation BusinessLocation @relation(fields: [businessLocationId, businessId], references: [id, businessId], onDelete: Restrict)
+
+  @@unique([botId, businessLocationId])
+  @@index([organizationId])
+  @@index([businessId])
+  @@index([businessLocationId])
+  @@map("seeding_bot_locations")
+}
+
+/// Nhiệm vụ seeding của một bot tại một địa điểm. Được sinh từ chiến lược đã duyệt
+/// hoặc tạo thủ công; người vận hành đăng nội dung và đánh dấu hoàn thành.
+model SeedingBotTask {
+  id                 String         @id @default(cuid())
+  organizationId     String
+  botId              String
+  botAccountId       String?
+  businessId         String
+  businessLocationId String
+  analysisSessionId  String?
+  strategyVersionId  String?
+  taskType           BotTaskType    @default(REVIEW_SEEDING)
+  status             BotTaskStatus  @default(PENDING)
+  title              String
+  content            String? // nội dung review gợi ý
+  scheduledAt        DateTime?
+  externalRef        String? // link review sau khi đăng thủ công
+  completedBy        String?
+  completedAt        DateTime?
+  failureReason      String?
+  notes              String?
+  createdBy          String?        @default("SYSTEM")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  // Relations
+  bot              SeedingBot         @relation(fields: [botId], references: [id], onDelete: Restrict)
+  botAccount       SeedingBotAccount? @relation(fields: [botAccountId], references: [id], onDelete: SetNull)
+  businessLocation BusinessLocation   @relation(fields: [businessLocationId], references: [id], onDelete: Restrict)
+  analysisSession  AnalysisSession?   @relation(fields: [analysisSessionId], references: [id], onDelete: SetNull)
+  strategyVersion  StrategyVersion?   @relation(fields: [strategyVersionId], references: [id], onDelete: SetNull)
+  activityLogs     SeedingBotActivityLog[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId])
+  @@index([botId])
+  @@index([botAccountId])
+  @@index([status])
+  @@index([analysisSessionId])
+  @@map("seeding_bot_tasks")
+}
+
+/// Log append-only cho toàn bộ vòng đời bot và nhiệm vụ
+model SeedingBotActivityLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  botId          String
+  botAccountId   String?
+  taskId         String?
+  action         String // BOT_CREATED, ACCOUNT_ADDED, LOCATION_ASSIGNED, TASK_ASSIGNED, TASK_COMPLETED, ...
+  detail         Json?
+  createdAt      DateTime @default(now())
+
+  // Relations
+  bot        SeedingBot         @relation(fields: [botId], references: [id], onDelete: Cascade)
+  botAccount SeedingBotAccount? @relation(fields: [botAccountId], references: [id], onDelete: SetNull)
+  task       SeedingBotTask?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([botId])
+  @@index([taskId])
+  @@index([createdAt])
+  @@map("seeding_bot_activity_logs")
 }

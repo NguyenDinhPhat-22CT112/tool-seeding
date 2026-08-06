@@ -35,7 +35,7 @@ export const serpApiConfig = registerAs("serpApi", (): SerpApiConfig => ({
     autocompleteMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_AUTOCOMPLETE_MONTHLY_LIMIT, 8000),
     autocompleteOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_AUTOCOMPLETE_ORG_MONTHLY_LIMIT, 200),
     placeDetailsMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_MONTHLY_LIMIT, 800),
-    placeDetailsOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_ORG_MONTHLY_LIMIT, 20),
+    placeDetailsOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_ORG_MONTHLY_LIMIT, 50),
     reviewsMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_REVIEWS_MONTHLY_LIMIT, 1000),
     reviewsOrgMonthlyLimit: parsePositiveInteger(process.env.SERPAPI_REVIEWS_ORG_MONTHLY_LIMIT, 50),
 }));

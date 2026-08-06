@@ -9,14 +9,14 @@ export class AIProviderFactory {
 
   create(): AIProvider {
     return createAIProvider({
-      provider: this.config.get<string>("ai.provider", "openai"),
-      openai: {
-        apiKey: this.config.get<string>("ai.openai.apiKey"),
-        model: this.config.get<string>("ai.openai.model", "gpt-4o-mini"),
-      },
+      provider: this.config.get<string>("ai.provider", "groq"),
       gemini: {
         apiKey: this.config.get<string>("ai.gemini.apiKey"),
         model: this.config.get<string>("ai.gemini.model", "gemini-2.0-flash"),
+      },
+      groq: {
+        apiKey: this.config.get<string>("ai.groq.apiKey"),
+        model: this.config.get<string>("ai.groq.model", "openai/gpt-oss-20b"),
       },
     });
   }

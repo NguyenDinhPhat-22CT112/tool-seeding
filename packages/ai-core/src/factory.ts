@@ -1,24 +1,25 @@
 import type { AIProvider } from "./ai-provider.interface";
-import { createOpenAIProvider } from "./providers/openai-provider";
 import { createGeminiProvider } from "./providers/gemini-provider";
-import { createOllamaProvider } from "./providers/ollama-provider";
+import { createGroqProvider } from "./providers/groq-provider";
 import { createDeepSeekProvider } from "./providers/deepseek-provider";
 import { createFailoverProvider } from "./providers/failover-provider";
 
 export interface AIProviderConfig {
   provider?: string;
-  openai?: { apiKey?: string; model?: string };
   gemini?: { apiKey?: string; apiKeys?: string[]; model?: string };
-  ollama?: { baseUrl?: string; model?: string };
+  groq?: { apiKey?: string; model?: string; baseUrl?: string };
   deepseek?: { apiKey?: string; model?: string; baseUrl?: string };
 }
 
+export const SUPPORTED_AI_PROVIDERS = ["groq", "deepseek", "gemini"] as const;
+
 export function createAIProvider(config?: AIProviderConfig): AIProvider {
-  const providerName = config?.provider ?? "openai";
-  if (providerName === "ollama") {
-    return createOllamaProvider({
-      baseUrl: config?.ollama?.baseUrl,
-      model: config?.ollama?.model,
+  const providerName = config?.provider ?? "groq";
+  if (providerName === "groq") {
+    return createGroqProvider({
+      apiKey: config?.groq?.apiKey,
+      model: config?.groq?.model,
+      baseUrl: config?.groq?.baseUrl,
     });
   }
   if (providerName === "deepseek") {
@@ -42,8 +43,7 @@ export function createAIProvider(config?: AIProviderConfig): AIProvider {
     }
     return createFailoverProvider(providers);
   }
-  return createOpenAIProvider({
-    apiKey: config?.openai?.apiKey,
-    model: config?.openai?.model,
-  });
+  throw new Error(
+    `Unsupported AI provider: ${providerName}. Supported: ${SUPPORTED_AI_PROVIDERS.join(", ")}`,
+  );
 }

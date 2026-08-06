@@ -24,10 +24,13 @@ export type { PromptDefinition } from "./prompt-registry";
 
 export { FEEDBACK_ANALYSIS_V1 } from "./prompts/feedback-analysis/v1";
 export { FEEDBACK_ANALYSIS_V2 } from "./prompts/feedback-analysis/v2";
+export { FEEDBACK_ANALYSIS_V3 } from "./prompts/feedback-analysis/v3";
 export { INSIGHT_GENERATION_V1 } from "./prompts/insight-generation/v1";
 export { INSIGHT_GENERATION_V2 } from "./prompts/insight-generation/v2";
+export { INSIGHT_GENERATION_V3 } from "./prompts/insight-generation/v3";
 export { STRATEGY_GENERATION_V1 } from "./prompts/strategy-generation/v1";
 export { STRATEGY_GENERATION_V2 } from "./prompts/strategy-generation/v2";
+export { STRATEGY_GENERATION_V3 } from "./prompts/strategy-generation/v3";
 export { DEFAULT_PROMPTS, registerDefaultPrompts } from "./prompts";
 
 export {
@@ -51,16 +54,13 @@ export {
 } from "./schemas/strategy-generation.schema";
 export type { StrategyGenerationOutput } from "./schemas/strategy-generation.schema";
 
-export { createOpenAIProvider } from "./providers/openai-provider";
-export type { OpenAIProviderConfig } from "./providers/openai-provider";
-
 export { createGeminiProvider } from "./providers/gemini-provider";
 export type { GeminiProviderConfig } from "./providers/gemini-provider";
 
 export { createFailoverProvider } from "./providers/failover-provider";
 
-export { createOllamaProvider } from "./providers/ollama-provider";
-export type { OllamaProviderConfig } from "./providers/ollama-provider";
+export { createGroqProvider } from "./providers/groq-provider";
+export type { GroqProviderConfig } from "./providers/groq-provider";
 
 export { createDeepSeekProvider } from "./providers/deepseek-provider";
 export type { DeepSeekProviderConfig } from "./providers/deepseek-provider";

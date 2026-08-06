@@ -4,12 +4,14 @@ import Link from "next/link";
 import { InsightListItemResponse } from "@/lib/types";
 import { InsightStatusBadge, InsightOriginBadge, PriorityBadge, ConfidenceScore } from "./insight-status";
 import { Button } from "@/components/ui/button";
-import { Trash2, Flag } from "lucide-react";
+import { Archive, Flag, Trash2 } from "lucide-react";
 
 interface InsightCardProps {
   insight: InsightListItemResponse;
   sessionId: string;
+  onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
+  isArchivingId?: string;
   isDeletingId?: string;
   canManage?: boolean;
 }
@@ -17,7 +19,9 @@ interface InsightCardProps {
 export function InsightCard({
   insight,
   sessionId,
+  onArchive,
   onDelete,
+  isArchivingId,
   isDeletingId,
   canManage = true,
 }: InsightCardProps) {
@@ -58,18 +62,34 @@ export function InsightCard({
           <p className="text-xs text-muted-foreground">
             Cập nhật: {new Date(insight.updatedAt).toLocaleDateString("vi-VN")}
           </p>
-          {onDelete && insight.status !== "ARCHIVED" && canManage && (
-            <div onClick={(e) => e.preventDefault()}>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDelete(insight.id)}
-                disabled={isDeletingId === insight.id}
-                className="h-8 w-8 p-0"
-                aria-label="Lưu trữ"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+          {canManage && (
+            <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
+              {onArchive && insight.status !== "ARCHIVED" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onArchive(insight.id)}
+                  disabled={isArchivingId === insight.id}
+                  className="h-8 w-8 p-0"
+                  aria-label="Lưu trữ"
+                  title="Lưu trữ"
+                >
+                  <Archive className="w-4 h-4" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(insight.id)}
+                  disabled={isDeletingId === insight.id}
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                  aria-label="Xóa vĩnh viễn"
+                  title="Xóa vĩnh viễn"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           )}
         </div>

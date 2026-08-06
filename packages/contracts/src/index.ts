@@ -340,6 +340,7 @@ export interface AnalysisSessionListItemResponse {
   id: string;
   name: string;
   businessId: string;
+  businessName: string;
   objective: string | null;
   status: AnalysisSessionStatus;
   feedbackCount: number;

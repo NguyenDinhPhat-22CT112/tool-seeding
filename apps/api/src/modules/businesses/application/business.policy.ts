@@ -35,4 +35,14 @@ export class BusinessPolicy {
       throw new ForbiddenActionError("Bạn không có quyền sửa doanh nghiệp này");
     }
   }
+
+  canDelete(ctx: RequestContext): boolean {
+    return ctx.role === "ORG_ADMIN";
+  }
+
+  assertCanDelete(ctx: RequestContext) {
+    if (!this.canDelete(ctx)) {
+      throw new ForbiddenActionError("Chỉ Org Admin được xóa doanh nghiệp");
+    }
+  }
 }

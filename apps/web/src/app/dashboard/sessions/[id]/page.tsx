@@ -8,12 +8,15 @@ import {
   useStartDataCollection,
   useCompleteStage,
   useArchiveSession,
+  useDeleteSession,
   useTriggerProcess,
 } from "@/hooks/use-sessions";
 import {
   useTriggerInsightGeneration,
   useTriggerStrategyGeneration,
 } from "@/hooks/use-jobs";
+import { useTriggerReviewCrawl } from "@/hooks/use-review-crawl";
+import { useFetchLocations } from "@/hooks/use-businesses";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/common/status-badge";
 import { SessionProgress } from "@/components/sessions/session-progress";
@@ -24,7 +27,9 @@ import { JobsTab } from "@/components/sessions/jobs-tab";
 import { ImportsTab } from "@/components/sessions/imports-tab";
 import { Skeleton } from "@/components/common/skeleton";
 import { DeleteConfirmDialog } from "@/components/business/delete-dialogs";
-import { ArrowLeft, Lightbulb, Target, Pencil } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
+import { BusinessLocationResponse } from "@/lib/types";
+import { ArrowLeft, Lightbulb, Target, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 const TABS = [
@@ -45,16 +50,21 @@ export default function SessionDetailPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditingMetadata, setIsEditingMetadata] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [metadata, setMetadata] = useState({ name: "", objective: "", focusProduct: "" });
 
   const { data: session, isLoading } = useFetchSession(sessionId);
+  const { data: locations } = useFetchLocations(session?.businessId);
   const updateMutation = useUpdateSession(sessionId);
   const startDataCollectionMutation = useStartDataCollection(sessionId);
   const completeStageMutation = useCompleteStage(sessionId);
   const archiveMutation = useArchiveSession();
+  const deleteMutation = useDeleteSession();
   const triggerProcessMutation = useTriggerProcess(sessionId);
   const triggerInsightGenerationMutation = useTriggerInsightGeneration(sessionId);
   const triggerStrategyGenerationMutation = useTriggerStrategyGeneration(sessionId);
+  const crawlMutation = useTriggerReviewCrawl(sessionId);
+  const [crawlNotice, setCrawlNotice] = useState("");
 
   const isMutating =
     startDataCollectionMutation.isPending ||
@@ -62,7 +72,50 @@ export default function SessionDetailPage() {
     archiveMutation.isPending ||
     triggerProcessMutation.isPending ||
     triggerInsightGenerationMutation.isPending ||
-    triggerStrategyGenerationMutation.isPending;
+    triggerStrategyGenerationMutation.isPending ||
+    crawlMutation.isPending;
+
+  const handleStartDataCollection = async () => {
+    setCrawlNotice("");
+    await startDataCollectionMutation.mutateAsync();
+
+    const businessId = session?.businessId;
+    if (!businessId) {
+      setCrawlNotice("Không xác định được doanh nghiệp của đợt phân tích.");
+      return;
+    }
+
+    let linkedLocations: BusinessLocationResponse[] = [];
+    try {
+      const res = await apiClient.get<{ items: BusinessLocationResponse[] }>(
+        `/businesses/${businessId}/locations`,
+      );
+      linkedLocations =
+        res.items?.filter((l) => l.serpapiPlaceId && l.serpapiPlaceId.length > 0) || [];
+    } catch {
+      linkedLocations = locations?.filter((l) => l.serpapiPlaceId && l.serpapiPlaceId.length > 0) || [];
+    }
+
+    if (linkedLocations.length === 0) {
+      setCrawlNotice(
+        "Doanh nghiệp chưa có địa điểm nào liên kết Google Maps. Vào trang doanh nghiệp để thêm địa điểm trước.",
+      );
+      return;
+    }
+
+    let crawled = 0;
+    for (const location of linkedLocations) {
+      try {
+        await crawlMutation.mutateAsync({ businessLocationId: location.id });
+        crawled += 1;
+      } catch {
+        // tiếp tục với địa điểm kế tiếp
+      }
+    }
+    setCrawlNotice(
+      `Đã kích hoạt thu thập ${crawled}/${linkedLocations.length} địa điểm. Quá trình chạy nền — xem tab "Công việc" để theo dõi.`,
+    );
+  };
 
   if (isLoading) {
     return (
@@ -115,6 +168,17 @@ export default function SessionDetailPage() {
           </p>
         </div>
         <StatusBadge status={session.status} />
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setShowDeleteDialog(true)}
+          disabled={deleteMutation.isPending}
+          className="text-destructive hover:text-destructive"
+          title="Xóa vĩnh viễn"
+          aria-label="Xóa vĩnh viễn"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
 
       <div className="border border-border rounded-lg p-6 space-y-4">
@@ -137,9 +201,15 @@ export default function SessionDetailPage() {
         </div>
 
         <div className="pt-4 border-t border-border">
+          {crawlNotice && (
+            <div className="mb-3 rounded-lg border border-blue-500/20 bg-blue-500/10 px-4 py-3">
+              <p className="text-sm text-blue-700 dark:text-blue-400">{crawlNotice}</p>
+            </div>
+          )}
           <SessionActions
             status={session.status}
-            onStartDataCollection={() => startDataCollectionMutation.mutate()}
+            feedbackCount={session.feedbackCount}
+            onStartDataCollection={() => void handleStartDataCollection()}
             onProcess={() => triggerProcessMutation.mutate()}
             onGenerateInsights={() => triggerInsightGenerationMutation.mutate()}
             onGenerateStrategy={() => triggerStrategyGenerationMutation.mutate()}
@@ -306,12 +376,27 @@ export default function SessionDetailPage() {
         isOpen={showArchiveDialog}
         title="Lưu trữ đợt phân tích"
         description={`Bạn có chắc chắn muốn lưu trữ đợt phân tích "${session.name}"?`}
+        confirmLabel="Lưu trữ"
+        loadingLabel="Đang lưu trữ..."
         isLoading={archiveMutation.isPending}
         onConfirm={async () => {
           await archiveMutation.mutateAsync(sessionId);
           setShowArchiveDialog(false);
         }}
         onCancel={() => setShowArchiveDialog(false)}
+      />
+
+      <DeleteConfirmDialog
+        isOpen={showDeleteDialog}
+        title="Xóa đợt phân tích"
+        description={`Bạn có chắc chắn muốn xóa vĩnh viễn đợt phân tích "${session.name}"? Toàn bộ dữ liệu (feedback, insight, chiến lược) sẽ bị xóa. Hành động này không thể hoàn tác.`}
+        isLoading={deleteMutation.isPending}
+        onConfirm={async () => {
+          await deleteMutation.mutateAsync(sessionId);
+          setShowDeleteDialog(false);
+          router.push("/dashboard/sessions");
+        }}
+        onCancel={() => setShowDeleteDialog(false)}
       />
     </div>
   );

@@ -15,39 +15,66 @@ import { strategyGenerationOutputSchema } from "../schemas/strategy-generation.s
 import { analyzeFeedbackWithProvider, generateStructuredWithProvider } from "./shared";
 import type { ProviderHandler } from "./shared";
 
-export interface OllamaProviderConfig {
-  /** Base URL Ollama server, mặc định local. */
-  baseUrl?: string;
-  /** Tên model đã pull về (VD qwen2.5:7b). */
+export interface GroqProviderConfig {
+  apiKey?: string;
   model?: string;
+  baseUrl?: string;
 }
+
+const GROQ_API = "https://api.groq.com/openai/v1";
 
 const SYSTEM_PROMPT =
   "Trả lời BẰNG TIẾNG VIỆT. Trả về JSON hợp lệ theo schema được yêu cầu trong prompt. Không thêm chữ nào ngoài JSON.";
 
-export function createOllamaProvider(config?: OllamaProviderConfig): AIProvider {
-  const baseUrl = (config?.baseUrl ?? "http://localhost:11434").replace(/\/+$/, "");
-  const model = config?.model ?? "qwen2.5:7b";
+function stubFeedback(input: AnalyzeFeedbackInput, model: string, promptVersion: string): AnalyzeFeedbackResult {
+  const isNegative = /tệ|chậm|kém|bad|slow|wait|đợi/i.test(input.content);
+  const output = feedbackAnalysisOutputSchema.parse({
+    sentiment: isNegative ? "NEGATIVE" : "POSITIVE",
+    sentimentScore: isNegative ? -0.6 : 0.7,
+    topics: isNegative ? ["thời gian phục vụ"] : ["chất lượng sản phẩm"],
+    painPoints: isNegative ? ["khách hàng phải chờ lâu"] : [],
+    questions: [],
+    priority: isNegative ? 4 : 2,
+    confidence: 0.75,
+    evidence: [{ text: input.content.slice(0, 120), relevance: 0.8 }],
+  });
+  return {
+    output,
+    model,
+    provider: "groq",
+    promptVersion,
+    usage: { promptTokens: input.content.length / 4, completionTokens: 120, totalTokens: 200 },
+    rawResponse: { stub: true },
+    durationMs: 50,
+  };
+}
+
+export function createGroqProvider(config?: GroqProviderConfig): AIProvider {
+  const apiKey = config?.apiKey;
+  const model = config?.model ?? "openai/gpt-oss-20b";
+  const baseUrl = (config?.baseUrl ?? GROQ_API).replace(/\/+$/, "");
   const retryPolicy = new AIRetryPolicy();
-  // Ollama local không có quota cứng; vẫn giữ token bucket để tránh quá tải GPU.
-  const limiter = new TokenBucketLimiter(10, 10 / 60, 1);
+  const limiter = new TokenBucketLimiter(30, 30 / 60, 1);
 
   const providerHandler: ProviderHandler = {
-    name: "ollama",
+    name: "groq",
     model,
-    buildRequest(userPrompt: string, _apiKey?: string) {
+    buildRequest(userPrompt: string, key: string) {
       return {
-        url: `${baseUrl}/v1/chat/completions`,
-        headers: { "Content-Type": "application/json" },
+        url: `${baseUrl}/chat/completions`,
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
         body: {
           model,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userPrompt },
           ],
+          response_format: { type: "json_object" },
           stream: false,
-          format: "json",
-          temperature: 0.1,
+          temperature: 0.3,
         },
       };
     },
@@ -62,65 +89,46 @@ export function createOllamaProvider(config?: OllamaProviderConfig): AIProvider 
         },
       };
     },
-    stubResult(input: AnalyzeFeedbackInput, promptVersion: string): AnalyzeFeedbackResult {
-      const isNegative = /tệ|chậm|kém|bad|slow|wait|đợi/i.test(input.content);
-      const output = feedbackAnalysisOutputSchema.parse({
-        sentiment: isNegative ? "NEGATIVE" : "POSITIVE",
-        sentimentScore: isNegative ? -0.6 : 0.7,
-        topics: isNegative ? ["thời gian phục vụ"] : ["chất lượng sản phẩm"],
-        painPoints: isNegative ? ["khách hàng phải chờ lâu"] : [],
-        questions: [],
-        priority: isNegative ? 4 : 2,
-        confidence: 0.75,
-        evidence: [{ text: input.content.slice(0, 120), relevance: 0.8 }],
-      });
-      return {
-        output,
-        model,
-        provider: "ollama",
-        promptVersion,
-        usage: { promptTokens: input.content.length / 4, completionTokens: 120, totalTokens: 200 },
-        rawResponse: { stub: true },
-        durationMs: 50,
-      };
+    stubResult(input: AnalyzeFeedbackInput, promptVersion: string) {
+      return stubFeedback(input, model, promptVersion);
     },
   };
 
   return {
-    name: "ollama",
+    name: "groq",
     async analyzeFeedback(input) {
-      return analyzeFeedbackWithProvider(providerHandler, undefined, input, retryPolicy, limiter, false);
+      return analyzeFeedbackWithProvider(providerHandler, apiKey, input, retryPolicy, limiter);
     },
     async generateInsights(input: GenerateInsightsInput): Promise<GenerateInsightsResult> {
       return generateStructuredWithProvider({
         handler: providerHandler,
+        apiKey,
         promptId: "insight-generation",
-        promptVersion: input.promptVersion ?? "v1",
+        promptVersion: input.promptVersion ?? "v3",
         variables: {
           businessName: input.businessName,
           objective: input.objective ?? "Phân tích feedback khách hàng",
-          analyses: JSON.stringify(input.analyses, null, 2),
+          analyses: JSON.stringify(input.analyses),
         },
         schema: insightGenerationOutputSchema,
         retryPolicy,
         limiter,
-        requiresApiKey: false,
       });
     },
     async generateStrategy(input: GenerateStrategyInput): Promise<GenerateStrategyResult> {
       return generateStructuredWithProvider({
         handler: providerHandler,
+        apiKey,
         promptId: "strategy-generation",
-        promptVersion: input.promptVersion ?? "v1",
+        promptVersion: input.promptVersion ?? "v3",
         variables: {
           businessName: input.businessName,
           objective: input.objective ?? "Xây dựng chiến lược seeding",
-          insights: JSON.stringify(input.insights, null, 2),
+          insights: JSON.stringify(input.insights),
         },
         schema: strategyGenerationOutputSchema,
         retryPolicy,
         limiter,
-        requiresApiKey: false,
       });
     },
   };

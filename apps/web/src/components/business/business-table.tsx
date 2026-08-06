@@ -4,7 +4,7 @@ import Link from "next/link";
 import { BusinessListItemResponse } from "@/lib/types";
 import { Skeleton } from "@/components/common/skeleton";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Trash2 } from "lucide-react";
+import { ChevronRight, FileText, Trash2 } from "lucide-react";
 
 interface BusinessTableProps {
   businesses: BusinessListItemResponse[];
@@ -76,6 +76,12 @@ export function BusinessTable({
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
+                    <Link href={`/dashboard/sessions?businessId=${business.id}`}>
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <FileText className="w-4 h-4" />
+                        <span>Đợt phân tích</span>
+                      </Button>
+                    </Link>
                     <Link href={`/dashboard/businesses/${business.id}`}>
                       <Button size="sm" variant="outline" className="gap-1">
                         <span>Xem</span>

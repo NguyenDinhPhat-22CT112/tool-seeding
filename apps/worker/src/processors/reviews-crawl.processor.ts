@@ -143,6 +143,7 @@ export class ReviewsCrawlProcessor {
         const totalKnown = result.totalReviews ?? null;
         const progress = computeProgress(page, totalFetched, totalKnown);
         await job.updateProgress(progress);
+        await this.jobRepo.updateProgress(processingJobId, progress);
       } while (nextToken && page < MAX_PAGES);
 
       await this.jobRepo.markDataSourceStatus(dataSource.id, "COMPLETED");

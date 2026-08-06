@@ -16,7 +16,7 @@ export interface ProviderHandler {
 }
 
 async function resolvePrompt(input: AnalyzeFeedbackInput): Promise<{ promptVersion: string; userPrompt: string }> {
-  const promptVersion = input.promptVersion ?? "v2";
+  const promptVersion = input.promptVersion ?? "v3";
   const prompt = promptRegistry.getVersion("feedback-analysis", promptVersion);
   const userPrompt = renderTemplate(prompt.template, {
     businessName: input.businessName,

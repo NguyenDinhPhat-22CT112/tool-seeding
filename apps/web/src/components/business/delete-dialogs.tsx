@@ -9,6 +9,8 @@ interface DeleteConfirmDialogProps {
   title?: string;
   description?: string;
   isLoading?: boolean;
+  confirmLabel?: string;
+  loadingLabel?: string;
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }
@@ -18,6 +20,8 @@ export function DeleteConfirmDialog({
   title = "Xóa doanh nghiệp",
   description = "Bạn có chắc chắn muốn xóa?",
   isLoading = false,
+  confirmLabel = "Xóa",
+  loadingLabel = "Đang xóa...",
   onConfirm,
   onCancel,
 }: DeleteConfirmDialogProps) {
@@ -45,7 +49,7 @@ export function DeleteConfirmDialog({
           }}
           disabled={isLoading}
         >
-          {isLoading ? "Đang xóa..." : "Xóa"}
+          {isLoading ? loadingLabel : confirmLabel}
         </Button>
       </div>
     </Dialog>
@@ -73,8 +77,8 @@ export function BusinessDeleteDialog({
       title="Xóa doanh nghiệp"
       description={
         businessName
-          ? `Bạn có chắc chắn muốn xóa "${businessName}"? Hành động này không thể hoàn tác.`
-          : "Bạn có chắc chắn muốn xóa doanh nghiệp này? Hành động này không thể hoàn tác."
+          ? `Bạn có chắc chắn muốn xóa "${businessName}"? Toàn bộ đợt phân tích, insight và dữ liệu liên quan sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.`
+          : "Bạn có chắc chắn muốn xóa doanh nghiệp này? Toàn bộ đợt phân tích, insight và dữ liệu liên quan sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác."
       }
       isLoading={isLoading}
       onConfirm={onConfirm}

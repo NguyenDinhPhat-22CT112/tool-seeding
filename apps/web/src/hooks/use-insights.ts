@@ -189,17 +189,15 @@ export function useArchiveInsight(sessionId: string) {
   });
 }
 
-// API khÃ´ng cÃ³ DELETE insight â€” thay báº±ng archive (káº¿t thÃºc, chá»‰ Ä‘á»c).
-export function useDeleteInsight(sessionId: string, insightId: string) {
+export function useDeleteInsight(sessionId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
-      apiClient.post<InsightResponse>(
-        `/analysis-sessions/${sessionId}/insights/${insightId}/archive`,
-        {},
+    mutationFn: (insightId: string) =>
+      apiClient.delete<InsightResponse>(
+        `/analysis-sessions/${sessionId}/insights/${insightId}`,
       ),
-    onSuccess: () => {
+    onSuccess: (_data, insightId) => {
       void queryClient.invalidateQueries({ queryKey: ["insights", sessionId] });
       void queryClient.invalidateQueries({
         queryKey: ["insight", sessionId, insightId],

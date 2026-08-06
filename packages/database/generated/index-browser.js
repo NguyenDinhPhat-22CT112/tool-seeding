@@ -458,6 +458,82 @@ exports.Prisma.AIUsageLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SeedingBotScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  displayName: 'displayName',
+  avatarUrl: 'avatarUrl',
+  brandVoice: 'brandVoice',
+  maturityLevel: 'maturityLevel',
+  status: 'status',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.SeedingBotAccountScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  botId: 'botId',
+  platform: 'platform',
+  accountLabel: 'accountLabel',
+  profileUrl: 'profileUrl',
+  avatarUrl: 'avatarUrl',
+  accountStatus: 'accountStatus',
+  accountCreatedAt: 'accountCreatedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SeedingBotLocationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  botId: 'botId',
+  businessId: 'businessId',
+  businessLocationId: 'businessLocationId',
+  isPrimary: 'isPrimary',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SeedingBotTaskScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  botId: 'botId',
+  botAccountId: 'botAccountId',
+  businessId: 'businessId',
+  businessLocationId: 'businessLocationId',
+  analysisSessionId: 'analysisSessionId',
+  strategyVersionId: 'strategyVersionId',
+  taskType: 'taskType',
+  status: 'status',
+  title: 'title',
+  content: 'content',
+  scheduledAt: 'scheduledAt',
+  externalRef: 'externalRef',
+  completedBy: 'completedBy',
+  completedAt: 'completedAt',
+  failureReason: 'failureReason',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SeedingBotActivityLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  botId: 'botId',
+  botAccountId: 'botAccountId',
+  taskId: 'taskId',
+  action: 'action',
+  detail: 'detail',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -615,6 +691,32 @@ exports.StrategyVersionStatus = exports.$Enums.StrategyVersionStatus = {
   ARCHIVED: 'ARCHIVED'
 };
 
+exports.BotStatus = exports.$Enums.BotStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  DISABLED: 'DISABLED'
+};
+
+exports.BotPlatform = exports.$Enums.BotPlatform = {
+  GOOGLE_MAPS: 'GOOGLE_MAPS'
+};
+
+exports.BotAccountStatus = exports.$Enums.BotAccountStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  BANNED: 'BANNED'
+};
+
+exports.BotTaskType = exports.$Enums.BotTaskType = {
+  REVIEW_SEEDING: 'REVIEW_SEEDING'
+};
+
+exports.BotTaskStatus = exports.$Enums.BotTaskStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Organization: 'Organization',
@@ -635,7 +737,12 @@ exports.Prisma.ModelName = {
   Strategy: 'Strategy',
   StrategyVersion: 'StrategyVersion',
   StrategyInsight: 'StrategyInsight',
-  AIUsageLog: 'AIUsageLog'
+  AIUsageLog: 'AIUsageLog',
+  SeedingBot: 'SeedingBot',
+  SeedingBotAccount: 'SeedingBotAccount',
+  SeedingBotLocation: 'SeedingBotLocation',
+  SeedingBotTask: 'SeedingBotTask',
+  SeedingBotActivityLog: 'SeedingBotActivityLog'
 };
 
 /**

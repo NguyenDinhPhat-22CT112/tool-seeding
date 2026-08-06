@@ -23,14 +23,14 @@ export const jwtConfig = registerAs("jwt", () => ({
 }));
 
 export const aiConfig = registerAs("ai", () => ({
-  provider: process.env.AI_PROVIDER ?? "openai",
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-  },
+  provider: process.env.AI_PROVIDER ?? "groq",
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
     model: process.env.GEMINI_MODEL ?? "gemini-2.0-flash",
+  },
+  groq: {
+    apiKey: process.env.GROQ_API_KEY,
+    model: process.env.GROQ_MODEL ?? "openai/gpt-oss-20b",
   },
 }));
 

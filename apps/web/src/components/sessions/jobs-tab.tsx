@@ -12,8 +12,10 @@ interface JobsTabProps {
 }
 
 const JOB_TYPE_LABELS: Record<string, string> = {
-  REVIEW_CRAWL: "Thu thập đánh giá",
-  NORMALIZATION: "Chuẩn hoá dữ liệu",
+  REVIEW_CRAWLING: "Thu thập đánh giá",
+  DATA_NORMALIZATION: "Chuẩn hoá dữ liệu",
+  DEDUPLICATION: "Loại trùng lặp",
+  AI_FEEDBACK_ANALYSIS: "Phân tích AI feedback",
   INSIGHT_GENERATION: "Tạo insight",
   STRATEGY_GENERATION: "Tạo chiến lược",
 };

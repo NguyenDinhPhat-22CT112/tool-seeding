@@ -43,4 +43,14 @@ export class AnalysisSessionPolicy {
       "Bạn không có quyền lưu trữ (archive) đợt phân tích này",
     );
   }
+
+  canDelete(ctx: RequestContext): boolean {
+    return ctx.role === "ORG_ADMIN";
+  }
+
+  assertCanDelete(ctx: RequestContext) {
+    if (!this.canDelete(ctx)) {
+      throw new ForbiddenActionError("Chỉ Org Admin được xóa đợt phân tích");
+    }
+  }
 }
