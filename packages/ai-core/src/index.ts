@@ -65,5 +65,8 @@ export type { GroqProviderConfig } from "./providers/groq-provider";
 export { createDeepSeekProvider } from "./providers/deepseek-provider";
 export type { DeepSeekProviderConfig } from "./providers/deepseek-provider";
 
+export { createOpenRouterProvider } from "./providers/openrouter-provider";
+export type { OpenRouterProviderConfig } from "./providers/openrouter-provider";
+
 export { createAIProvider } from "./factory";
 export type { AIProviderConfig } from "./factory";
