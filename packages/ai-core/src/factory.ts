@@ -1,7 +1,6 @@
 import type { AIProvider } from "./ai-provider.interface";
 import { createGeminiProvider } from "./providers/gemini-provider";
 import { createGroqProvider } from "./providers/groq-provider";
-import { createDeepSeekProvider } from "./providers/deepseek-provider";
 import { createOpenRouterProvider } from "./providers/openrouter-provider";
 import { createFailoverProvider } from "./providers/failover-provider";
 
@@ -9,11 +8,10 @@ export interface AIProviderConfig {
   provider?: string;
   gemini?: { apiKey?: string; apiKeys?: string[]; model?: string };
   groq?: { apiKey?: string; model?: string; baseUrl?: string };
-  deepseek?: { apiKey?: string; model?: string; baseUrl?: string };
   openrouter?: { apiKey?: string; model?: string; baseUrl?: string };
 }
 
-export const SUPPORTED_AI_PROVIDERS = ["groq", "deepseek", "gemini", "openrouter"] as const;
+export const SUPPORTED_AI_PROVIDERS = ["groq", "gemini", "openrouter"] as const;
 
 export function createAIProvider(config?: AIProviderConfig): AIProvider {
   const providerName = config?.provider ?? "groq";
@@ -22,13 +20,6 @@ export function createAIProvider(config?: AIProviderConfig): AIProvider {
       apiKey: config?.groq?.apiKey,
       model: config?.groq?.model,
       baseUrl: config?.groq?.baseUrl,
-    });
-  }
-  if (providerName === "deepseek") {
-    return createDeepSeekProvider({
-      apiKey: config?.deepseek?.apiKey,
-      model: config?.deepseek?.model,
-      baseUrl: config?.deepseek?.baseUrl,
     });
   }
   if (providerName === "openrouter") {

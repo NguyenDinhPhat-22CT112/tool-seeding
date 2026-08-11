@@ -8,6 +8,7 @@ import { INSIGHT_GENERATION_V3 } from "./insight-generation/v3";
 import { STRATEGY_GENERATION_V1 } from "./strategy-generation/v1";
 import { STRATEGY_GENERATION_V2 } from "./strategy-generation/v2";
 import { STRATEGY_GENERATION_V3 } from "./strategy-generation/v3";
+import { CONTENT_GENERATION_V1 } from "./content-generation/v1";
 
 export const DEFAULT_PROMPTS = [
   FEEDBACK_ANALYSIS_V1,
@@ -19,6 +20,7 @@ export const DEFAULT_PROMPTS = [
   STRATEGY_GENERATION_V1,
   STRATEGY_GENERATION_V2,
   STRATEGY_GENERATION_V3,
+  CONTENT_GENERATION_V1,
 ];
 
 /** Đăng ký toàn bộ prompt mặc định — gọi ở mọi process (API, worker) dùng ai-core. */

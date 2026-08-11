@@ -11,6 +11,7 @@ import {
   ReviewsCrawlProcessor,
   InsightGenerationProcessor,
   StrategyGenerationProcessor,
+  ContentGenerationProcessor,
 } from "./processors";
 import { AiAnalysisService } from "./services/ai-analysis.service";
 import { JobRepositoryService } from "./services/job-repository.service";
@@ -43,6 +44,7 @@ const DATA_PROCESSING_QUEUE = "data-processing";
     ReviewsCrawlProcessor,
     InsightGenerationProcessor,
     StrategyGenerationProcessor,
+    ContentGenerationProcessor,
     AiAnalysisService,
     JobRepositoryService,
   ],
@@ -61,6 +63,7 @@ export class WorkerModule implements OnModuleInit {
         "ReviewsCrawlProcessor",
         "InsightGenerationProcessor",
         "StrategyGenerationProcessor",
+        "ContentGenerationProcessor",
       ],
     });
     this.logger.log("WorkerModule initialized successfully");

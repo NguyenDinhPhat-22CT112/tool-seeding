@@ -5,6 +5,8 @@ import type {
   AIProvider,
   AnalyzeFeedbackInput,
   AnalyzeFeedbackResult,
+  GenerateContentInput,
+  GenerateContentResult,
   GenerateInsightsInput,
   GenerateInsightsResult,
   GenerateStrategyInput,
@@ -40,10 +42,6 @@ export class AiAnalysisService {
         apiKey: this.config.get<string>("GROQ_API_KEY"),
         model: this.config.get<string>("GROQ_MODEL", "openai/gpt-oss-20b"),
       },
-      deepseek: {
-        apiKey: this.config.get<string>("DEEPSEEK_API_KEY"),
-        model: this.config.get<string>("DEEPSEEK_MODEL", "deepseek-v4-flash"),
-      },
     });
     this.logger.log(`Using ${providerName} AI provider for feedback analysis`);
     return this.provider;
@@ -51,7 +49,7 @@ export class AiAnalysisService {
 
   /**
    * Provider dùng cho insight generation — OpenRouter (AI_INSIGHT_PROVIDER, mặc định openrouter).
-   * Model mặc định deepseek/deepseek-r1 (reasoning mạnh). Fallback về provider feedback
+   * Model mặc định theo model free trên OpenRouter. Fallback về provider feedback
    * khi cấu hình "default".
    */
   private getInsightProvider(): AIProvider {
@@ -67,15 +65,11 @@ export class AiAnalysisService {
       provider: providerName,
       openrouter: {
         apiKey: this.config.get<string>("OPENROUTER_API_KEY"),
-        model: this.config.get<string>("OPENROUTER_MODEL", "deepseek/deepseek-r1"),
+        model: this.config.get<string>("OPENROUTER_MODEL", "google/gemini-2.0-flash-exp:free"),
       },
       gemini: {
         apiKey: this.config.get<string>("GEMINI_API_KEY"),
         model: this.config.get<string>("GEMINI_MODEL", "gemini-2.0-flash"),
-      },
-      deepseek: {
-        apiKey: this.config.get<string>("DEEPSEEK_API_KEY"),
-        model: this.config.get<string>("DEEPSEEK_MODEL", "deepseek-v4-flash"),
       },
     });
     this.logger.log(`Using ${providerName} AI provider for insight generation`);
@@ -109,11 +103,7 @@ export class AiAnalysisService {
       },
       openrouter: {
         apiKey: this.config.get<string>("OPENROUTER_API_KEY"),
-        model: this.config.get<string>("OPENROUTER_MODEL", "deepseek/deepseek-r1"),
-      },
-      deepseek: {
-        apiKey: this.config.get<string>("DEEPSEEK_API_KEY"),
-        model: this.config.get<string>("DEEPSEEK_MODEL", "deepseek-v4-flash"),
+        model: this.config.get<string>("OPENROUTER_MODEL", "google/gemini-2.0-flash-exp:free"),
       },
     });
     this.logger.log(`Using ${providerName} AI provider for strategy generation`);
@@ -133,5 +123,10 @@ export class AiAnalysisService {
   async generateStrategy(input: GenerateStrategyInput): Promise<GenerateStrategyResult> {
     const provider = this.getStrategyProvider();
     return provider.generateStrategy(input);
+  }
+
+  async generateContent(input: GenerateContentInput): Promise<GenerateContentResult> {
+    const provider = this.getStrategyProvider();
+    return provider.generateContent(input);
   }
 }

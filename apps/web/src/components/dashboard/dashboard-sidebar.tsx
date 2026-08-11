@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { BarChart3, Building2, FileText, Lightbulb, Settings } from "lucide-react";
+import { BarChart3, Building2, FileText, FileCode2, Lightbulb, Settings } from "lucide-react";
 
 const navItems = [
   {
@@ -30,6 +30,12 @@ const navItems = [
     href: "/dashboard/insights",
     icon: Lightbulb,
     roles: ["ORG_ADMIN", "INSIGHT_REVIEWER", "STRATEGY_MANAGER"],
+  },
+  {
+    title: "Prompt Template",
+    href: "/dashboard/prompt-templates",
+    icon: FileCode2,
+    roles: ["ORG_ADMIN"],
   },
   {
     title: "Cài đặt",

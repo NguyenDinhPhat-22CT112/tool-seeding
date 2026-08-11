@@ -5,3 +5,4 @@ export { FeedbackAnalysisProcessor } from "./feedback-analysis.processor";
 export { ReviewsCrawlProcessor } from "./reviews-crawl.processor";
 export { InsightGenerationProcessor } from "./insight-generation.processor";
 export { StrategyGenerationProcessor } from "./strategy-generation.processor";
+export { ContentGenerationProcessor } from "./content-generation.processor";

@@ -29,6 +29,11 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: 'auth-store',
       version: 1,
+      onRehydrateStorage: () => (state) => {
+        if (state?.auth) {
+          apiClient.setAuthContext(state.auth);
+        }
+      },
     }
   )
 );

@@ -22,6 +22,7 @@ import { AiAnalysisModule } from "./modules/ai-analysis";
 import { ReviewsCrawlerModule } from "./modules/reviews-crawler";
 import { InsightsModule } from "./modules/insights";
 import { StrategyModule } from "./modules/strategy";
+import { ContentModule } from "./modules/content";
 import { IamModule } from "./modules/iam";
 import { QueueModule } from "./shared/queues/queue.module";
 import { AiModule } from "./integrations/ai/ai.module";
@@ -49,6 +50,7 @@ import { AuditService } from "./shared/audit";
     ReviewsCrawlerModule,
     InsightsModule,
     StrategyModule,
+    ContentModule,
     IamModule,
     QueueModule,
     AiModule,

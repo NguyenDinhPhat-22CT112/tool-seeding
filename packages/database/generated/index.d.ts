@@ -109,6 +109,28 @@ export type StrategyVersion = $Result.DefaultSelection<Prisma.$StrategyVersionPa
  */
 export type StrategyInsight = $Result.DefaultSelection<Prisma.$StrategyInsightPayload>
 /**
+ * Model SeedingContent
+ * Nội dung seeding — sinh từ AI (candidate → Save) hoặc viết thủ công từ chiến lược.
+ * Session-first: luôn thuộc một AnalysisSession + StrategyVersion.
+ */
+export type SeedingContent = $Result.DefaultSelection<Prisma.$SeedingContentPayload>
+/**
+ * Model ContentVersion
+ * Lịch sử chỉnh sửa + snapshot review của một nội dung.
+ * Chỉ tạo version mới khi body/title thực sự thay đổi.
+ */
+export type ContentVersion = $Result.DefaultSelection<Prisma.$ContentVersionPayload>
+/**
+ * Model AIGeneration
+ * Candidate AI — nhiều phương án cho 1 request; KHÔNG tạo Content cho tới khi user Save.
+ */
+export type AIGeneration = $Result.DefaultSelection<Prisma.$AIGenerationPayload>
+/**
+ * Model PromptTemplate
+ * Prompt library — dùng chung toàn hệ thống, có version để tái tạo kết quả AI.
+ */
+export type PromptTemplate = $Result.DefaultSelection<Prisma.$PromptTemplatePayload>
+/**
  * Model AIUsageLog
  * 
  */
@@ -306,7 +328,8 @@ export const JobType: {
   AI_FEEDBACK_ANALYSIS: 'AI_FEEDBACK_ANALYSIS',
   REVIEW_CRAWLING: 'REVIEW_CRAWLING',
   INSIGHT_GENERATION: 'INSIGHT_GENERATION',
-  STRATEGY_GENERATION: 'STRATEGY_GENERATION'
+  STRATEGY_GENERATION: 'STRATEGY_GENERATION',
+  CONTENT_GENERATION: 'CONTENT_GENERATION'
 };
 
 export type JobType = (typeof JobType)[keyof typeof JobType]
@@ -362,6 +385,53 @@ export const BotTaskStatus: {
 };
 
 export type BotTaskStatus = (typeof BotTaskStatus)[keyof typeof BotTaskStatus]
+
+
+export const ContentOrigin: {
+  AI_GENERATED: 'AI_GENERATED',
+  HUMAN_WRITTEN: 'HUMAN_WRITTEN'
+};
+
+export type ContentOrigin = (typeof ContentOrigin)[keyof typeof ContentOrigin]
+
+
+export const ContentStatus: {
+  DRAFT: 'DRAFT',
+  WAITING_APPROVAL: 'WAITING_APPROVAL',
+  NEEDS_REVISION: 'NEEDS_REVISION',
+  APPROVED: 'APPROVED',
+  LOCKED: 'LOCKED',
+  ARCHIVED: 'ARCHIVED'
+};
+
+export type ContentStatus = (typeof ContentStatus)[keyof typeof ContentStatus]
+
+
+export const ContentVersionSource: {
+  HUMAN_EDIT: 'HUMAN_EDIT',
+  AI_GENERATE: 'AI_GENERATE',
+  AI_REWRITE: 'AI_REWRITE'
+};
+
+export type ContentVersionSource = (typeof ContentVersionSource)[keyof typeof ContentVersionSource]
+
+
+export const AIGenerationStatus: {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  DISCARDED: 'DISCARDED'
+};
+
+export type AIGenerationStatus = (typeof AIGenerationStatus)[keyof typeof AIGenerationStatus]
+
+
+export const PromptPurpose: {
+  GENERATE: 'GENERATE',
+  REWRITE: 'REWRITE'
+};
+
+export type PromptPurpose = (typeof PromptPurpose)[keyof typeof PromptPurpose]
 
 }
 
@@ -448,6 +518,26 @@ export const BotTaskType: typeof $Enums.BotTaskType
 export type BotTaskStatus = $Enums.BotTaskStatus
 
 export const BotTaskStatus: typeof $Enums.BotTaskStatus
+
+export type ContentOrigin = $Enums.ContentOrigin
+
+export const ContentOrigin: typeof $Enums.ContentOrigin
+
+export type ContentStatus = $Enums.ContentStatus
+
+export const ContentStatus: typeof $Enums.ContentStatus
+
+export type ContentVersionSource = $Enums.ContentVersionSource
+
+export const ContentVersionSource: typeof $Enums.ContentVersionSource
+
+export type AIGenerationStatus = $Enums.AIGenerationStatus
+
+export const AIGenerationStatus: typeof $Enums.AIGenerationStatus
+
+export type PromptPurpose = $Enums.PromptPurpose
+
+export const PromptPurpose: typeof $Enums.PromptPurpose
 
 /**
  * ##  Prisma Client ʲˢ
@@ -756,6 +846,46 @@ export class PrismaClient<
     * ```
     */
   get strategyInsight(): Prisma.StrategyInsightDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.seedingContent`: Exposes CRUD operations for the **SeedingContent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeedingContents
+    * const seedingContents = await prisma.seedingContent.findMany()
+    * ```
+    */
+  get seedingContent(): Prisma.SeedingContentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.contentVersion`: Exposes CRUD operations for the **ContentVersion** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ContentVersions
+    * const contentVersions = await prisma.contentVersion.findMany()
+    * ```
+    */
+  get contentVersion(): Prisma.ContentVersionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.aIGeneration`: Exposes CRUD operations for the **AIGeneration** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AIGenerations
+    * const aIGenerations = await prisma.aIGeneration.findMany()
+    * ```
+    */
+  get aIGeneration(): Prisma.AIGenerationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.promptTemplate`: Exposes CRUD operations for the **PromptTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PromptTemplates
+    * const promptTemplates = await prisma.promptTemplate.findMany()
+    * ```
+    */
+  get promptTemplate(): Prisma.PromptTemplateDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.aIUsageLog`: Exposes CRUD operations for the **AIUsageLog** model.
@@ -1276,6 +1406,10 @@ export namespace Prisma {
     Strategy: 'Strategy',
     StrategyVersion: 'StrategyVersion',
     StrategyInsight: 'StrategyInsight',
+    SeedingContent: 'SeedingContent',
+    ContentVersion: 'ContentVersion',
+    AIGeneration: 'AIGeneration',
+    PromptTemplate: 'PromptTemplate',
     AIUsageLog: 'AIUsageLog',
     SeedingBot: 'SeedingBot',
     SeedingBotAccount: 'SeedingBotAccount',
@@ -1300,7 +1434,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "organization" | "organizationMember" | "refreshToken" | "business" | "businessLocation" | "externalApiUsage" | "analysisSession" | "dataSource" | "customerFeedback" | "feedbackAnalysis" | "processingJob" | "importBatch" | "insight" | "insightEvidence" | "insightReviewLog" | "strategy" | "strategyVersion" | "strategyInsight" | "aIUsageLog" | "seedingBot" | "seedingBotAccount" | "seedingBotLocation" | "seedingBotTask" | "seedingBotActivityLog"
+      modelProps: "user" | "organization" | "organizationMember" | "refreshToken" | "business" | "businessLocation" | "externalApiUsage" | "analysisSession" | "dataSource" | "customerFeedback" | "feedbackAnalysis" | "processingJob" | "importBatch" | "insight" | "insightEvidence" | "insightReviewLog" | "strategy" | "strategyVersion" | "strategyInsight" | "seedingContent" | "contentVersion" | "aIGeneration" | "promptTemplate" | "aIUsageLog" | "seedingBot" | "seedingBotAccount" | "seedingBotLocation" | "seedingBotTask" | "seedingBotActivityLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2710,6 +2844,302 @@ export namespace Prisma {
           }
         }
       }
+      SeedingContent: {
+        payload: Prisma.$SeedingContentPayload<ExtArgs>
+        fields: Prisma.SeedingContentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SeedingContentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SeedingContentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>
+          }
+          findFirst: {
+            args: Prisma.SeedingContentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SeedingContentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>
+          }
+          findMany: {
+            args: Prisma.SeedingContentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>[]
+          }
+          create: {
+            args: Prisma.SeedingContentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>
+          }
+          createMany: {
+            args: Prisma.SeedingContentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SeedingContentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>[]
+          }
+          delete: {
+            args: Prisma.SeedingContentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>
+          }
+          update: {
+            args: Prisma.SeedingContentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>
+          }
+          deleteMany: {
+            args: Prisma.SeedingContentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SeedingContentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SeedingContentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>[]
+          }
+          upsert: {
+            args: Prisma.SeedingContentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SeedingContentPayload>
+          }
+          aggregate: {
+            args: Prisma.SeedingContentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSeedingContent>
+          }
+          groupBy: {
+            args: Prisma.SeedingContentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SeedingContentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SeedingContentCountArgs<ExtArgs>
+            result: $Utils.Optional<SeedingContentCountAggregateOutputType> | number
+          }
+        }
+      }
+      ContentVersion: {
+        payload: Prisma.$ContentVersionPayload<ExtArgs>
+        fields: Prisma.ContentVersionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ContentVersionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ContentVersionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>
+          }
+          findFirst: {
+            args: Prisma.ContentVersionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ContentVersionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>
+          }
+          findMany: {
+            args: Prisma.ContentVersionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>[]
+          }
+          create: {
+            args: Prisma.ContentVersionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>
+          }
+          createMany: {
+            args: Prisma.ContentVersionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ContentVersionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>[]
+          }
+          delete: {
+            args: Prisma.ContentVersionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>
+          }
+          update: {
+            args: Prisma.ContentVersionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ContentVersionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ContentVersionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ContentVersionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>[]
+          }
+          upsert: {
+            args: Prisma.ContentVersionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentVersionPayload>
+          }
+          aggregate: {
+            args: Prisma.ContentVersionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateContentVersion>
+          }
+          groupBy: {
+            args: Prisma.ContentVersionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ContentVersionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ContentVersionCountArgs<ExtArgs>
+            result: $Utils.Optional<ContentVersionCountAggregateOutputType> | number
+          }
+        }
+      }
+      AIGeneration: {
+        payload: Prisma.$AIGenerationPayload<ExtArgs>
+        fields: Prisma.AIGenerationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AIGenerationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AIGenerationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>
+          }
+          findFirst: {
+            args: Prisma.AIGenerationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AIGenerationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>
+          }
+          findMany: {
+            args: Prisma.AIGenerationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>[]
+          }
+          create: {
+            args: Prisma.AIGenerationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>
+          }
+          createMany: {
+            args: Prisma.AIGenerationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AIGenerationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>[]
+          }
+          delete: {
+            args: Prisma.AIGenerationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>
+          }
+          update: {
+            args: Prisma.AIGenerationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>
+          }
+          deleteMany: {
+            args: Prisma.AIGenerationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AIGenerationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AIGenerationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>[]
+          }
+          upsert: {
+            args: Prisma.AIGenerationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIGenerationPayload>
+          }
+          aggregate: {
+            args: Prisma.AIGenerationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAIGeneration>
+          }
+          groupBy: {
+            args: Prisma.AIGenerationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AIGenerationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AIGenerationCountArgs<ExtArgs>
+            result: $Utils.Optional<AIGenerationCountAggregateOutputType> | number
+          }
+        }
+      }
+      PromptTemplate: {
+        payload: Prisma.$PromptTemplatePayload<ExtArgs>
+        fields: Prisma.PromptTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PromptTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PromptTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.PromptTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PromptTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.PromptTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.PromptTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.PromptTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PromptTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.PromptTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>
+          }
+          update: {
+            args: Prisma.PromptTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.PromptTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PromptTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PromptTemplateUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>[]
+          }
+          upsert: {
+            args: Prisma.PromptTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromptTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.PromptTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePromptTemplate>
+          }
+          groupBy: {
+            args: Prisma.PromptTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PromptTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PromptTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<PromptTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
       AIUsageLog: {
         payload: Prisma.$AIUsageLogPayload<ExtArgs>
         fields: Prisma.AIUsageLogFieldRefs
@@ -3269,6 +3699,10 @@ export namespace Prisma {
     strategy?: StrategyOmit
     strategyVersion?: StrategyVersionOmit
     strategyInsight?: StrategyInsightOmit
+    seedingContent?: SeedingContentOmit
+    contentVersion?: ContentVersionOmit
+    aIGeneration?: AIGenerationOmit
+    promptTemplate?: PromptTemplateOmit
     aIUsageLog?: AIUsageLogOmit
     seedingBot?: SeedingBotOmit
     seedingBotAccount?: SeedingBotAccountOmit
@@ -3548,6 +3982,8 @@ export namespace Prisma {
     insights: number
     strategies: number
     botTasks: number
+    seedingContents: number
+    aiGenerations: number
   }
 
   export type AnalysisSessionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3557,6 +3993,8 @@ export namespace Prisma {
     insights?: boolean | AnalysisSessionCountOutputTypeCountInsightsArgs
     strategies?: boolean | AnalysisSessionCountOutputTypeCountStrategiesArgs
     botTasks?: boolean | AnalysisSessionCountOutputTypeCountBotTasksArgs
+    seedingContents?: boolean | AnalysisSessionCountOutputTypeCountSeedingContentsArgs
+    aiGenerations?: boolean | AnalysisSessionCountOutputTypeCountAiGenerationsArgs
   }
 
   // Custom InputTypes
@@ -3610,6 +4048,20 @@ export namespace Prisma {
    */
   export type AnalysisSessionCountOutputTypeCountBotTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SeedingBotTaskWhereInput
+  }
+
+  /**
+   * AnalysisSessionCountOutputType without action
+   */
+  export type AnalysisSessionCountOutputTypeCountSeedingContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingContentWhereInput
+  }
+
+  /**
+   * AnalysisSessionCountOutputType without action
+   */
+  export type AnalysisSessionCountOutputTypeCountAiGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIGenerationWhereInput
   }
 
 
@@ -3838,11 +4290,15 @@ export namespace Prisma {
   export type StrategyVersionCountOutputType = {
     insights: number
     botTasks: number
+    seedingContents: number
+    aiGenerations: number
   }
 
   export type StrategyVersionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     insights?: boolean | StrategyVersionCountOutputTypeCountInsightsArgs
     botTasks?: boolean | StrategyVersionCountOutputTypeCountBotTasksArgs
+    seedingContents?: boolean | StrategyVersionCountOutputTypeCountSeedingContentsArgs
+    aiGenerations?: boolean | StrategyVersionCountOutputTypeCountAiGenerationsArgs
   }
 
   // Custom InputTypes
@@ -3868,6 +4324,122 @@ export namespace Prisma {
    */
   export type StrategyVersionCountOutputTypeCountBotTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SeedingBotTaskWhereInput
+  }
+
+  /**
+   * StrategyVersionCountOutputType without action
+   */
+  export type StrategyVersionCountOutputTypeCountSeedingContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingContentWhereInput
+  }
+
+  /**
+   * StrategyVersionCountOutputType without action
+   */
+  export type StrategyVersionCountOutputTypeCountAiGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIGenerationWhereInput
+  }
+
+
+  /**
+   * Count Type SeedingContentCountOutputType
+   */
+
+  export type SeedingContentCountOutputType = {
+    versions: number
+    aiGenerations: number
+  }
+
+  export type SeedingContentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    versions?: boolean | SeedingContentCountOutputTypeCountVersionsArgs
+    aiGenerations?: boolean | SeedingContentCountOutputTypeCountAiGenerationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SeedingContentCountOutputType without action
+   */
+  export type SeedingContentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContentCountOutputType
+     */
+    select?: SeedingContentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SeedingContentCountOutputType without action
+   */
+  export type SeedingContentCountOutputTypeCountVersionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentVersionWhereInput
+  }
+
+  /**
+   * SeedingContentCountOutputType without action
+   */
+  export type SeedingContentCountOutputTypeCountAiGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIGenerationWhereInput
+  }
+
+
+  /**
+   * Count Type AIGenerationCountOutputType
+   */
+
+  export type AIGenerationCountOutputType = {
+    versions: number
+  }
+
+  export type AIGenerationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    versions?: boolean | AIGenerationCountOutputTypeCountVersionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AIGenerationCountOutputType without action
+   */
+  export type AIGenerationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGenerationCountOutputType
+     */
+    select?: AIGenerationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AIGenerationCountOutputType without action
+   */
+  export type AIGenerationCountOutputTypeCountVersionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentVersionWhereInput
+  }
+
+
+  /**
+   * Count Type PromptTemplateCountOutputType
+   */
+
+  export type PromptTemplateCountOutputType = {
+    generations: number
+  }
+
+  export type PromptTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    generations?: boolean | PromptTemplateCountOutputTypeCountGenerationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PromptTemplateCountOutputType without action
+   */
+  export type PromptTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplateCountOutputType
+     */
+    select?: PromptTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PromptTemplateCountOutputType without action
+   */
+  export type PromptTemplateCountOutputTypeCountGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIGenerationWhereInput
   }
 
 
@@ -12520,6 +13092,8 @@ export namespace Prisma {
     insights?: boolean | AnalysisSession$insightsArgs<ExtArgs>
     strategies?: boolean | AnalysisSession$strategiesArgs<ExtArgs>
     botTasks?: boolean | AnalysisSession$botTasksArgs<ExtArgs>
+    seedingContents?: boolean | AnalysisSession$seedingContentsArgs<ExtArgs>
+    aiGenerations?: boolean | AnalysisSession$aiGenerationsArgs<ExtArgs>
     _count?: boolean | AnalysisSessionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["analysisSession"]>
 
@@ -12594,6 +13168,8 @@ export namespace Prisma {
     insights?: boolean | AnalysisSession$insightsArgs<ExtArgs>
     strategies?: boolean | AnalysisSession$strategiesArgs<ExtArgs>
     botTasks?: boolean | AnalysisSession$botTasksArgs<ExtArgs>
+    seedingContents?: boolean | AnalysisSession$seedingContentsArgs<ExtArgs>
+    aiGenerations?: boolean | AnalysisSession$aiGenerationsArgs<ExtArgs>
     _count?: boolean | AnalysisSessionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AnalysisSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12616,6 +13192,8 @@ export namespace Prisma {
       insights: Prisma.$InsightPayload<ExtArgs>[]
       strategies: Prisma.$StrategyPayload<ExtArgs>[]
       botTasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
+      seedingContents: Prisma.$SeedingContentPayload<ExtArgs>[]
+      aiGenerations: Prisma.$AIGenerationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13036,6 +13614,8 @@ export namespace Prisma {
     insights<T extends AnalysisSession$insightsArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$insightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InsightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     strategies<T extends AnalysisSession$strategiesArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$strategiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StrategyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     botTasks<T extends AnalysisSession$botTasksArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$botTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    seedingContents<T extends AnalysisSession$seedingContentsArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$seedingContentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    aiGenerations<T extends AnalysisSession$aiGenerationsArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSession$aiGenerationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13618,6 +14198,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * AnalysisSession.seedingContents
+   */
+  export type AnalysisSession$seedingContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    where?: SeedingContentWhereInput
+    orderBy?: SeedingContentOrderByWithRelationInput | SeedingContentOrderByWithRelationInput[]
+    cursor?: SeedingContentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingContentScalarFieldEnum | SeedingContentScalarFieldEnum[]
+  }
+
+  /**
+   * AnalysisSession.aiGenerations
+   */
+  export type AnalysisSession$aiGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    where?: AIGenerationWhereInput
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    cursor?: AIGenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
   }
 
   /**
@@ -25394,6 +26022,8 @@ export namespace Prisma {
     activeForStrategy?: boolean | StrategyVersion$activeForStrategyArgs<ExtArgs>
     insights?: boolean | StrategyVersion$insightsArgs<ExtArgs>
     botTasks?: boolean | StrategyVersion$botTasksArgs<ExtArgs>
+    seedingContents?: boolean | StrategyVersion$seedingContentsArgs<ExtArgs>
+    aiGenerations?: boolean | StrategyVersion$aiGenerationsArgs<ExtArgs>
     _count?: boolean | StrategyVersionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["strategyVersion"]>
 
@@ -25495,6 +26125,8 @@ export namespace Prisma {
     activeForStrategy?: boolean | StrategyVersion$activeForStrategyArgs<ExtArgs>
     insights?: boolean | StrategyVersion$insightsArgs<ExtArgs>
     botTasks?: boolean | StrategyVersion$botTasksArgs<ExtArgs>
+    seedingContents?: boolean | StrategyVersion$seedingContentsArgs<ExtArgs>
+    aiGenerations?: boolean | StrategyVersion$aiGenerationsArgs<ExtArgs>
     _count?: boolean | StrategyVersionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StrategyVersionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -25511,6 +26143,8 @@ export namespace Prisma {
       activeForStrategy: Prisma.$StrategyPayload<ExtArgs> | null
       insights: Prisma.$StrategyInsightPayload<ExtArgs>[]
       botTasks: Prisma.$SeedingBotTaskPayload<ExtArgs>[]
+      seedingContents: Prisma.$SeedingContentPayload<ExtArgs>[]
+      aiGenerations: Prisma.$AIGenerationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -25938,6 +26572,8 @@ export namespace Prisma {
     activeForStrategy<T extends StrategyVersion$activeForStrategyArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$activeForStrategyArgs<ExtArgs>>): Prisma__StrategyClient<$Result.GetResult<Prisma.$StrategyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     insights<T extends StrategyVersion$insightsArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$insightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StrategyInsightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     botTasks<T extends StrategyVersion$botTasksArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$botTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingBotTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    seedingContents<T extends StrategyVersion$seedingContentsArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$seedingContentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    aiGenerations<T extends StrategyVersion$aiGenerationsArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersion$aiGenerationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -26454,6 +27090,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SeedingBotTaskScalarFieldEnum | SeedingBotTaskScalarFieldEnum[]
+  }
+
+  /**
+   * StrategyVersion.seedingContents
+   */
+  export type StrategyVersion$seedingContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    where?: SeedingContentWhereInput
+    orderBy?: SeedingContentOrderByWithRelationInput | SeedingContentOrderByWithRelationInput[]
+    cursor?: SeedingContentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SeedingContentScalarFieldEnum | SeedingContentScalarFieldEnum[]
+  }
+
+  /**
+   * StrategyVersion.aiGenerations
+   */
+  export type StrategyVersion$aiGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    where?: AIGenerationWhereInput
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    cursor?: AIGenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
   }
 
   /**
@@ -27594,6 +28278,5059 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: StrategyInsightInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SeedingContent
+   */
+
+  export type AggregateSeedingContent = {
+    _count: SeedingContentCountAggregateOutputType | null
+    _min: SeedingContentMinAggregateOutputType | null
+    _max: SeedingContentMaxAggregateOutputType | null
+  }
+
+  export type SeedingContentMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    origin: $Enums.ContentOrigin | null
+    status: $Enums.ContentStatus | null
+    platform: string | null
+    contentType: string | null
+    title: string | null
+    currentVersionId: string | null
+    contentHash: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    archivedAt: Date | null
+  }
+
+  export type SeedingContentMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    origin: $Enums.ContentOrigin | null
+    status: $Enums.ContentStatus | null
+    platform: string | null
+    contentType: string | null
+    title: string | null
+    currentVersionId: string | null
+    contentHash: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    archivedAt: Date | null
+  }
+
+  export type SeedingContentCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    analysisSessionId: number
+    strategyVersionId: number
+    origin: number
+    status: number
+    platform: number
+    contentType: number
+    title: number
+    currentVersionId: number
+    contentHash: number
+    tags: number
+    createdBy: number
+    createdAt: number
+    updatedAt: number
+    archivedAt: number
+    _all: number
+  }
+
+
+  export type SeedingContentMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    origin?: true
+    status?: true
+    platform?: true
+    contentType?: true
+    title?: true
+    currentVersionId?: true
+    contentHash?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    archivedAt?: true
+  }
+
+  export type SeedingContentMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    origin?: true
+    status?: true
+    platform?: true
+    contentType?: true
+    title?: true
+    currentVersionId?: true
+    contentHash?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    archivedAt?: true
+  }
+
+  export type SeedingContentCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    origin?: true
+    status?: true
+    platform?: true
+    contentType?: true
+    title?: true
+    currentVersionId?: true
+    contentHash?: true
+    tags?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    archivedAt?: true
+    _all?: true
+  }
+
+  export type SeedingContentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingContent to aggregate.
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingContents to fetch.
+     */
+    orderBy?: SeedingContentOrderByWithRelationInput | SeedingContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SeedingContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SeedingContents
+    **/
+    _count?: true | SeedingContentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SeedingContentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SeedingContentMaxAggregateInputType
+  }
+
+  export type GetSeedingContentAggregateType<T extends SeedingContentAggregateArgs> = {
+        [P in keyof T & keyof AggregateSeedingContent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSeedingContent[P]>
+      : GetScalarType<T[P], AggregateSeedingContent[P]>
+  }
+
+
+
+
+  export type SeedingContentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SeedingContentWhereInput
+    orderBy?: SeedingContentOrderByWithAggregationInput | SeedingContentOrderByWithAggregationInput[]
+    by: SeedingContentScalarFieldEnum[] | SeedingContentScalarFieldEnum
+    having?: SeedingContentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SeedingContentCountAggregateInputType | true
+    _min?: SeedingContentMinAggregateInputType
+    _max?: SeedingContentMaxAggregateInputType
+  }
+
+  export type SeedingContentGroupByOutputType = {
+    id: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    origin: $Enums.ContentOrigin
+    status: $Enums.ContentStatus
+    platform: string
+    contentType: string
+    title: string
+    currentVersionId: string | null
+    contentHash: string | null
+    tags: JsonValue
+    createdBy: string | null
+    createdAt: Date
+    updatedAt: Date
+    archivedAt: Date | null
+    _count: SeedingContentCountAggregateOutputType | null
+    _min: SeedingContentMinAggregateOutputType | null
+    _max: SeedingContentMaxAggregateOutputType | null
+  }
+
+  type GetSeedingContentGroupByPayload<T extends SeedingContentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SeedingContentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SeedingContentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SeedingContentGroupByOutputType[P]>
+            : GetScalarType<T[P], SeedingContentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SeedingContentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    origin?: boolean
+    status?: boolean
+    platform?: boolean
+    contentType?: boolean
+    title?: boolean
+    currentVersionId?: boolean
+    contentHash?: boolean
+    tags?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    archivedAt?: boolean
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    versions?: boolean | SeedingContent$versionsArgs<ExtArgs>
+    currentVersion?: boolean | SeedingContent$currentVersionArgs<ExtArgs>
+    aiGenerations?: boolean | SeedingContent$aiGenerationsArgs<ExtArgs>
+    _count?: boolean | SeedingContentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingContent"]>
+
+  export type SeedingContentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    origin?: boolean
+    status?: boolean
+    platform?: boolean
+    contentType?: boolean
+    title?: boolean
+    currentVersionId?: boolean
+    contentHash?: boolean
+    tags?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    archivedAt?: boolean
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    currentVersion?: boolean | SeedingContent$currentVersionArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingContent"]>
+
+  export type SeedingContentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    origin?: boolean
+    status?: boolean
+    platform?: boolean
+    contentType?: boolean
+    title?: boolean
+    currentVersionId?: boolean
+    contentHash?: boolean
+    tags?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    archivedAt?: boolean
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    currentVersion?: boolean | SeedingContent$currentVersionArgs<ExtArgs>
+  }, ExtArgs["result"]["seedingContent"]>
+
+  export type SeedingContentSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    origin?: boolean
+    status?: boolean
+    platform?: boolean
+    contentType?: boolean
+    title?: boolean
+    currentVersionId?: boolean
+    contentHash?: boolean
+    tags?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    archivedAt?: boolean
+  }
+
+  export type SeedingContentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "analysisSessionId" | "strategyVersionId" | "origin" | "status" | "platform" | "contentType" | "title" | "currentVersionId" | "contentHash" | "tags" | "createdBy" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["seedingContent"]>
+  export type SeedingContentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    versions?: boolean | SeedingContent$versionsArgs<ExtArgs>
+    currentVersion?: boolean | SeedingContent$currentVersionArgs<ExtArgs>
+    aiGenerations?: boolean | SeedingContent$aiGenerationsArgs<ExtArgs>
+    _count?: boolean | SeedingContentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SeedingContentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    currentVersion?: boolean | SeedingContent$currentVersionArgs<ExtArgs>
+  }
+  export type SeedingContentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    currentVersion?: boolean | SeedingContent$currentVersionArgs<ExtArgs>
+  }
+
+  export type $SeedingContentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SeedingContent"
+    objects: {
+      analysisSession: Prisma.$AnalysisSessionPayload<ExtArgs>
+      strategyVersion: Prisma.$StrategyVersionPayload<ExtArgs>
+      versions: Prisma.$ContentVersionPayload<ExtArgs>[]
+      currentVersion: Prisma.$ContentVersionPayload<ExtArgs> | null
+      aiGenerations: Prisma.$AIGenerationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      analysisSessionId: string
+      strategyVersionId: string
+      origin: $Enums.ContentOrigin
+      status: $Enums.ContentStatus
+      platform: string
+      contentType: string
+      title: string
+      currentVersionId: string | null
+      contentHash: string | null
+      tags: Prisma.JsonValue
+      createdBy: string | null
+      createdAt: Date
+      updatedAt: Date
+      archivedAt: Date | null
+    }, ExtArgs["result"]["seedingContent"]>
+    composites: {}
+  }
+
+  type SeedingContentGetPayload<S extends boolean | null | undefined | SeedingContentDefaultArgs> = $Result.GetResult<Prisma.$SeedingContentPayload, S>
+
+  type SeedingContentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SeedingContentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SeedingContentCountAggregateInputType | true
+    }
+
+  export interface SeedingContentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SeedingContent'], meta: { name: 'SeedingContent' } }
+    /**
+     * Find zero or one SeedingContent that matches the filter.
+     * @param {SeedingContentFindUniqueArgs} args - Arguments to find a SeedingContent
+     * @example
+     * // Get one SeedingContent
+     * const seedingContent = await prisma.seedingContent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SeedingContentFindUniqueArgs>(args: SelectSubset<T, SeedingContentFindUniqueArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SeedingContent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SeedingContentFindUniqueOrThrowArgs} args - Arguments to find a SeedingContent
+     * @example
+     * // Get one SeedingContent
+     * const seedingContent = await prisma.seedingContent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SeedingContentFindUniqueOrThrowArgs>(args: SelectSubset<T, SeedingContentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingContent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentFindFirstArgs} args - Arguments to find a SeedingContent
+     * @example
+     * // Get one SeedingContent
+     * const seedingContent = await prisma.seedingContent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SeedingContentFindFirstArgs>(args?: SelectSubset<T, SeedingContentFindFirstArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SeedingContent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentFindFirstOrThrowArgs} args - Arguments to find a SeedingContent
+     * @example
+     * // Get one SeedingContent
+     * const seedingContent = await prisma.seedingContent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SeedingContentFindFirstOrThrowArgs>(args?: SelectSubset<T, SeedingContentFindFirstOrThrowArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SeedingContents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SeedingContents
+     * const seedingContents = await prisma.seedingContent.findMany()
+     * 
+     * // Get first 10 SeedingContents
+     * const seedingContents = await prisma.seedingContent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const seedingContentWithIdOnly = await prisma.seedingContent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SeedingContentFindManyArgs>(args?: SelectSubset<T, SeedingContentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SeedingContent.
+     * @param {SeedingContentCreateArgs} args - Arguments to create a SeedingContent.
+     * @example
+     * // Create one SeedingContent
+     * const SeedingContent = await prisma.seedingContent.create({
+     *   data: {
+     *     // ... data to create a SeedingContent
+     *   }
+     * })
+     * 
+     */
+    create<T extends SeedingContentCreateArgs>(args: SelectSubset<T, SeedingContentCreateArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SeedingContents.
+     * @param {SeedingContentCreateManyArgs} args - Arguments to create many SeedingContents.
+     * @example
+     * // Create many SeedingContents
+     * const seedingContent = await prisma.seedingContent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SeedingContentCreateManyArgs>(args?: SelectSubset<T, SeedingContentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SeedingContents and returns the data saved in the database.
+     * @param {SeedingContentCreateManyAndReturnArgs} args - Arguments to create many SeedingContents.
+     * @example
+     * // Create many SeedingContents
+     * const seedingContent = await prisma.seedingContent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SeedingContents and only return the `id`
+     * const seedingContentWithIdOnly = await prisma.seedingContent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SeedingContentCreateManyAndReturnArgs>(args?: SelectSubset<T, SeedingContentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SeedingContent.
+     * @param {SeedingContentDeleteArgs} args - Arguments to delete one SeedingContent.
+     * @example
+     * // Delete one SeedingContent
+     * const SeedingContent = await prisma.seedingContent.delete({
+     *   where: {
+     *     // ... filter to delete one SeedingContent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SeedingContentDeleteArgs>(args: SelectSubset<T, SeedingContentDeleteArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SeedingContent.
+     * @param {SeedingContentUpdateArgs} args - Arguments to update one SeedingContent.
+     * @example
+     * // Update one SeedingContent
+     * const seedingContent = await prisma.seedingContent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SeedingContentUpdateArgs>(args: SelectSubset<T, SeedingContentUpdateArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SeedingContents.
+     * @param {SeedingContentDeleteManyArgs} args - Arguments to filter SeedingContents to delete.
+     * @example
+     * // Delete a few SeedingContents
+     * const { count } = await prisma.seedingContent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SeedingContentDeleteManyArgs>(args?: SelectSubset<T, SeedingContentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SeedingContents
+     * const seedingContent = await prisma.seedingContent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SeedingContentUpdateManyArgs>(args: SelectSubset<T, SeedingContentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SeedingContents and returns the data updated in the database.
+     * @param {SeedingContentUpdateManyAndReturnArgs} args - Arguments to update many SeedingContents.
+     * @example
+     * // Update many SeedingContents
+     * const seedingContent = await prisma.seedingContent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SeedingContents and only return the `id`
+     * const seedingContentWithIdOnly = await prisma.seedingContent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SeedingContentUpdateManyAndReturnArgs>(args: SelectSubset<T, SeedingContentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SeedingContent.
+     * @param {SeedingContentUpsertArgs} args - Arguments to update or create a SeedingContent.
+     * @example
+     * // Update or create a SeedingContent
+     * const seedingContent = await prisma.seedingContent.upsert({
+     *   create: {
+     *     // ... data to create a SeedingContent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SeedingContent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SeedingContentUpsertArgs>(args: SelectSubset<T, SeedingContentUpsertArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SeedingContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentCountArgs} args - Arguments to filter SeedingContents to count.
+     * @example
+     * // Count the number of SeedingContents
+     * const count = await prisma.seedingContent.count({
+     *   where: {
+     *     // ... the filter for the SeedingContents we want to count
+     *   }
+     * })
+    **/
+    count<T extends SeedingContentCountArgs>(
+      args?: Subset<T, SeedingContentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SeedingContentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SeedingContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SeedingContentAggregateArgs>(args: Subset<T, SeedingContentAggregateArgs>): Prisma.PrismaPromise<GetSeedingContentAggregateType<T>>
+
+    /**
+     * Group by SeedingContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SeedingContentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SeedingContentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SeedingContentGroupByArgs['orderBy'] }
+        : { orderBy?: SeedingContentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SeedingContentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSeedingContentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SeedingContent model
+   */
+  readonly fields: SeedingContentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SeedingContent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SeedingContentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    analysisSession<T extends AnalysisSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSessionDefaultArgs<ExtArgs>>): Prisma__AnalysisSessionClient<$Result.GetResult<Prisma.$AnalysisSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    strategyVersion<T extends StrategyVersionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersionDefaultArgs<ExtArgs>>): Prisma__StrategyVersionClient<$Result.GetResult<Prisma.$StrategyVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    versions<T extends SeedingContent$versionsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingContent$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    currentVersion<T extends SeedingContent$currentVersionArgs<ExtArgs> = {}>(args?: Subset<T, SeedingContent$currentVersionArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    aiGenerations<T extends SeedingContent$aiGenerationsArgs<ExtArgs> = {}>(args?: Subset<T, SeedingContent$aiGenerationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SeedingContent model
+   */
+  interface SeedingContentFieldRefs {
+    readonly id: FieldRef<"SeedingContent", 'String'>
+    readonly organizationId: FieldRef<"SeedingContent", 'String'>
+    readonly analysisSessionId: FieldRef<"SeedingContent", 'String'>
+    readonly strategyVersionId: FieldRef<"SeedingContent", 'String'>
+    readonly origin: FieldRef<"SeedingContent", 'ContentOrigin'>
+    readonly status: FieldRef<"SeedingContent", 'ContentStatus'>
+    readonly platform: FieldRef<"SeedingContent", 'String'>
+    readonly contentType: FieldRef<"SeedingContent", 'String'>
+    readonly title: FieldRef<"SeedingContent", 'String'>
+    readonly currentVersionId: FieldRef<"SeedingContent", 'String'>
+    readonly contentHash: FieldRef<"SeedingContent", 'String'>
+    readonly tags: FieldRef<"SeedingContent", 'Json'>
+    readonly createdBy: FieldRef<"SeedingContent", 'String'>
+    readonly createdAt: FieldRef<"SeedingContent", 'DateTime'>
+    readonly updatedAt: FieldRef<"SeedingContent", 'DateTime'>
+    readonly archivedAt: FieldRef<"SeedingContent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SeedingContent findUnique
+   */
+  export type SeedingContentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingContent to fetch.
+     */
+    where: SeedingContentWhereUniqueInput
+  }
+
+  /**
+   * SeedingContent findUniqueOrThrow
+   */
+  export type SeedingContentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingContent to fetch.
+     */
+    where: SeedingContentWhereUniqueInput
+  }
+
+  /**
+   * SeedingContent findFirst
+   */
+  export type SeedingContentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingContent to fetch.
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingContents to fetch.
+     */
+    orderBy?: SeedingContentOrderByWithRelationInput | SeedingContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingContents.
+     */
+    cursor?: SeedingContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingContents.
+     */
+    distinct?: SeedingContentScalarFieldEnum | SeedingContentScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingContent findFirstOrThrow
+   */
+  export type SeedingContentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingContent to fetch.
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingContents to fetch.
+     */
+    orderBy?: SeedingContentOrderByWithRelationInput | SeedingContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SeedingContents.
+     */
+    cursor?: SeedingContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SeedingContents.
+     */
+    distinct?: SeedingContentScalarFieldEnum | SeedingContentScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingContent findMany
+   */
+  export type SeedingContentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * Filter, which SeedingContents to fetch.
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SeedingContents to fetch.
+     */
+    orderBy?: SeedingContentOrderByWithRelationInput | SeedingContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SeedingContents.
+     */
+    cursor?: SeedingContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SeedingContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SeedingContents.
+     */
+    skip?: number
+    distinct?: SeedingContentScalarFieldEnum | SeedingContentScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingContent create
+   */
+  export type SeedingContentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SeedingContent.
+     */
+    data: XOR<SeedingContentCreateInput, SeedingContentUncheckedCreateInput>
+  }
+
+  /**
+   * SeedingContent createMany
+   */
+  export type SeedingContentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SeedingContents.
+     */
+    data: SeedingContentCreateManyInput | SeedingContentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SeedingContent createManyAndReturn
+   */
+  export type SeedingContentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * The data used to create many SeedingContents.
+     */
+    data: SeedingContentCreateManyInput | SeedingContentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingContent update
+   */
+  export type SeedingContentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SeedingContent.
+     */
+    data: XOR<SeedingContentUpdateInput, SeedingContentUncheckedUpdateInput>
+    /**
+     * Choose, which SeedingContent to update.
+     */
+    where: SeedingContentWhereUniqueInput
+  }
+
+  /**
+   * SeedingContent updateMany
+   */
+  export type SeedingContentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SeedingContents.
+     */
+    data: XOR<SeedingContentUpdateManyMutationInput, SeedingContentUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingContents to update
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * Limit how many SeedingContents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingContent updateManyAndReturn
+   */
+  export type SeedingContentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * The data used to update SeedingContents.
+     */
+    data: XOR<SeedingContentUpdateManyMutationInput, SeedingContentUncheckedUpdateManyInput>
+    /**
+     * Filter which SeedingContents to update
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * Limit how many SeedingContents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SeedingContent upsert
+   */
+  export type SeedingContentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SeedingContent to update in case it exists.
+     */
+    where: SeedingContentWhereUniqueInput
+    /**
+     * In case the SeedingContent found by the `where` argument doesn't exist, create a new SeedingContent with this data.
+     */
+    create: XOR<SeedingContentCreateInput, SeedingContentUncheckedCreateInput>
+    /**
+     * In case the SeedingContent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SeedingContentUpdateInput, SeedingContentUncheckedUpdateInput>
+  }
+
+  /**
+   * SeedingContent delete
+   */
+  export type SeedingContentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    /**
+     * Filter which SeedingContent to delete.
+     */
+    where: SeedingContentWhereUniqueInput
+  }
+
+  /**
+   * SeedingContent deleteMany
+   */
+  export type SeedingContentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SeedingContents to delete
+     */
+    where?: SeedingContentWhereInput
+    /**
+     * Limit how many SeedingContents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SeedingContent.versions
+   */
+  export type SeedingContent$versionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    where?: ContentVersionWhereInput
+    orderBy?: ContentVersionOrderByWithRelationInput | ContentVersionOrderByWithRelationInput[]
+    cursor?: ContentVersionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ContentVersionScalarFieldEnum | ContentVersionScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingContent.currentVersion
+   */
+  export type SeedingContent$currentVersionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    where?: ContentVersionWhereInput
+  }
+
+  /**
+   * SeedingContent.aiGenerations
+   */
+  export type SeedingContent$aiGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    where?: AIGenerationWhereInput
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    cursor?: AIGenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
+  }
+
+  /**
+   * SeedingContent without action
+   */
+  export type SeedingContentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ContentVersion
+   */
+
+  export type AggregateContentVersion = {
+    _count: ContentVersionCountAggregateOutputType | null
+    _avg: ContentVersionAvgAggregateOutputType | null
+    _sum: ContentVersionSumAggregateOutputType | null
+    _min: ContentVersionMinAggregateOutputType | null
+    _max: ContentVersionMaxAggregateOutputType | null
+  }
+
+  export type ContentVersionAvgAggregateOutputType = {
+    versionNumber: number | null
+  }
+
+  export type ContentVersionSumAggregateOutputType = {
+    versionNumber: number | null
+  }
+
+  export type ContentVersionMinAggregateOutputType = {
+    id: string | null
+    contentId: string | null
+    versionNumber: number | null
+    title: string | null
+    body: string | null
+    contentTheme: string | null
+    source: $Enums.ContentVersionSource | null
+    aiGenerationId: string | null
+    editReason: string | null
+    editedBy: string | null
+    reviewedBy: string | null
+    reviewedAt: Date | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    reviewComment: string | null
+    createdAt: Date | null
+  }
+
+  export type ContentVersionMaxAggregateOutputType = {
+    id: string | null
+    contentId: string | null
+    versionNumber: number | null
+    title: string | null
+    body: string | null
+    contentTheme: string | null
+    source: $Enums.ContentVersionSource | null
+    aiGenerationId: string | null
+    editReason: string | null
+    editedBy: string | null
+    reviewedBy: string | null
+    reviewedAt: Date | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    reviewComment: string | null
+    createdAt: Date | null
+  }
+
+  export type ContentVersionCountAggregateOutputType = {
+    id: number
+    contentId: number
+    versionNumber: number
+    title: number
+    body: number
+    contentTheme: number
+    source: number
+    aiGenerationId: number
+    editReason: number
+    editedBy: number
+    reviewedBy: number
+    reviewedAt: number
+    approvedBy: number
+    approvedAt: number
+    reviewComment: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ContentVersionAvgAggregateInputType = {
+    versionNumber?: true
+  }
+
+  export type ContentVersionSumAggregateInputType = {
+    versionNumber?: true
+  }
+
+  export type ContentVersionMinAggregateInputType = {
+    id?: true
+    contentId?: true
+    versionNumber?: true
+    title?: true
+    body?: true
+    contentTheme?: true
+    source?: true
+    aiGenerationId?: true
+    editReason?: true
+    editedBy?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    approvedBy?: true
+    approvedAt?: true
+    reviewComment?: true
+    createdAt?: true
+  }
+
+  export type ContentVersionMaxAggregateInputType = {
+    id?: true
+    contentId?: true
+    versionNumber?: true
+    title?: true
+    body?: true
+    contentTheme?: true
+    source?: true
+    aiGenerationId?: true
+    editReason?: true
+    editedBy?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    approvedBy?: true
+    approvedAt?: true
+    reviewComment?: true
+    createdAt?: true
+  }
+
+  export type ContentVersionCountAggregateInputType = {
+    id?: true
+    contentId?: true
+    versionNumber?: true
+    title?: true
+    body?: true
+    contentTheme?: true
+    source?: true
+    aiGenerationId?: true
+    editReason?: true
+    editedBy?: true
+    reviewedBy?: true
+    reviewedAt?: true
+    approvedBy?: true
+    approvedAt?: true
+    reviewComment?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ContentVersionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContentVersion to aggregate.
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentVersions to fetch.
+     */
+    orderBy?: ContentVersionOrderByWithRelationInput | ContentVersionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ContentVersionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentVersions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentVersions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ContentVersions
+    **/
+    _count?: true | ContentVersionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ContentVersionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ContentVersionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ContentVersionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ContentVersionMaxAggregateInputType
+  }
+
+  export type GetContentVersionAggregateType<T extends ContentVersionAggregateArgs> = {
+        [P in keyof T & keyof AggregateContentVersion]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateContentVersion[P]>
+      : GetScalarType<T[P], AggregateContentVersion[P]>
+  }
+
+
+
+
+  export type ContentVersionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentVersionWhereInput
+    orderBy?: ContentVersionOrderByWithAggregationInput | ContentVersionOrderByWithAggregationInput[]
+    by: ContentVersionScalarFieldEnum[] | ContentVersionScalarFieldEnum
+    having?: ContentVersionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ContentVersionCountAggregateInputType | true
+    _avg?: ContentVersionAvgAggregateInputType
+    _sum?: ContentVersionSumAggregateInputType
+    _min?: ContentVersionMinAggregateInputType
+    _max?: ContentVersionMaxAggregateInputType
+  }
+
+  export type ContentVersionGroupByOutputType = {
+    id: string
+    contentId: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme: string | null
+    source: $Enums.ContentVersionSource
+    aiGenerationId: string | null
+    editReason: string | null
+    editedBy: string | null
+    reviewedBy: string | null
+    reviewedAt: Date | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    reviewComment: string | null
+    createdAt: Date
+    _count: ContentVersionCountAggregateOutputType | null
+    _avg: ContentVersionAvgAggregateOutputType | null
+    _sum: ContentVersionSumAggregateOutputType | null
+    _min: ContentVersionMinAggregateOutputType | null
+    _max: ContentVersionMaxAggregateOutputType | null
+  }
+
+  type GetContentVersionGroupByPayload<T extends ContentVersionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ContentVersionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ContentVersionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ContentVersionGroupByOutputType[P]>
+            : GetScalarType<T[P], ContentVersionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ContentVersionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contentId?: boolean
+    versionNumber?: boolean
+    title?: boolean
+    body?: boolean
+    contentTheme?: boolean
+    source?: boolean
+    aiGenerationId?: boolean
+    editReason?: boolean
+    editedBy?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    reviewComment?: boolean
+    createdAt?: boolean
+    content?: boolean | SeedingContentDefaultArgs<ExtArgs>
+    currentFor?: boolean | ContentVersion$currentForArgs<ExtArgs>
+    aiGeneration?: boolean | ContentVersion$aiGenerationArgs<ExtArgs>
+  }, ExtArgs["result"]["contentVersion"]>
+
+  export type ContentVersionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contentId?: boolean
+    versionNumber?: boolean
+    title?: boolean
+    body?: boolean
+    contentTheme?: boolean
+    source?: boolean
+    aiGenerationId?: boolean
+    editReason?: boolean
+    editedBy?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    reviewComment?: boolean
+    createdAt?: boolean
+    content?: boolean | SeedingContentDefaultArgs<ExtArgs>
+    aiGeneration?: boolean | ContentVersion$aiGenerationArgs<ExtArgs>
+  }, ExtArgs["result"]["contentVersion"]>
+
+  export type ContentVersionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contentId?: boolean
+    versionNumber?: boolean
+    title?: boolean
+    body?: boolean
+    contentTheme?: boolean
+    source?: boolean
+    aiGenerationId?: boolean
+    editReason?: boolean
+    editedBy?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    reviewComment?: boolean
+    createdAt?: boolean
+    content?: boolean | SeedingContentDefaultArgs<ExtArgs>
+    aiGeneration?: boolean | ContentVersion$aiGenerationArgs<ExtArgs>
+  }, ExtArgs["result"]["contentVersion"]>
+
+  export type ContentVersionSelectScalar = {
+    id?: boolean
+    contentId?: boolean
+    versionNumber?: boolean
+    title?: boolean
+    body?: boolean
+    contentTheme?: boolean
+    source?: boolean
+    aiGenerationId?: boolean
+    editReason?: boolean
+    editedBy?: boolean
+    reviewedBy?: boolean
+    reviewedAt?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    reviewComment?: boolean
+    createdAt?: boolean
+  }
+
+  export type ContentVersionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contentId" | "versionNumber" | "title" | "body" | "contentTheme" | "source" | "aiGenerationId" | "editReason" | "editedBy" | "reviewedBy" | "reviewedAt" | "approvedBy" | "approvedAt" | "reviewComment" | "createdAt", ExtArgs["result"]["contentVersion"]>
+  export type ContentVersionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    content?: boolean | SeedingContentDefaultArgs<ExtArgs>
+    currentFor?: boolean | ContentVersion$currentForArgs<ExtArgs>
+    aiGeneration?: boolean | ContentVersion$aiGenerationArgs<ExtArgs>
+  }
+  export type ContentVersionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    content?: boolean | SeedingContentDefaultArgs<ExtArgs>
+    aiGeneration?: boolean | ContentVersion$aiGenerationArgs<ExtArgs>
+  }
+  export type ContentVersionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    content?: boolean | SeedingContentDefaultArgs<ExtArgs>
+    aiGeneration?: boolean | ContentVersion$aiGenerationArgs<ExtArgs>
+  }
+
+  export type $ContentVersionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ContentVersion"
+    objects: {
+      content: Prisma.$SeedingContentPayload<ExtArgs>
+      currentFor: Prisma.$SeedingContentPayload<ExtArgs> | null
+      aiGeneration: Prisma.$AIGenerationPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      contentId: string
+      versionNumber: number
+      title: string
+      body: string
+      contentTheme: string | null
+      source: $Enums.ContentVersionSource
+      aiGenerationId: string | null
+      editReason: string | null
+      editedBy: string | null
+      reviewedBy: string | null
+      reviewedAt: Date | null
+      approvedBy: string | null
+      approvedAt: Date | null
+      reviewComment: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["contentVersion"]>
+    composites: {}
+  }
+
+  type ContentVersionGetPayload<S extends boolean | null | undefined | ContentVersionDefaultArgs> = $Result.GetResult<Prisma.$ContentVersionPayload, S>
+
+  type ContentVersionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ContentVersionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ContentVersionCountAggregateInputType | true
+    }
+
+  export interface ContentVersionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ContentVersion'], meta: { name: 'ContentVersion' } }
+    /**
+     * Find zero or one ContentVersion that matches the filter.
+     * @param {ContentVersionFindUniqueArgs} args - Arguments to find a ContentVersion
+     * @example
+     * // Get one ContentVersion
+     * const contentVersion = await prisma.contentVersion.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ContentVersionFindUniqueArgs>(args: SelectSubset<T, ContentVersionFindUniqueArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ContentVersion that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ContentVersionFindUniqueOrThrowArgs} args - Arguments to find a ContentVersion
+     * @example
+     * // Get one ContentVersion
+     * const contentVersion = await prisma.contentVersion.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ContentVersionFindUniqueOrThrowArgs>(args: SelectSubset<T, ContentVersionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ContentVersion that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionFindFirstArgs} args - Arguments to find a ContentVersion
+     * @example
+     * // Get one ContentVersion
+     * const contentVersion = await prisma.contentVersion.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ContentVersionFindFirstArgs>(args?: SelectSubset<T, ContentVersionFindFirstArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ContentVersion that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionFindFirstOrThrowArgs} args - Arguments to find a ContentVersion
+     * @example
+     * // Get one ContentVersion
+     * const contentVersion = await prisma.contentVersion.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ContentVersionFindFirstOrThrowArgs>(args?: SelectSubset<T, ContentVersionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ContentVersions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ContentVersions
+     * const contentVersions = await prisma.contentVersion.findMany()
+     * 
+     * // Get first 10 ContentVersions
+     * const contentVersions = await prisma.contentVersion.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const contentVersionWithIdOnly = await prisma.contentVersion.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ContentVersionFindManyArgs>(args?: SelectSubset<T, ContentVersionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ContentVersion.
+     * @param {ContentVersionCreateArgs} args - Arguments to create a ContentVersion.
+     * @example
+     * // Create one ContentVersion
+     * const ContentVersion = await prisma.contentVersion.create({
+     *   data: {
+     *     // ... data to create a ContentVersion
+     *   }
+     * })
+     * 
+     */
+    create<T extends ContentVersionCreateArgs>(args: SelectSubset<T, ContentVersionCreateArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ContentVersions.
+     * @param {ContentVersionCreateManyArgs} args - Arguments to create many ContentVersions.
+     * @example
+     * // Create many ContentVersions
+     * const contentVersion = await prisma.contentVersion.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ContentVersionCreateManyArgs>(args?: SelectSubset<T, ContentVersionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ContentVersions and returns the data saved in the database.
+     * @param {ContentVersionCreateManyAndReturnArgs} args - Arguments to create many ContentVersions.
+     * @example
+     * // Create many ContentVersions
+     * const contentVersion = await prisma.contentVersion.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ContentVersions and only return the `id`
+     * const contentVersionWithIdOnly = await prisma.contentVersion.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ContentVersionCreateManyAndReturnArgs>(args?: SelectSubset<T, ContentVersionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ContentVersion.
+     * @param {ContentVersionDeleteArgs} args - Arguments to delete one ContentVersion.
+     * @example
+     * // Delete one ContentVersion
+     * const ContentVersion = await prisma.contentVersion.delete({
+     *   where: {
+     *     // ... filter to delete one ContentVersion
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ContentVersionDeleteArgs>(args: SelectSubset<T, ContentVersionDeleteArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ContentVersion.
+     * @param {ContentVersionUpdateArgs} args - Arguments to update one ContentVersion.
+     * @example
+     * // Update one ContentVersion
+     * const contentVersion = await prisma.contentVersion.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ContentVersionUpdateArgs>(args: SelectSubset<T, ContentVersionUpdateArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ContentVersions.
+     * @param {ContentVersionDeleteManyArgs} args - Arguments to filter ContentVersions to delete.
+     * @example
+     * // Delete a few ContentVersions
+     * const { count } = await prisma.contentVersion.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ContentVersionDeleteManyArgs>(args?: SelectSubset<T, ContentVersionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ContentVersions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ContentVersions
+     * const contentVersion = await prisma.contentVersion.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ContentVersionUpdateManyArgs>(args: SelectSubset<T, ContentVersionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ContentVersions and returns the data updated in the database.
+     * @param {ContentVersionUpdateManyAndReturnArgs} args - Arguments to update many ContentVersions.
+     * @example
+     * // Update many ContentVersions
+     * const contentVersion = await prisma.contentVersion.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ContentVersions and only return the `id`
+     * const contentVersionWithIdOnly = await prisma.contentVersion.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ContentVersionUpdateManyAndReturnArgs>(args: SelectSubset<T, ContentVersionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ContentVersion.
+     * @param {ContentVersionUpsertArgs} args - Arguments to update or create a ContentVersion.
+     * @example
+     * // Update or create a ContentVersion
+     * const contentVersion = await prisma.contentVersion.upsert({
+     *   create: {
+     *     // ... data to create a ContentVersion
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ContentVersion we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ContentVersionUpsertArgs>(args: SelectSubset<T, ContentVersionUpsertArgs<ExtArgs>>): Prisma__ContentVersionClient<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ContentVersions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionCountArgs} args - Arguments to filter ContentVersions to count.
+     * @example
+     * // Count the number of ContentVersions
+     * const count = await prisma.contentVersion.count({
+     *   where: {
+     *     // ... the filter for the ContentVersions we want to count
+     *   }
+     * })
+    **/
+    count<T extends ContentVersionCountArgs>(
+      args?: Subset<T, ContentVersionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ContentVersionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ContentVersion.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ContentVersionAggregateArgs>(args: Subset<T, ContentVersionAggregateArgs>): Prisma.PrismaPromise<GetContentVersionAggregateType<T>>
+
+    /**
+     * Group by ContentVersion.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentVersionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ContentVersionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ContentVersionGroupByArgs['orderBy'] }
+        : { orderBy?: ContentVersionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ContentVersionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContentVersionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ContentVersion model
+   */
+  readonly fields: ContentVersionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ContentVersion.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ContentVersionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    content<T extends SeedingContentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SeedingContentDefaultArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    currentFor<T extends ContentVersion$currentForArgs<ExtArgs> = {}>(args?: Subset<T, ContentVersion$currentForArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    aiGeneration<T extends ContentVersion$aiGenerationArgs<ExtArgs> = {}>(args?: Subset<T, ContentVersion$aiGenerationArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ContentVersion model
+   */
+  interface ContentVersionFieldRefs {
+    readonly id: FieldRef<"ContentVersion", 'String'>
+    readonly contentId: FieldRef<"ContentVersion", 'String'>
+    readonly versionNumber: FieldRef<"ContentVersion", 'Int'>
+    readonly title: FieldRef<"ContentVersion", 'String'>
+    readonly body: FieldRef<"ContentVersion", 'String'>
+    readonly contentTheme: FieldRef<"ContentVersion", 'String'>
+    readonly source: FieldRef<"ContentVersion", 'ContentVersionSource'>
+    readonly aiGenerationId: FieldRef<"ContentVersion", 'String'>
+    readonly editReason: FieldRef<"ContentVersion", 'String'>
+    readonly editedBy: FieldRef<"ContentVersion", 'String'>
+    readonly reviewedBy: FieldRef<"ContentVersion", 'String'>
+    readonly reviewedAt: FieldRef<"ContentVersion", 'DateTime'>
+    readonly approvedBy: FieldRef<"ContentVersion", 'String'>
+    readonly approvedAt: FieldRef<"ContentVersion", 'DateTime'>
+    readonly reviewComment: FieldRef<"ContentVersion", 'String'>
+    readonly createdAt: FieldRef<"ContentVersion", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ContentVersion findUnique
+   */
+  export type ContentVersionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentVersion to fetch.
+     */
+    where: ContentVersionWhereUniqueInput
+  }
+
+  /**
+   * ContentVersion findUniqueOrThrow
+   */
+  export type ContentVersionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentVersion to fetch.
+     */
+    where: ContentVersionWhereUniqueInput
+  }
+
+  /**
+   * ContentVersion findFirst
+   */
+  export type ContentVersionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentVersion to fetch.
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentVersions to fetch.
+     */
+    orderBy?: ContentVersionOrderByWithRelationInput | ContentVersionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ContentVersions.
+     */
+    cursor?: ContentVersionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentVersions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentVersions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentVersions.
+     */
+    distinct?: ContentVersionScalarFieldEnum | ContentVersionScalarFieldEnum[]
+  }
+
+  /**
+   * ContentVersion findFirstOrThrow
+   */
+  export type ContentVersionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentVersion to fetch.
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentVersions to fetch.
+     */
+    orderBy?: ContentVersionOrderByWithRelationInput | ContentVersionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ContentVersions.
+     */
+    cursor?: ContentVersionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentVersions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentVersions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentVersions.
+     */
+    distinct?: ContentVersionScalarFieldEnum | ContentVersionScalarFieldEnum[]
+  }
+
+  /**
+   * ContentVersion findMany
+   */
+  export type ContentVersionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentVersions to fetch.
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentVersions to fetch.
+     */
+    orderBy?: ContentVersionOrderByWithRelationInput | ContentVersionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ContentVersions.
+     */
+    cursor?: ContentVersionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentVersions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentVersions.
+     */
+    skip?: number
+    distinct?: ContentVersionScalarFieldEnum | ContentVersionScalarFieldEnum[]
+  }
+
+  /**
+   * ContentVersion create
+   */
+  export type ContentVersionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ContentVersion.
+     */
+    data: XOR<ContentVersionCreateInput, ContentVersionUncheckedCreateInput>
+  }
+
+  /**
+   * ContentVersion createMany
+   */
+  export type ContentVersionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ContentVersions.
+     */
+    data: ContentVersionCreateManyInput | ContentVersionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ContentVersion createManyAndReturn
+   */
+  export type ContentVersionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * The data used to create many ContentVersions.
+     */
+    data: ContentVersionCreateManyInput | ContentVersionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ContentVersion update
+   */
+  export type ContentVersionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ContentVersion.
+     */
+    data: XOR<ContentVersionUpdateInput, ContentVersionUncheckedUpdateInput>
+    /**
+     * Choose, which ContentVersion to update.
+     */
+    where: ContentVersionWhereUniqueInput
+  }
+
+  /**
+   * ContentVersion updateMany
+   */
+  export type ContentVersionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ContentVersions.
+     */
+    data: XOR<ContentVersionUpdateManyMutationInput, ContentVersionUncheckedUpdateManyInput>
+    /**
+     * Filter which ContentVersions to update
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * Limit how many ContentVersions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ContentVersion updateManyAndReturn
+   */
+  export type ContentVersionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * The data used to update ContentVersions.
+     */
+    data: XOR<ContentVersionUpdateManyMutationInput, ContentVersionUncheckedUpdateManyInput>
+    /**
+     * Filter which ContentVersions to update
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * Limit how many ContentVersions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ContentVersion upsert
+   */
+  export type ContentVersionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ContentVersion to update in case it exists.
+     */
+    where: ContentVersionWhereUniqueInput
+    /**
+     * In case the ContentVersion found by the `where` argument doesn't exist, create a new ContentVersion with this data.
+     */
+    create: XOR<ContentVersionCreateInput, ContentVersionUncheckedCreateInput>
+    /**
+     * In case the ContentVersion was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ContentVersionUpdateInput, ContentVersionUncheckedUpdateInput>
+  }
+
+  /**
+   * ContentVersion delete
+   */
+  export type ContentVersionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    /**
+     * Filter which ContentVersion to delete.
+     */
+    where: ContentVersionWhereUniqueInput
+  }
+
+  /**
+   * ContentVersion deleteMany
+   */
+  export type ContentVersionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContentVersions to delete
+     */
+    where?: ContentVersionWhereInput
+    /**
+     * Limit how many ContentVersions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ContentVersion.currentFor
+   */
+  export type ContentVersion$currentForArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    where?: SeedingContentWhereInput
+  }
+
+  /**
+   * ContentVersion.aiGeneration
+   */
+  export type ContentVersion$aiGenerationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    where?: AIGenerationWhereInput
+  }
+
+  /**
+   * ContentVersion without action
+   */
+  export type ContentVersionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AIGeneration
+   */
+
+  export type AggregateAIGeneration = {
+    _count: AIGenerationCountAggregateOutputType | null
+    _avg: AIGenerationAvgAggregateOutputType | null
+    _sum: AIGenerationSumAggregateOutputType | null
+    _min: AIGenerationMinAggregateOutputType | null
+    _max: AIGenerationMaxAggregateOutputType | null
+  }
+
+  export type AIGenerationAvgAggregateOutputType = {
+    selectedCandidateIndex: number | null
+  }
+
+  export type AIGenerationSumAggregateOutputType = {
+    selectedCandidateIndex: number | null
+  }
+
+  export type AIGenerationMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    contentId: string | null
+    promptTemplateId: string | null
+    promptRendered: string | null
+    promptVersion: string | null
+    aiProvider: string | null
+    aiModel: string | null
+    selectedCandidateIndex: number | null
+    status: $Enums.AIGenerationStatus | null
+    requestedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type AIGenerationMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    analysisSessionId: string | null
+    strategyVersionId: string | null
+    contentId: string | null
+    promptTemplateId: string | null
+    promptRendered: string | null
+    promptVersion: string | null
+    aiProvider: string | null
+    aiModel: string | null
+    selectedCandidateIndex: number | null
+    status: $Enums.AIGenerationStatus | null
+    requestedBy: string | null
+    createdAt: Date | null
+  }
+
+  export type AIGenerationCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    analysisSessionId: number
+    strategyVersionId: number
+    contentId: number
+    promptTemplateId: number
+    promptRendered: number
+    promptVersion: number
+    aiProvider: number
+    aiModel: number
+    parameters: number
+    candidates: number
+    selectedCandidateIndex: number
+    status: number
+    rawResponse: number
+    requestedBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AIGenerationAvgAggregateInputType = {
+    selectedCandidateIndex?: true
+  }
+
+  export type AIGenerationSumAggregateInputType = {
+    selectedCandidateIndex?: true
+  }
+
+  export type AIGenerationMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    contentId?: true
+    promptTemplateId?: true
+    promptRendered?: true
+    promptVersion?: true
+    aiProvider?: true
+    aiModel?: true
+    selectedCandidateIndex?: true
+    status?: true
+    requestedBy?: true
+    createdAt?: true
+  }
+
+  export type AIGenerationMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    contentId?: true
+    promptTemplateId?: true
+    promptRendered?: true
+    promptVersion?: true
+    aiProvider?: true
+    aiModel?: true
+    selectedCandidateIndex?: true
+    status?: true
+    requestedBy?: true
+    createdAt?: true
+  }
+
+  export type AIGenerationCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    analysisSessionId?: true
+    strategyVersionId?: true
+    contentId?: true
+    promptTemplateId?: true
+    promptRendered?: true
+    promptVersion?: true
+    aiProvider?: true
+    aiModel?: true
+    parameters?: true
+    candidates?: true
+    selectedCandidateIndex?: true
+    status?: true
+    rawResponse?: true
+    requestedBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AIGenerationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIGeneration to aggregate.
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIGenerations to fetch.
+     */
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AIGenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIGenerations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIGenerations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AIGenerations
+    **/
+    _count?: true | AIGenerationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AIGenerationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AIGenerationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AIGenerationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AIGenerationMaxAggregateInputType
+  }
+
+  export type GetAIGenerationAggregateType<T extends AIGenerationAggregateArgs> = {
+        [P in keyof T & keyof AggregateAIGeneration]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAIGeneration[P]>
+      : GetScalarType<T[P], AggregateAIGeneration[P]>
+  }
+
+
+
+
+  export type AIGenerationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIGenerationWhereInput
+    orderBy?: AIGenerationOrderByWithAggregationInput | AIGenerationOrderByWithAggregationInput[]
+    by: AIGenerationScalarFieldEnum[] | AIGenerationScalarFieldEnum
+    having?: AIGenerationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AIGenerationCountAggregateInputType | true
+    _avg?: AIGenerationAvgAggregateInputType
+    _sum?: AIGenerationSumAggregateInputType
+    _min?: AIGenerationMinAggregateInputType
+    _max?: AIGenerationMaxAggregateInputType
+  }
+
+  export type AIGenerationGroupByOutputType = {
+    id: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    contentId: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion: string | null
+    aiProvider: string
+    aiModel: string
+    parameters: JsonValue
+    candidates: JsonValue
+    selectedCandidateIndex: number | null
+    status: $Enums.AIGenerationStatus
+    rawResponse: JsonValue | null
+    requestedBy: string | null
+    createdAt: Date
+    _count: AIGenerationCountAggregateOutputType | null
+    _avg: AIGenerationAvgAggregateOutputType | null
+    _sum: AIGenerationSumAggregateOutputType | null
+    _min: AIGenerationMinAggregateOutputType | null
+    _max: AIGenerationMaxAggregateOutputType | null
+  }
+
+  type GetAIGenerationGroupByPayload<T extends AIGenerationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AIGenerationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AIGenerationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AIGenerationGroupByOutputType[P]>
+            : GetScalarType<T[P], AIGenerationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AIGenerationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    contentId?: boolean
+    promptTemplateId?: boolean
+    promptRendered?: boolean
+    promptVersion?: boolean
+    aiProvider?: boolean
+    aiModel?: boolean
+    parameters?: boolean
+    candidates?: boolean
+    selectedCandidateIndex?: boolean
+    status?: boolean
+    rawResponse?: boolean
+    requestedBy?: boolean
+    createdAt?: boolean
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    promptTemplate?: boolean | PromptTemplateDefaultArgs<ExtArgs>
+    content?: boolean | AIGeneration$contentArgs<ExtArgs>
+    versions?: boolean | AIGeneration$versionsArgs<ExtArgs>
+    _count?: boolean | AIGenerationCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aIGeneration"]>
+
+  export type AIGenerationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    contentId?: boolean
+    promptTemplateId?: boolean
+    promptRendered?: boolean
+    promptVersion?: boolean
+    aiProvider?: boolean
+    aiModel?: boolean
+    parameters?: boolean
+    candidates?: boolean
+    selectedCandidateIndex?: boolean
+    status?: boolean
+    rawResponse?: boolean
+    requestedBy?: boolean
+    createdAt?: boolean
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    promptTemplate?: boolean | PromptTemplateDefaultArgs<ExtArgs>
+    content?: boolean | AIGeneration$contentArgs<ExtArgs>
+  }, ExtArgs["result"]["aIGeneration"]>
+
+  export type AIGenerationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    contentId?: boolean
+    promptTemplateId?: boolean
+    promptRendered?: boolean
+    promptVersion?: boolean
+    aiProvider?: boolean
+    aiModel?: boolean
+    parameters?: boolean
+    candidates?: boolean
+    selectedCandidateIndex?: boolean
+    status?: boolean
+    rawResponse?: boolean
+    requestedBy?: boolean
+    createdAt?: boolean
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    promptTemplate?: boolean | PromptTemplateDefaultArgs<ExtArgs>
+    content?: boolean | AIGeneration$contentArgs<ExtArgs>
+  }, ExtArgs["result"]["aIGeneration"]>
+
+  export type AIGenerationSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    analysisSessionId?: boolean
+    strategyVersionId?: boolean
+    contentId?: boolean
+    promptTemplateId?: boolean
+    promptRendered?: boolean
+    promptVersion?: boolean
+    aiProvider?: boolean
+    aiModel?: boolean
+    parameters?: boolean
+    candidates?: boolean
+    selectedCandidateIndex?: boolean
+    status?: boolean
+    rawResponse?: boolean
+    requestedBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type AIGenerationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "analysisSessionId" | "strategyVersionId" | "contentId" | "promptTemplateId" | "promptRendered" | "promptVersion" | "aiProvider" | "aiModel" | "parameters" | "candidates" | "selectedCandidateIndex" | "status" | "rawResponse" | "requestedBy" | "createdAt", ExtArgs["result"]["aIGeneration"]>
+  export type AIGenerationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    promptTemplate?: boolean | PromptTemplateDefaultArgs<ExtArgs>
+    content?: boolean | AIGeneration$contentArgs<ExtArgs>
+    versions?: boolean | AIGeneration$versionsArgs<ExtArgs>
+    _count?: boolean | AIGenerationCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AIGenerationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    promptTemplate?: boolean | PromptTemplateDefaultArgs<ExtArgs>
+    content?: boolean | AIGeneration$contentArgs<ExtArgs>
+  }
+  export type AIGenerationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    analysisSession?: boolean | AnalysisSessionDefaultArgs<ExtArgs>
+    strategyVersion?: boolean | StrategyVersionDefaultArgs<ExtArgs>
+    promptTemplate?: boolean | PromptTemplateDefaultArgs<ExtArgs>
+    content?: boolean | AIGeneration$contentArgs<ExtArgs>
+  }
+
+  export type $AIGenerationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AIGeneration"
+    objects: {
+      analysisSession: Prisma.$AnalysisSessionPayload<ExtArgs>
+      strategyVersion: Prisma.$StrategyVersionPayload<ExtArgs>
+      promptTemplate: Prisma.$PromptTemplatePayload<ExtArgs>
+      content: Prisma.$SeedingContentPayload<ExtArgs> | null
+      versions: Prisma.$ContentVersionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      analysisSessionId: string
+      strategyVersionId: string
+      contentId: string | null
+      promptTemplateId: string
+      promptRendered: string
+      promptVersion: string | null
+      aiProvider: string
+      aiModel: string
+      parameters: Prisma.JsonValue
+      candidates: Prisma.JsonValue
+      selectedCandidateIndex: number | null
+      status: $Enums.AIGenerationStatus
+      rawResponse: Prisma.JsonValue | null
+      requestedBy: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["aIGeneration"]>
+    composites: {}
+  }
+
+  type AIGenerationGetPayload<S extends boolean | null | undefined | AIGenerationDefaultArgs> = $Result.GetResult<Prisma.$AIGenerationPayload, S>
+
+  type AIGenerationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AIGenerationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AIGenerationCountAggregateInputType | true
+    }
+
+  export interface AIGenerationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AIGeneration'], meta: { name: 'AIGeneration' } }
+    /**
+     * Find zero or one AIGeneration that matches the filter.
+     * @param {AIGenerationFindUniqueArgs} args - Arguments to find a AIGeneration
+     * @example
+     * // Get one AIGeneration
+     * const aIGeneration = await prisma.aIGeneration.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AIGenerationFindUniqueArgs>(args: SelectSubset<T, AIGenerationFindUniqueArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AIGeneration that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AIGenerationFindUniqueOrThrowArgs} args - Arguments to find a AIGeneration
+     * @example
+     * // Get one AIGeneration
+     * const aIGeneration = await prisma.aIGeneration.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AIGenerationFindUniqueOrThrowArgs>(args: SelectSubset<T, AIGenerationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AIGeneration that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationFindFirstArgs} args - Arguments to find a AIGeneration
+     * @example
+     * // Get one AIGeneration
+     * const aIGeneration = await prisma.aIGeneration.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AIGenerationFindFirstArgs>(args?: SelectSubset<T, AIGenerationFindFirstArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AIGeneration that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationFindFirstOrThrowArgs} args - Arguments to find a AIGeneration
+     * @example
+     * // Get one AIGeneration
+     * const aIGeneration = await prisma.aIGeneration.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AIGenerationFindFirstOrThrowArgs>(args?: SelectSubset<T, AIGenerationFindFirstOrThrowArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AIGenerations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AIGenerations
+     * const aIGenerations = await prisma.aIGeneration.findMany()
+     * 
+     * // Get first 10 AIGenerations
+     * const aIGenerations = await prisma.aIGeneration.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aIGenerationWithIdOnly = await prisma.aIGeneration.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AIGenerationFindManyArgs>(args?: SelectSubset<T, AIGenerationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AIGeneration.
+     * @param {AIGenerationCreateArgs} args - Arguments to create a AIGeneration.
+     * @example
+     * // Create one AIGeneration
+     * const AIGeneration = await prisma.aIGeneration.create({
+     *   data: {
+     *     // ... data to create a AIGeneration
+     *   }
+     * })
+     * 
+     */
+    create<T extends AIGenerationCreateArgs>(args: SelectSubset<T, AIGenerationCreateArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AIGenerations.
+     * @param {AIGenerationCreateManyArgs} args - Arguments to create many AIGenerations.
+     * @example
+     * // Create many AIGenerations
+     * const aIGeneration = await prisma.aIGeneration.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AIGenerationCreateManyArgs>(args?: SelectSubset<T, AIGenerationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AIGenerations and returns the data saved in the database.
+     * @param {AIGenerationCreateManyAndReturnArgs} args - Arguments to create many AIGenerations.
+     * @example
+     * // Create many AIGenerations
+     * const aIGeneration = await prisma.aIGeneration.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AIGenerations and only return the `id`
+     * const aIGenerationWithIdOnly = await prisma.aIGeneration.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AIGenerationCreateManyAndReturnArgs>(args?: SelectSubset<T, AIGenerationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AIGeneration.
+     * @param {AIGenerationDeleteArgs} args - Arguments to delete one AIGeneration.
+     * @example
+     * // Delete one AIGeneration
+     * const AIGeneration = await prisma.aIGeneration.delete({
+     *   where: {
+     *     // ... filter to delete one AIGeneration
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AIGenerationDeleteArgs>(args: SelectSubset<T, AIGenerationDeleteArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AIGeneration.
+     * @param {AIGenerationUpdateArgs} args - Arguments to update one AIGeneration.
+     * @example
+     * // Update one AIGeneration
+     * const aIGeneration = await prisma.aIGeneration.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AIGenerationUpdateArgs>(args: SelectSubset<T, AIGenerationUpdateArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AIGenerations.
+     * @param {AIGenerationDeleteManyArgs} args - Arguments to filter AIGenerations to delete.
+     * @example
+     * // Delete a few AIGenerations
+     * const { count } = await prisma.aIGeneration.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AIGenerationDeleteManyArgs>(args?: SelectSubset<T, AIGenerationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIGenerations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AIGenerations
+     * const aIGeneration = await prisma.aIGeneration.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AIGenerationUpdateManyArgs>(args: SelectSubset<T, AIGenerationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIGenerations and returns the data updated in the database.
+     * @param {AIGenerationUpdateManyAndReturnArgs} args - Arguments to update many AIGenerations.
+     * @example
+     * // Update many AIGenerations
+     * const aIGeneration = await prisma.aIGeneration.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AIGenerations and only return the `id`
+     * const aIGenerationWithIdOnly = await prisma.aIGeneration.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AIGenerationUpdateManyAndReturnArgs>(args: SelectSubset<T, AIGenerationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AIGeneration.
+     * @param {AIGenerationUpsertArgs} args - Arguments to update or create a AIGeneration.
+     * @example
+     * // Update or create a AIGeneration
+     * const aIGeneration = await prisma.aIGeneration.upsert({
+     *   create: {
+     *     // ... data to create a AIGeneration
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AIGeneration we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AIGenerationUpsertArgs>(args: SelectSubset<T, AIGenerationUpsertArgs<ExtArgs>>): Prisma__AIGenerationClient<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AIGenerations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationCountArgs} args - Arguments to filter AIGenerations to count.
+     * @example
+     * // Count the number of AIGenerations
+     * const count = await prisma.aIGeneration.count({
+     *   where: {
+     *     // ... the filter for the AIGenerations we want to count
+     *   }
+     * })
+    **/
+    count<T extends AIGenerationCountArgs>(
+      args?: Subset<T, AIGenerationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AIGenerationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AIGeneration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AIGenerationAggregateArgs>(args: Subset<T, AIGenerationAggregateArgs>): Prisma.PrismaPromise<GetAIGenerationAggregateType<T>>
+
+    /**
+     * Group by AIGeneration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIGenerationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AIGenerationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AIGenerationGroupByArgs['orderBy'] }
+        : { orderBy?: AIGenerationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AIGenerationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAIGenerationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AIGeneration model
+   */
+  readonly fields: AIGenerationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AIGeneration.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AIGenerationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    analysisSession<T extends AnalysisSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisSessionDefaultArgs<ExtArgs>>): Prisma__AnalysisSessionClient<$Result.GetResult<Prisma.$AnalysisSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    strategyVersion<T extends StrategyVersionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StrategyVersionDefaultArgs<ExtArgs>>): Prisma__StrategyVersionClient<$Result.GetResult<Prisma.$StrategyVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    promptTemplate<T extends PromptTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PromptTemplateDefaultArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    content<T extends AIGeneration$contentArgs<ExtArgs> = {}>(args?: Subset<T, AIGeneration$contentArgs<ExtArgs>>): Prisma__SeedingContentClient<$Result.GetResult<Prisma.$SeedingContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    versions<T extends AIGeneration$versionsArgs<ExtArgs> = {}>(args?: Subset<T, AIGeneration$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AIGeneration model
+   */
+  interface AIGenerationFieldRefs {
+    readonly id: FieldRef<"AIGeneration", 'String'>
+    readonly organizationId: FieldRef<"AIGeneration", 'String'>
+    readonly analysisSessionId: FieldRef<"AIGeneration", 'String'>
+    readonly strategyVersionId: FieldRef<"AIGeneration", 'String'>
+    readonly contentId: FieldRef<"AIGeneration", 'String'>
+    readonly promptTemplateId: FieldRef<"AIGeneration", 'String'>
+    readonly promptRendered: FieldRef<"AIGeneration", 'String'>
+    readonly promptVersion: FieldRef<"AIGeneration", 'String'>
+    readonly aiProvider: FieldRef<"AIGeneration", 'String'>
+    readonly aiModel: FieldRef<"AIGeneration", 'String'>
+    readonly parameters: FieldRef<"AIGeneration", 'Json'>
+    readonly candidates: FieldRef<"AIGeneration", 'Json'>
+    readonly selectedCandidateIndex: FieldRef<"AIGeneration", 'Int'>
+    readonly status: FieldRef<"AIGeneration", 'AIGenerationStatus'>
+    readonly rawResponse: FieldRef<"AIGeneration", 'Json'>
+    readonly requestedBy: FieldRef<"AIGeneration", 'String'>
+    readonly createdAt: FieldRef<"AIGeneration", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AIGeneration findUnique
+   */
+  export type AIGenerationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which AIGeneration to fetch.
+     */
+    where: AIGenerationWhereUniqueInput
+  }
+
+  /**
+   * AIGeneration findUniqueOrThrow
+   */
+  export type AIGenerationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which AIGeneration to fetch.
+     */
+    where: AIGenerationWhereUniqueInput
+  }
+
+  /**
+   * AIGeneration findFirst
+   */
+  export type AIGenerationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which AIGeneration to fetch.
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIGenerations to fetch.
+     */
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIGenerations.
+     */
+    cursor?: AIGenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIGenerations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIGenerations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIGenerations.
+     */
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
+  }
+
+  /**
+   * AIGeneration findFirstOrThrow
+   */
+  export type AIGenerationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which AIGeneration to fetch.
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIGenerations to fetch.
+     */
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIGenerations.
+     */
+    cursor?: AIGenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIGenerations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIGenerations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIGenerations.
+     */
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
+  }
+
+  /**
+   * AIGeneration findMany
+   */
+  export type AIGenerationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which AIGenerations to fetch.
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIGenerations to fetch.
+     */
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AIGenerations.
+     */
+    cursor?: AIGenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIGenerations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIGenerations.
+     */
+    skip?: number
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
+  }
+
+  /**
+   * AIGeneration create
+   */
+  export type AIGenerationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AIGeneration.
+     */
+    data: XOR<AIGenerationCreateInput, AIGenerationUncheckedCreateInput>
+  }
+
+  /**
+   * AIGeneration createMany
+   */
+  export type AIGenerationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AIGenerations.
+     */
+    data: AIGenerationCreateManyInput | AIGenerationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AIGeneration createManyAndReturn
+   */
+  export type AIGenerationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * The data used to create many AIGenerations.
+     */
+    data: AIGenerationCreateManyInput | AIGenerationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AIGeneration update
+   */
+  export type AIGenerationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AIGeneration.
+     */
+    data: XOR<AIGenerationUpdateInput, AIGenerationUncheckedUpdateInput>
+    /**
+     * Choose, which AIGeneration to update.
+     */
+    where: AIGenerationWhereUniqueInput
+  }
+
+  /**
+   * AIGeneration updateMany
+   */
+  export type AIGenerationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AIGenerations.
+     */
+    data: XOR<AIGenerationUpdateManyMutationInput, AIGenerationUncheckedUpdateManyInput>
+    /**
+     * Filter which AIGenerations to update
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * Limit how many AIGenerations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIGeneration updateManyAndReturn
+   */
+  export type AIGenerationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * The data used to update AIGenerations.
+     */
+    data: XOR<AIGenerationUpdateManyMutationInput, AIGenerationUncheckedUpdateManyInput>
+    /**
+     * Filter which AIGenerations to update
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * Limit how many AIGenerations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AIGeneration upsert
+   */
+  export type AIGenerationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AIGeneration to update in case it exists.
+     */
+    where: AIGenerationWhereUniqueInput
+    /**
+     * In case the AIGeneration found by the `where` argument doesn't exist, create a new AIGeneration with this data.
+     */
+    create: XOR<AIGenerationCreateInput, AIGenerationUncheckedCreateInput>
+    /**
+     * In case the AIGeneration was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AIGenerationUpdateInput, AIGenerationUncheckedUpdateInput>
+  }
+
+  /**
+   * AIGeneration delete
+   */
+  export type AIGenerationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    /**
+     * Filter which AIGeneration to delete.
+     */
+    where: AIGenerationWhereUniqueInput
+  }
+
+  /**
+   * AIGeneration deleteMany
+   */
+  export type AIGenerationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIGenerations to delete
+     */
+    where?: AIGenerationWhereInput
+    /**
+     * Limit how many AIGenerations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIGeneration.content
+   */
+  export type AIGeneration$contentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SeedingContent
+     */
+    select?: SeedingContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SeedingContent
+     */
+    omit?: SeedingContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SeedingContentInclude<ExtArgs> | null
+    where?: SeedingContentWhereInput
+  }
+
+  /**
+   * AIGeneration.versions
+   */
+  export type AIGeneration$versionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentVersion
+     */
+    select?: ContentVersionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentVersion
+     */
+    omit?: ContentVersionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentVersionInclude<ExtArgs> | null
+    where?: ContentVersionWhereInput
+    orderBy?: ContentVersionOrderByWithRelationInput | ContentVersionOrderByWithRelationInput[]
+    cursor?: ContentVersionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ContentVersionScalarFieldEnum | ContentVersionScalarFieldEnum[]
+  }
+
+  /**
+   * AIGeneration without action
+   */
+  export type AIGenerationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PromptTemplate
+   */
+
+  export type AggregatePromptTemplate = {
+    _count: PromptTemplateCountAggregateOutputType | null
+    _avg: PromptTemplateAvgAggregateOutputType | null
+    _sum: PromptTemplateSumAggregateOutputType | null
+    _min: PromptTemplateMinAggregateOutputType | null
+    _max: PromptTemplateMaxAggregateOutputType | null
+  }
+
+  export type PromptTemplateAvgAggregateOutputType = {
+    version: number | null
+  }
+
+  export type PromptTemplateSumAggregateOutputType = {
+    version: number | null
+  }
+
+  export type PromptTemplateMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    platform: string | null
+    contentType: string | null
+    purpose: $Enums.PromptPurpose | null
+    templateBody: string | null
+    version: number | null
+    isActive: boolean | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type PromptTemplateMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    platform: string | null
+    contentType: string | null
+    purpose: $Enums.PromptPurpose | null
+    templateBody: string | null
+    version: number | null
+    isActive: boolean | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type PromptTemplateCountAggregateOutputType = {
+    id: number
+    name: number
+    platform: number
+    contentType: number
+    purpose: number
+    templateBody: number
+    version: number
+    isActive: number
+    createdBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PromptTemplateAvgAggregateInputType = {
+    version?: true
+  }
+
+  export type PromptTemplateSumAggregateInputType = {
+    version?: true
+  }
+
+  export type PromptTemplateMinAggregateInputType = {
+    id?: true
+    name?: true
+    platform?: true
+    contentType?: true
+    purpose?: true
+    templateBody?: true
+    version?: true
+    isActive?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type PromptTemplateMaxAggregateInputType = {
+    id?: true
+    name?: true
+    platform?: true
+    contentType?: true
+    purpose?: true
+    templateBody?: true
+    version?: true
+    isActive?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type PromptTemplateCountAggregateInputType = {
+    id?: true
+    name?: true
+    platform?: true
+    contentType?: true
+    purpose?: true
+    templateBody?: true
+    version?: true
+    isActive?: true
+    createdBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PromptTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PromptTemplate to aggregate.
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromptTemplates to fetch.
+     */
+    orderBy?: PromptTemplateOrderByWithRelationInput | PromptTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PromptTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromptTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromptTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PromptTemplates
+    **/
+    _count?: true | PromptTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PromptTemplateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PromptTemplateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PromptTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PromptTemplateMaxAggregateInputType
+  }
+
+  export type GetPromptTemplateAggregateType<T extends PromptTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregatePromptTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePromptTemplate[P]>
+      : GetScalarType<T[P], AggregatePromptTemplate[P]>
+  }
+
+
+
+
+  export type PromptTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PromptTemplateWhereInput
+    orderBy?: PromptTemplateOrderByWithAggregationInput | PromptTemplateOrderByWithAggregationInput[]
+    by: PromptTemplateScalarFieldEnum[] | PromptTemplateScalarFieldEnum
+    having?: PromptTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PromptTemplateCountAggregateInputType | true
+    _avg?: PromptTemplateAvgAggregateInputType
+    _sum?: PromptTemplateSumAggregateInputType
+    _min?: PromptTemplateMinAggregateInputType
+    _max?: PromptTemplateMaxAggregateInputType
+  }
+
+  export type PromptTemplateGroupByOutputType = {
+    id: string
+    name: string
+    platform: string | null
+    contentType: string
+    purpose: $Enums.PromptPurpose
+    templateBody: string
+    version: number
+    isActive: boolean
+    createdBy: string | null
+    createdAt: Date
+    _count: PromptTemplateCountAggregateOutputType | null
+    _avg: PromptTemplateAvgAggregateOutputType | null
+    _sum: PromptTemplateSumAggregateOutputType | null
+    _min: PromptTemplateMinAggregateOutputType | null
+    _max: PromptTemplateMaxAggregateOutputType | null
+  }
+
+  type GetPromptTemplateGroupByPayload<T extends PromptTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PromptTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PromptTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PromptTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], PromptTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PromptTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    platform?: boolean
+    contentType?: boolean
+    purpose?: boolean
+    templateBody?: boolean
+    version?: boolean
+    isActive?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    generations?: boolean | PromptTemplate$generationsArgs<ExtArgs>
+    _count?: boolean | PromptTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["promptTemplate"]>
+
+  export type PromptTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    platform?: boolean
+    contentType?: boolean
+    purpose?: boolean
+    templateBody?: boolean
+    version?: boolean
+    isActive?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["promptTemplate"]>
+
+  export type PromptTemplateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    platform?: boolean
+    contentType?: boolean
+    purpose?: boolean
+    templateBody?: boolean
+    version?: boolean
+    isActive?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["promptTemplate"]>
+
+  export type PromptTemplateSelectScalar = {
+    id?: boolean
+    name?: boolean
+    platform?: boolean
+    contentType?: boolean
+    purpose?: boolean
+    templateBody?: boolean
+    version?: boolean
+    isActive?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type PromptTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "platform" | "contentType" | "purpose" | "templateBody" | "version" | "isActive" | "createdBy" | "createdAt", ExtArgs["result"]["promptTemplate"]>
+  export type PromptTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    generations?: boolean | PromptTemplate$generationsArgs<ExtArgs>
+    _count?: boolean | PromptTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PromptTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type PromptTemplateIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $PromptTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PromptTemplate"
+    objects: {
+      generations: Prisma.$AIGenerationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      platform: string | null
+      contentType: string
+      purpose: $Enums.PromptPurpose
+      templateBody: string
+      version: number
+      isActive: boolean
+      createdBy: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["promptTemplate"]>
+    composites: {}
+  }
+
+  type PromptTemplateGetPayload<S extends boolean | null | undefined | PromptTemplateDefaultArgs> = $Result.GetResult<Prisma.$PromptTemplatePayload, S>
+
+  type PromptTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PromptTemplateFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PromptTemplateCountAggregateInputType | true
+    }
+
+  export interface PromptTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PromptTemplate'], meta: { name: 'PromptTemplate' } }
+    /**
+     * Find zero or one PromptTemplate that matches the filter.
+     * @param {PromptTemplateFindUniqueArgs} args - Arguments to find a PromptTemplate
+     * @example
+     * // Get one PromptTemplate
+     * const promptTemplate = await prisma.promptTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PromptTemplateFindUniqueArgs>(args: SelectSubset<T, PromptTemplateFindUniqueArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PromptTemplate that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PromptTemplateFindUniqueOrThrowArgs} args - Arguments to find a PromptTemplate
+     * @example
+     * // Get one PromptTemplate
+     * const promptTemplate = await prisma.promptTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PromptTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, PromptTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PromptTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateFindFirstArgs} args - Arguments to find a PromptTemplate
+     * @example
+     * // Get one PromptTemplate
+     * const promptTemplate = await prisma.promptTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PromptTemplateFindFirstArgs>(args?: SelectSubset<T, PromptTemplateFindFirstArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PromptTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateFindFirstOrThrowArgs} args - Arguments to find a PromptTemplate
+     * @example
+     * // Get one PromptTemplate
+     * const promptTemplate = await prisma.promptTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PromptTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, PromptTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PromptTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PromptTemplates
+     * const promptTemplates = await prisma.promptTemplate.findMany()
+     * 
+     * // Get first 10 PromptTemplates
+     * const promptTemplates = await prisma.promptTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const promptTemplateWithIdOnly = await prisma.promptTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PromptTemplateFindManyArgs>(args?: SelectSubset<T, PromptTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PromptTemplate.
+     * @param {PromptTemplateCreateArgs} args - Arguments to create a PromptTemplate.
+     * @example
+     * // Create one PromptTemplate
+     * const PromptTemplate = await prisma.promptTemplate.create({
+     *   data: {
+     *     // ... data to create a PromptTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends PromptTemplateCreateArgs>(args: SelectSubset<T, PromptTemplateCreateArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PromptTemplates.
+     * @param {PromptTemplateCreateManyArgs} args - Arguments to create many PromptTemplates.
+     * @example
+     * // Create many PromptTemplates
+     * const promptTemplate = await prisma.promptTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PromptTemplateCreateManyArgs>(args?: SelectSubset<T, PromptTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PromptTemplates and returns the data saved in the database.
+     * @param {PromptTemplateCreateManyAndReturnArgs} args - Arguments to create many PromptTemplates.
+     * @example
+     * // Create many PromptTemplates
+     * const promptTemplate = await prisma.promptTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PromptTemplates and only return the `id`
+     * const promptTemplateWithIdOnly = await prisma.promptTemplate.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PromptTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, PromptTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PromptTemplate.
+     * @param {PromptTemplateDeleteArgs} args - Arguments to delete one PromptTemplate.
+     * @example
+     * // Delete one PromptTemplate
+     * const PromptTemplate = await prisma.promptTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one PromptTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PromptTemplateDeleteArgs>(args: SelectSubset<T, PromptTemplateDeleteArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PromptTemplate.
+     * @param {PromptTemplateUpdateArgs} args - Arguments to update one PromptTemplate.
+     * @example
+     * // Update one PromptTemplate
+     * const promptTemplate = await prisma.promptTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PromptTemplateUpdateArgs>(args: SelectSubset<T, PromptTemplateUpdateArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PromptTemplates.
+     * @param {PromptTemplateDeleteManyArgs} args - Arguments to filter PromptTemplates to delete.
+     * @example
+     * // Delete a few PromptTemplates
+     * const { count } = await prisma.promptTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PromptTemplateDeleteManyArgs>(args?: SelectSubset<T, PromptTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PromptTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PromptTemplates
+     * const promptTemplate = await prisma.promptTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PromptTemplateUpdateManyArgs>(args: SelectSubset<T, PromptTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PromptTemplates and returns the data updated in the database.
+     * @param {PromptTemplateUpdateManyAndReturnArgs} args - Arguments to update many PromptTemplates.
+     * @example
+     * // Update many PromptTemplates
+     * const promptTemplate = await prisma.promptTemplate.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PromptTemplates and only return the `id`
+     * const promptTemplateWithIdOnly = await prisma.promptTemplate.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PromptTemplateUpdateManyAndReturnArgs>(args: SelectSubset<T, PromptTemplateUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PromptTemplate.
+     * @param {PromptTemplateUpsertArgs} args - Arguments to update or create a PromptTemplate.
+     * @example
+     * // Update or create a PromptTemplate
+     * const promptTemplate = await prisma.promptTemplate.upsert({
+     *   create: {
+     *     // ... data to create a PromptTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PromptTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PromptTemplateUpsertArgs>(args: SelectSubset<T, PromptTemplateUpsertArgs<ExtArgs>>): Prisma__PromptTemplateClient<$Result.GetResult<Prisma.$PromptTemplatePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PromptTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateCountArgs} args - Arguments to filter PromptTemplates to count.
+     * @example
+     * // Count the number of PromptTemplates
+     * const count = await prisma.promptTemplate.count({
+     *   where: {
+     *     // ... the filter for the PromptTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends PromptTemplateCountArgs>(
+      args?: Subset<T, PromptTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PromptTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PromptTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PromptTemplateAggregateArgs>(args: Subset<T, PromptTemplateAggregateArgs>): Prisma.PrismaPromise<GetPromptTemplateAggregateType<T>>
+
+    /**
+     * Group by PromptTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromptTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PromptTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PromptTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: PromptTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PromptTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPromptTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PromptTemplate model
+   */
+  readonly fields: PromptTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PromptTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PromptTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    generations<T extends PromptTemplate$generationsArgs<ExtArgs> = {}>(args?: Subset<T, PromptTemplate$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PromptTemplate model
+   */
+  interface PromptTemplateFieldRefs {
+    readonly id: FieldRef<"PromptTemplate", 'String'>
+    readonly name: FieldRef<"PromptTemplate", 'String'>
+    readonly platform: FieldRef<"PromptTemplate", 'String'>
+    readonly contentType: FieldRef<"PromptTemplate", 'String'>
+    readonly purpose: FieldRef<"PromptTemplate", 'PromptPurpose'>
+    readonly templateBody: FieldRef<"PromptTemplate", 'String'>
+    readonly version: FieldRef<"PromptTemplate", 'Int'>
+    readonly isActive: FieldRef<"PromptTemplate", 'Boolean'>
+    readonly createdBy: FieldRef<"PromptTemplate", 'String'>
+    readonly createdAt: FieldRef<"PromptTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PromptTemplate findUnique
+   */
+  export type PromptTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PromptTemplate to fetch.
+     */
+    where: PromptTemplateWhereUniqueInput
+  }
+
+  /**
+   * PromptTemplate findUniqueOrThrow
+   */
+  export type PromptTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PromptTemplate to fetch.
+     */
+    where: PromptTemplateWhereUniqueInput
+  }
+
+  /**
+   * PromptTemplate findFirst
+   */
+  export type PromptTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PromptTemplate to fetch.
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromptTemplates to fetch.
+     */
+    orderBy?: PromptTemplateOrderByWithRelationInput | PromptTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PromptTemplates.
+     */
+    cursor?: PromptTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromptTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromptTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PromptTemplates.
+     */
+    distinct?: PromptTemplateScalarFieldEnum | PromptTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * PromptTemplate findFirstOrThrow
+   */
+  export type PromptTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PromptTemplate to fetch.
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromptTemplates to fetch.
+     */
+    orderBy?: PromptTemplateOrderByWithRelationInput | PromptTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PromptTemplates.
+     */
+    cursor?: PromptTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromptTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromptTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PromptTemplates.
+     */
+    distinct?: PromptTemplateScalarFieldEnum | PromptTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * PromptTemplate findMany
+   */
+  export type PromptTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PromptTemplates to fetch.
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromptTemplates to fetch.
+     */
+    orderBy?: PromptTemplateOrderByWithRelationInput | PromptTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PromptTemplates.
+     */
+    cursor?: PromptTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromptTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromptTemplates.
+     */
+    skip?: number
+    distinct?: PromptTemplateScalarFieldEnum | PromptTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * PromptTemplate create
+   */
+  export type PromptTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PromptTemplate.
+     */
+    data: XOR<PromptTemplateCreateInput, PromptTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * PromptTemplate createMany
+   */
+  export type PromptTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PromptTemplates.
+     */
+    data: PromptTemplateCreateManyInput | PromptTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PromptTemplate createManyAndReturn
+   */
+  export type PromptTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to create many PromptTemplates.
+     */
+    data: PromptTemplateCreateManyInput | PromptTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PromptTemplate update
+   */
+  export type PromptTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PromptTemplate.
+     */
+    data: XOR<PromptTemplateUpdateInput, PromptTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which PromptTemplate to update.
+     */
+    where: PromptTemplateWhereUniqueInput
+  }
+
+  /**
+   * PromptTemplate updateMany
+   */
+  export type PromptTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PromptTemplates.
+     */
+    data: XOR<PromptTemplateUpdateManyMutationInput, PromptTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which PromptTemplates to update
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * Limit how many PromptTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PromptTemplate updateManyAndReturn
+   */
+  export type PromptTemplateUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to update PromptTemplates.
+     */
+    data: XOR<PromptTemplateUpdateManyMutationInput, PromptTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which PromptTemplates to update
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * Limit how many PromptTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PromptTemplate upsert
+   */
+  export type PromptTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PromptTemplate to update in case it exists.
+     */
+    where: PromptTemplateWhereUniqueInput
+    /**
+     * In case the PromptTemplate found by the `where` argument doesn't exist, create a new PromptTemplate with this data.
+     */
+    create: XOR<PromptTemplateCreateInput, PromptTemplateUncheckedCreateInput>
+    /**
+     * In case the PromptTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PromptTemplateUpdateInput, PromptTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * PromptTemplate delete
+   */
+  export type PromptTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which PromptTemplate to delete.
+     */
+    where: PromptTemplateWhereUniqueInput
+  }
+
+  /**
+   * PromptTemplate deleteMany
+   */
+  export type PromptTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PromptTemplates to delete
+     */
+    where?: PromptTemplateWhereInput
+    /**
+     * Limit how many PromptTemplates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PromptTemplate.generations
+   */
+  export type PromptTemplate$generationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIGeneration
+     */
+    select?: AIGenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIGeneration
+     */
+    omit?: AIGenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIGenerationInclude<ExtArgs> | null
+    where?: AIGenerationWhereInput
+    orderBy?: AIGenerationOrderByWithRelationInput | AIGenerationOrderByWithRelationInput[]
+    cursor?: AIGenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIGenerationScalarFieldEnum | AIGenerationScalarFieldEnum[]
+  }
+
+  /**
+   * PromptTemplate without action
+   */
+  export type PromptTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromptTemplate
+     */
+    select?: PromptTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromptTemplate
+     */
+    omit?: PromptTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromptTemplateInclude<ExtArgs> | null
   }
 
 
@@ -35327,6 +41064,89 @@ export namespace Prisma {
   export type StrategyInsightScalarFieldEnum = (typeof StrategyInsightScalarFieldEnum)[keyof typeof StrategyInsightScalarFieldEnum]
 
 
+  export const SeedingContentScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    analysisSessionId: 'analysisSessionId',
+    strategyVersionId: 'strategyVersionId',
+    origin: 'origin',
+    status: 'status',
+    platform: 'platform',
+    contentType: 'contentType',
+    title: 'title',
+    currentVersionId: 'currentVersionId',
+    contentHash: 'contentHash',
+    tags: 'tags',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    archivedAt: 'archivedAt'
+  };
+
+  export type SeedingContentScalarFieldEnum = (typeof SeedingContentScalarFieldEnum)[keyof typeof SeedingContentScalarFieldEnum]
+
+
+  export const ContentVersionScalarFieldEnum: {
+    id: 'id',
+    contentId: 'contentId',
+    versionNumber: 'versionNumber',
+    title: 'title',
+    body: 'body',
+    contentTheme: 'contentTheme',
+    source: 'source',
+    aiGenerationId: 'aiGenerationId',
+    editReason: 'editReason',
+    editedBy: 'editedBy',
+    reviewedBy: 'reviewedBy',
+    reviewedAt: 'reviewedAt',
+    approvedBy: 'approvedBy',
+    approvedAt: 'approvedAt',
+    reviewComment: 'reviewComment',
+    createdAt: 'createdAt'
+  };
+
+  export type ContentVersionScalarFieldEnum = (typeof ContentVersionScalarFieldEnum)[keyof typeof ContentVersionScalarFieldEnum]
+
+
+  export const AIGenerationScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    analysisSessionId: 'analysisSessionId',
+    strategyVersionId: 'strategyVersionId',
+    contentId: 'contentId',
+    promptTemplateId: 'promptTemplateId',
+    promptRendered: 'promptRendered',
+    promptVersion: 'promptVersion',
+    aiProvider: 'aiProvider',
+    aiModel: 'aiModel',
+    parameters: 'parameters',
+    candidates: 'candidates',
+    selectedCandidateIndex: 'selectedCandidateIndex',
+    status: 'status',
+    rawResponse: 'rawResponse',
+    requestedBy: 'requestedBy',
+    createdAt: 'createdAt'
+  };
+
+  export type AIGenerationScalarFieldEnum = (typeof AIGenerationScalarFieldEnum)[keyof typeof AIGenerationScalarFieldEnum]
+
+
+  export const PromptTemplateScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    platform: 'platform',
+    contentType: 'contentType',
+    purpose: 'purpose',
+    templateBody: 'templateBody',
+    version: 'version',
+    isActive: 'isActive',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt'
+  };
+
+  export type PromptTemplateScalarFieldEnum = (typeof PromptTemplateScalarFieldEnum)[keyof typeof PromptTemplateScalarFieldEnum]
+
+
   export const AIUsageLogScalarFieldEnum: {
     id: 'id',
     analysisSessionId: 'analysisSessionId',
@@ -35792,6 +41612,76 @@ export namespace Prisma {
    * Reference to a field of type 'StrategyVersionStatus[]'
    */
   export type ListEnumStrategyVersionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StrategyVersionStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ContentOrigin'
+   */
+  export type EnumContentOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentOrigin'>
+    
+
+
+  /**
+   * Reference to a field of type 'ContentOrigin[]'
+   */
+  export type ListEnumContentOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentOrigin[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ContentStatus'
+   */
+  export type EnumContentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ContentStatus[]'
+   */
+  export type ListEnumContentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ContentVersionSource'
+   */
+  export type EnumContentVersionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentVersionSource'>
+    
+
+
+  /**
+   * Reference to a field of type 'ContentVersionSource[]'
+   */
+  export type ListEnumContentVersionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentVersionSource[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AIGenerationStatus'
+   */
+  export type EnumAIGenerationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AIGenerationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'AIGenerationStatus[]'
+   */
+  export type ListEnumAIGenerationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AIGenerationStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromptPurpose'
+   */
+  export type EnumPromptPurposeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromptPurpose'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromptPurpose[]'
+   */
+  export type ListEnumPromptPurposeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromptPurpose[]'>
     
 
 
@@ -36541,6 +42431,8 @@ export namespace Prisma {
     insights?: InsightListRelationFilter
     strategies?: StrategyListRelationFilter
     botTasks?: SeedingBotTaskListRelationFilter
+    seedingContents?: SeedingContentListRelationFilter
+    aiGenerations?: AIGenerationListRelationFilter
   }
 
   export type AnalysisSessionOrderByWithRelationInput = {
@@ -36568,6 +42460,8 @@ export namespace Prisma {
     insights?: InsightOrderByRelationAggregateInput
     strategies?: StrategyOrderByRelationAggregateInput
     botTasks?: SeedingBotTaskOrderByRelationAggregateInput
+    seedingContents?: SeedingContentOrderByRelationAggregateInput
+    aiGenerations?: AIGenerationOrderByRelationAggregateInput
   }
 
   export type AnalysisSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -36599,6 +42493,8 @@ export namespace Prisma {
     insights?: InsightListRelationFilter
     strategies?: StrategyListRelationFilter
     botTasks?: SeedingBotTaskListRelationFilter
+    seedingContents?: SeedingContentListRelationFilter
+    aiGenerations?: AIGenerationListRelationFilter
   }, "id" | "id_businessId">
 
   export type AnalysisSessionOrderByWithAggregationInput = {
@@ -37683,6 +43579,8 @@ export namespace Prisma {
     activeForStrategy?: XOR<StrategyNullableScalarRelationFilter, StrategyWhereInput> | null
     insights?: StrategyInsightListRelationFilter
     botTasks?: SeedingBotTaskListRelationFilter
+    seedingContents?: SeedingContentListRelationFilter
+    aiGenerations?: AIGenerationListRelationFilter
   }
 
   export type StrategyVersionOrderByWithRelationInput = {
@@ -37717,6 +43615,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyOrderByWithRelationInput
     insights?: StrategyInsightOrderByRelationAggregateInput
     botTasks?: SeedingBotTaskOrderByRelationAggregateInput
+    seedingContents?: SeedingContentOrderByRelationAggregateInput
+    aiGenerations?: AIGenerationOrderByRelationAggregateInput
   }
 
   export type StrategyVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -37757,6 +43657,8 @@ export namespace Prisma {
     activeForStrategy?: XOR<StrategyNullableScalarRelationFilter, StrategyWhereInput> | null
     insights?: StrategyInsightListRelationFilter
     botTasks?: SeedingBotTaskListRelationFilter
+    seedingContents?: SeedingContentListRelationFilter
+    aiGenerations?: AIGenerationListRelationFilter
   }, "id" | "strategyId_versionNo" | "id_strategyId" | "id_analysisSessionId">
 
   export type StrategyVersionOrderByWithAggregationInput = {
@@ -37896,6 +43798,462 @@ export namespace Prisma {
     insightSnapshot?: JsonWithAggregatesFilter<"StrategyInsight">
     orderIndex?: IntWithAggregatesFilter<"StrategyInsight"> | number
     linkedAt?: DateTimeWithAggregatesFilter<"StrategyInsight"> | Date | string
+  }
+
+  export type SeedingContentWhereInput = {
+    AND?: SeedingContentWhereInput | SeedingContentWhereInput[]
+    OR?: SeedingContentWhereInput[]
+    NOT?: SeedingContentWhereInput | SeedingContentWhereInput[]
+    id?: StringFilter<"SeedingContent"> | string
+    organizationId?: StringFilter<"SeedingContent"> | string
+    analysisSessionId?: StringFilter<"SeedingContent"> | string
+    strategyVersionId?: StringFilter<"SeedingContent"> | string
+    origin?: EnumContentOriginFilter<"SeedingContent"> | $Enums.ContentOrigin
+    status?: EnumContentStatusFilter<"SeedingContent"> | $Enums.ContentStatus
+    platform?: StringFilter<"SeedingContent"> | string
+    contentType?: StringFilter<"SeedingContent"> | string
+    title?: StringFilter<"SeedingContent"> | string
+    currentVersionId?: StringNullableFilter<"SeedingContent"> | string | null
+    contentHash?: StringNullableFilter<"SeedingContent"> | string | null
+    tags?: JsonFilter<"SeedingContent">
+    createdBy?: StringNullableFilter<"SeedingContent"> | string | null
+    createdAt?: DateTimeFilter<"SeedingContent"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingContent"> | Date | string
+    archivedAt?: DateTimeNullableFilter<"SeedingContent"> | Date | string | null
+    analysisSession?: XOR<AnalysisSessionScalarRelationFilter, AnalysisSessionWhereInput>
+    strategyVersion?: XOR<StrategyVersionScalarRelationFilter, StrategyVersionWhereInput>
+    versions?: ContentVersionListRelationFilter
+    currentVersion?: XOR<ContentVersionNullableScalarRelationFilter, ContentVersionWhereInput> | null
+    aiGenerations?: AIGenerationListRelationFilter
+  }
+
+  export type SeedingContentOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    origin?: SortOrder
+    status?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    title?: SortOrder
+    currentVersionId?: SortOrderInput | SortOrder
+    contentHash?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
+    analysisSession?: AnalysisSessionOrderByWithRelationInput
+    strategyVersion?: StrategyVersionOrderByWithRelationInput
+    versions?: ContentVersionOrderByRelationAggregateInput
+    currentVersion?: ContentVersionOrderByWithRelationInput
+    aiGenerations?: AIGenerationOrderByRelationAggregateInput
+  }
+
+  export type SeedingContentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    currentVersionId?: string
+    currentVersionId_id?: SeedingContentCurrentVersionIdIdCompoundUniqueInput
+    id_organizationId?: SeedingContentIdOrganizationIdCompoundUniqueInput
+    AND?: SeedingContentWhereInput | SeedingContentWhereInput[]
+    OR?: SeedingContentWhereInput[]
+    NOT?: SeedingContentWhereInput | SeedingContentWhereInput[]
+    organizationId?: StringFilter<"SeedingContent"> | string
+    analysisSessionId?: StringFilter<"SeedingContent"> | string
+    strategyVersionId?: StringFilter<"SeedingContent"> | string
+    origin?: EnumContentOriginFilter<"SeedingContent"> | $Enums.ContentOrigin
+    status?: EnumContentStatusFilter<"SeedingContent"> | $Enums.ContentStatus
+    platform?: StringFilter<"SeedingContent"> | string
+    contentType?: StringFilter<"SeedingContent"> | string
+    title?: StringFilter<"SeedingContent"> | string
+    contentHash?: StringNullableFilter<"SeedingContent"> | string | null
+    tags?: JsonFilter<"SeedingContent">
+    createdBy?: StringNullableFilter<"SeedingContent"> | string | null
+    createdAt?: DateTimeFilter<"SeedingContent"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingContent"> | Date | string
+    archivedAt?: DateTimeNullableFilter<"SeedingContent"> | Date | string | null
+    analysisSession?: XOR<AnalysisSessionScalarRelationFilter, AnalysisSessionWhereInput>
+    strategyVersion?: XOR<StrategyVersionScalarRelationFilter, StrategyVersionWhereInput>
+    versions?: ContentVersionListRelationFilter
+    currentVersion?: XOR<ContentVersionNullableScalarRelationFilter, ContentVersionWhereInput> | null
+    aiGenerations?: AIGenerationListRelationFilter
+  }, "id" | "currentVersionId" | "currentVersionId_id" | "id_organizationId">
+
+  export type SeedingContentOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    origin?: SortOrder
+    status?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    title?: SortOrder
+    currentVersionId?: SortOrderInput | SortOrder
+    contentHash?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
+    _count?: SeedingContentCountOrderByAggregateInput
+    _max?: SeedingContentMaxOrderByAggregateInput
+    _min?: SeedingContentMinOrderByAggregateInput
+  }
+
+  export type SeedingContentScalarWhereWithAggregatesInput = {
+    AND?: SeedingContentScalarWhereWithAggregatesInput | SeedingContentScalarWhereWithAggregatesInput[]
+    OR?: SeedingContentScalarWhereWithAggregatesInput[]
+    NOT?: SeedingContentScalarWhereWithAggregatesInput | SeedingContentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SeedingContent"> | string
+    organizationId?: StringWithAggregatesFilter<"SeedingContent"> | string
+    analysisSessionId?: StringWithAggregatesFilter<"SeedingContent"> | string
+    strategyVersionId?: StringWithAggregatesFilter<"SeedingContent"> | string
+    origin?: EnumContentOriginWithAggregatesFilter<"SeedingContent"> | $Enums.ContentOrigin
+    status?: EnumContentStatusWithAggregatesFilter<"SeedingContent"> | $Enums.ContentStatus
+    platform?: StringWithAggregatesFilter<"SeedingContent"> | string
+    contentType?: StringWithAggregatesFilter<"SeedingContent"> | string
+    title?: StringWithAggregatesFilter<"SeedingContent"> | string
+    currentVersionId?: StringNullableWithAggregatesFilter<"SeedingContent"> | string | null
+    contentHash?: StringNullableWithAggregatesFilter<"SeedingContent"> | string | null
+    tags?: JsonWithAggregatesFilter<"SeedingContent">
+    createdBy?: StringNullableWithAggregatesFilter<"SeedingContent"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SeedingContent"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SeedingContent"> | Date | string
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"SeedingContent"> | Date | string | null
+  }
+
+  export type ContentVersionWhereInput = {
+    AND?: ContentVersionWhereInput | ContentVersionWhereInput[]
+    OR?: ContentVersionWhereInput[]
+    NOT?: ContentVersionWhereInput | ContentVersionWhereInput[]
+    id?: StringFilter<"ContentVersion"> | string
+    contentId?: StringFilter<"ContentVersion"> | string
+    versionNumber?: IntFilter<"ContentVersion"> | number
+    title?: StringFilter<"ContentVersion"> | string
+    body?: StringFilter<"ContentVersion"> | string
+    contentTheme?: StringNullableFilter<"ContentVersion"> | string | null
+    source?: EnumContentVersionSourceFilter<"ContentVersion"> | $Enums.ContentVersionSource
+    aiGenerationId?: StringNullableFilter<"ContentVersion"> | string | null
+    editReason?: StringNullableFilter<"ContentVersion"> | string | null
+    editedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    reviewedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"ContentVersion"> | Date | string | null
+    approvedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    approvedAt?: DateTimeNullableFilter<"ContentVersion"> | Date | string | null
+    reviewComment?: StringNullableFilter<"ContentVersion"> | string | null
+    createdAt?: DateTimeFilter<"ContentVersion"> | Date | string
+    content?: XOR<SeedingContentScalarRelationFilter, SeedingContentWhereInput>
+    currentFor?: XOR<SeedingContentNullableScalarRelationFilter, SeedingContentWhereInput> | null
+    aiGeneration?: XOR<AIGenerationNullableScalarRelationFilter, AIGenerationWhereInput> | null
+  }
+
+  export type ContentVersionOrderByWithRelationInput = {
+    id?: SortOrder
+    contentId?: SortOrder
+    versionNumber?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    contentTheme?: SortOrderInput | SortOrder
+    source?: SortOrder
+    aiGenerationId?: SortOrderInput | SortOrder
+    editReason?: SortOrderInput | SortOrder
+    editedBy?: SortOrderInput | SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    reviewComment?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    content?: SeedingContentOrderByWithRelationInput
+    currentFor?: SeedingContentOrderByWithRelationInput
+    aiGeneration?: AIGenerationOrderByWithRelationInput
+  }
+
+  export type ContentVersionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    contentId_versionNumber?: ContentVersionContentIdVersionNumberCompoundUniqueInput
+    id_contentId?: ContentVersionIdContentIdCompoundUniqueInput
+    AND?: ContentVersionWhereInput | ContentVersionWhereInput[]
+    OR?: ContentVersionWhereInput[]
+    NOT?: ContentVersionWhereInput | ContentVersionWhereInput[]
+    contentId?: StringFilter<"ContentVersion"> | string
+    versionNumber?: IntFilter<"ContentVersion"> | number
+    title?: StringFilter<"ContentVersion"> | string
+    body?: StringFilter<"ContentVersion"> | string
+    contentTheme?: StringNullableFilter<"ContentVersion"> | string | null
+    source?: EnumContentVersionSourceFilter<"ContentVersion"> | $Enums.ContentVersionSource
+    aiGenerationId?: StringNullableFilter<"ContentVersion"> | string | null
+    editReason?: StringNullableFilter<"ContentVersion"> | string | null
+    editedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    reviewedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"ContentVersion"> | Date | string | null
+    approvedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    approvedAt?: DateTimeNullableFilter<"ContentVersion"> | Date | string | null
+    reviewComment?: StringNullableFilter<"ContentVersion"> | string | null
+    createdAt?: DateTimeFilter<"ContentVersion"> | Date | string
+    content?: XOR<SeedingContentScalarRelationFilter, SeedingContentWhereInput>
+    currentFor?: XOR<SeedingContentNullableScalarRelationFilter, SeedingContentWhereInput> | null
+    aiGeneration?: XOR<AIGenerationNullableScalarRelationFilter, AIGenerationWhereInput> | null
+  }, "id" | "contentId_versionNumber" | "id_contentId">
+
+  export type ContentVersionOrderByWithAggregationInput = {
+    id?: SortOrder
+    contentId?: SortOrder
+    versionNumber?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    contentTheme?: SortOrderInput | SortOrder
+    source?: SortOrder
+    aiGenerationId?: SortOrderInput | SortOrder
+    editReason?: SortOrderInput | SortOrder
+    editedBy?: SortOrderInput | SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    reviewComment?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ContentVersionCountOrderByAggregateInput
+    _avg?: ContentVersionAvgOrderByAggregateInput
+    _max?: ContentVersionMaxOrderByAggregateInput
+    _min?: ContentVersionMinOrderByAggregateInput
+    _sum?: ContentVersionSumOrderByAggregateInput
+  }
+
+  export type ContentVersionScalarWhereWithAggregatesInput = {
+    AND?: ContentVersionScalarWhereWithAggregatesInput | ContentVersionScalarWhereWithAggregatesInput[]
+    OR?: ContentVersionScalarWhereWithAggregatesInput[]
+    NOT?: ContentVersionScalarWhereWithAggregatesInput | ContentVersionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ContentVersion"> | string
+    contentId?: StringWithAggregatesFilter<"ContentVersion"> | string
+    versionNumber?: IntWithAggregatesFilter<"ContentVersion"> | number
+    title?: StringWithAggregatesFilter<"ContentVersion"> | string
+    body?: StringWithAggregatesFilter<"ContentVersion"> | string
+    contentTheme?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    source?: EnumContentVersionSourceWithAggregatesFilter<"ContentVersion"> | $Enums.ContentVersionSource
+    aiGenerationId?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    editReason?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    editedBy?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    reviewedBy?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"ContentVersion"> | Date | string | null
+    approvedBy?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"ContentVersion"> | Date | string | null
+    reviewComment?: StringNullableWithAggregatesFilter<"ContentVersion"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ContentVersion"> | Date | string
+  }
+
+  export type AIGenerationWhereInput = {
+    AND?: AIGenerationWhereInput | AIGenerationWhereInput[]
+    OR?: AIGenerationWhereInput[]
+    NOT?: AIGenerationWhereInput | AIGenerationWhereInput[]
+    id?: StringFilter<"AIGeneration"> | string
+    organizationId?: StringFilter<"AIGeneration"> | string
+    analysisSessionId?: StringFilter<"AIGeneration"> | string
+    strategyVersionId?: StringFilter<"AIGeneration"> | string
+    contentId?: StringNullableFilter<"AIGeneration"> | string | null
+    promptTemplateId?: StringFilter<"AIGeneration"> | string
+    promptRendered?: StringFilter<"AIGeneration"> | string
+    promptVersion?: StringNullableFilter<"AIGeneration"> | string | null
+    aiProvider?: StringFilter<"AIGeneration"> | string
+    aiModel?: StringFilter<"AIGeneration"> | string
+    parameters?: JsonFilter<"AIGeneration">
+    candidates?: JsonFilter<"AIGeneration">
+    selectedCandidateIndex?: IntNullableFilter<"AIGeneration"> | number | null
+    status?: EnumAIGenerationStatusFilter<"AIGeneration"> | $Enums.AIGenerationStatus
+    rawResponse?: JsonNullableFilter<"AIGeneration">
+    requestedBy?: StringNullableFilter<"AIGeneration"> | string | null
+    createdAt?: DateTimeFilter<"AIGeneration"> | Date | string
+    analysisSession?: XOR<AnalysisSessionScalarRelationFilter, AnalysisSessionWhereInput>
+    strategyVersion?: XOR<StrategyVersionScalarRelationFilter, StrategyVersionWhereInput>
+    promptTemplate?: XOR<PromptTemplateScalarRelationFilter, PromptTemplateWhereInput>
+    content?: XOR<SeedingContentNullableScalarRelationFilter, SeedingContentWhereInput> | null
+    versions?: ContentVersionListRelationFilter
+  }
+
+  export type AIGenerationOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    contentId?: SortOrderInput | SortOrder
+    promptTemplateId?: SortOrder
+    promptRendered?: SortOrder
+    promptVersion?: SortOrderInput | SortOrder
+    aiProvider?: SortOrder
+    aiModel?: SortOrder
+    parameters?: SortOrder
+    candidates?: SortOrder
+    selectedCandidateIndex?: SortOrderInput | SortOrder
+    status?: SortOrder
+    rawResponse?: SortOrderInput | SortOrder
+    requestedBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    analysisSession?: AnalysisSessionOrderByWithRelationInput
+    strategyVersion?: StrategyVersionOrderByWithRelationInput
+    promptTemplate?: PromptTemplateOrderByWithRelationInput
+    content?: SeedingContentOrderByWithRelationInput
+    versions?: ContentVersionOrderByRelationAggregateInput
+  }
+
+  export type AIGenerationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    id_organizationId?: AIGenerationIdOrganizationIdCompoundUniqueInput
+    AND?: AIGenerationWhereInput | AIGenerationWhereInput[]
+    OR?: AIGenerationWhereInput[]
+    NOT?: AIGenerationWhereInput | AIGenerationWhereInput[]
+    organizationId?: StringFilter<"AIGeneration"> | string
+    analysisSessionId?: StringFilter<"AIGeneration"> | string
+    strategyVersionId?: StringFilter<"AIGeneration"> | string
+    contentId?: StringNullableFilter<"AIGeneration"> | string | null
+    promptTemplateId?: StringFilter<"AIGeneration"> | string
+    promptRendered?: StringFilter<"AIGeneration"> | string
+    promptVersion?: StringNullableFilter<"AIGeneration"> | string | null
+    aiProvider?: StringFilter<"AIGeneration"> | string
+    aiModel?: StringFilter<"AIGeneration"> | string
+    parameters?: JsonFilter<"AIGeneration">
+    candidates?: JsonFilter<"AIGeneration">
+    selectedCandidateIndex?: IntNullableFilter<"AIGeneration"> | number | null
+    status?: EnumAIGenerationStatusFilter<"AIGeneration"> | $Enums.AIGenerationStatus
+    rawResponse?: JsonNullableFilter<"AIGeneration">
+    requestedBy?: StringNullableFilter<"AIGeneration"> | string | null
+    createdAt?: DateTimeFilter<"AIGeneration"> | Date | string
+    analysisSession?: XOR<AnalysisSessionScalarRelationFilter, AnalysisSessionWhereInput>
+    strategyVersion?: XOR<StrategyVersionScalarRelationFilter, StrategyVersionWhereInput>
+    promptTemplate?: XOR<PromptTemplateScalarRelationFilter, PromptTemplateWhereInput>
+    content?: XOR<SeedingContentNullableScalarRelationFilter, SeedingContentWhereInput> | null
+    versions?: ContentVersionListRelationFilter
+  }, "id" | "id_organizationId">
+
+  export type AIGenerationOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    contentId?: SortOrderInput | SortOrder
+    promptTemplateId?: SortOrder
+    promptRendered?: SortOrder
+    promptVersion?: SortOrderInput | SortOrder
+    aiProvider?: SortOrder
+    aiModel?: SortOrder
+    parameters?: SortOrder
+    candidates?: SortOrder
+    selectedCandidateIndex?: SortOrderInput | SortOrder
+    status?: SortOrder
+    rawResponse?: SortOrderInput | SortOrder
+    requestedBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AIGenerationCountOrderByAggregateInput
+    _avg?: AIGenerationAvgOrderByAggregateInput
+    _max?: AIGenerationMaxOrderByAggregateInput
+    _min?: AIGenerationMinOrderByAggregateInput
+    _sum?: AIGenerationSumOrderByAggregateInput
+  }
+
+  export type AIGenerationScalarWhereWithAggregatesInput = {
+    AND?: AIGenerationScalarWhereWithAggregatesInput | AIGenerationScalarWhereWithAggregatesInput[]
+    OR?: AIGenerationScalarWhereWithAggregatesInput[]
+    NOT?: AIGenerationScalarWhereWithAggregatesInput | AIGenerationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AIGeneration"> | string
+    organizationId?: StringWithAggregatesFilter<"AIGeneration"> | string
+    analysisSessionId?: StringWithAggregatesFilter<"AIGeneration"> | string
+    strategyVersionId?: StringWithAggregatesFilter<"AIGeneration"> | string
+    contentId?: StringNullableWithAggregatesFilter<"AIGeneration"> | string | null
+    promptTemplateId?: StringWithAggregatesFilter<"AIGeneration"> | string
+    promptRendered?: StringWithAggregatesFilter<"AIGeneration"> | string
+    promptVersion?: StringNullableWithAggregatesFilter<"AIGeneration"> | string | null
+    aiProvider?: StringWithAggregatesFilter<"AIGeneration"> | string
+    aiModel?: StringWithAggregatesFilter<"AIGeneration"> | string
+    parameters?: JsonWithAggregatesFilter<"AIGeneration">
+    candidates?: JsonWithAggregatesFilter<"AIGeneration">
+    selectedCandidateIndex?: IntNullableWithAggregatesFilter<"AIGeneration"> | number | null
+    status?: EnumAIGenerationStatusWithAggregatesFilter<"AIGeneration"> | $Enums.AIGenerationStatus
+    rawResponse?: JsonNullableWithAggregatesFilter<"AIGeneration">
+    requestedBy?: StringNullableWithAggregatesFilter<"AIGeneration"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AIGeneration"> | Date | string
+  }
+
+  export type PromptTemplateWhereInput = {
+    AND?: PromptTemplateWhereInput | PromptTemplateWhereInput[]
+    OR?: PromptTemplateWhereInput[]
+    NOT?: PromptTemplateWhereInput | PromptTemplateWhereInput[]
+    id?: StringFilter<"PromptTemplate"> | string
+    name?: StringFilter<"PromptTemplate"> | string
+    platform?: StringNullableFilter<"PromptTemplate"> | string | null
+    contentType?: StringFilter<"PromptTemplate"> | string
+    purpose?: EnumPromptPurposeFilter<"PromptTemplate"> | $Enums.PromptPurpose
+    templateBody?: StringFilter<"PromptTemplate"> | string
+    version?: IntFilter<"PromptTemplate"> | number
+    isActive?: BoolFilter<"PromptTemplate"> | boolean
+    createdBy?: StringNullableFilter<"PromptTemplate"> | string | null
+    createdAt?: DateTimeFilter<"PromptTemplate"> | Date | string
+    generations?: AIGenerationListRelationFilter
+  }
+
+  export type PromptTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    contentType?: SortOrder
+    purpose?: SortOrder
+    templateBody?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    generations?: AIGenerationOrderByRelationAggregateInput
+  }
+
+  export type PromptTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PromptTemplateWhereInput | PromptTemplateWhereInput[]
+    OR?: PromptTemplateWhereInput[]
+    NOT?: PromptTemplateWhereInput | PromptTemplateWhereInput[]
+    name?: StringFilter<"PromptTemplate"> | string
+    platform?: StringNullableFilter<"PromptTemplate"> | string | null
+    contentType?: StringFilter<"PromptTemplate"> | string
+    purpose?: EnumPromptPurposeFilter<"PromptTemplate"> | $Enums.PromptPurpose
+    templateBody?: StringFilter<"PromptTemplate"> | string
+    version?: IntFilter<"PromptTemplate"> | number
+    isActive?: BoolFilter<"PromptTemplate"> | boolean
+    createdBy?: StringNullableFilter<"PromptTemplate"> | string | null
+    createdAt?: DateTimeFilter<"PromptTemplate"> | Date | string
+    generations?: AIGenerationListRelationFilter
+  }, "id">
+
+  export type PromptTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    contentType?: SortOrder
+    purpose?: SortOrder
+    templateBody?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: PromptTemplateCountOrderByAggregateInput
+    _avg?: PromptTemplateAvgOrderByAggregateInput
+    _max?: PromptTemplateMaxOrderByAggregateInput
+    _min?: PromptTemplateMinOrderByAggregateInput
+    _sum?: PromptTemplateSumOrderByAggregateInput
+  }
+
+  export type PromptTemplateScalarWhereWithAggregatesInput = {
+    AND?: PromptTemplateScalarWhereWithAggregatesInput | PromptTemplateScalarWhereWithAggregatesInput[]
+    OR?: PromptTemplateScalarWhereWithAggregatesInput[]
+    NOT?: PromptTemplateScalarWhereWithAggregatesInput | PromptTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PromptTemplate"> | string
+    name?: StringWithAggregatesFilter<"PromptTemplate"> | string
+    platform?: StringNullableWithAggregatesFilter<"PromptTemplate"> | string | null
+    contentType?: StringWithAggregatesFilter<"PromptTemplate"> | string
+    purpose?: EnumPromptPurposeWithAggregatesFilter<"PromptTemplate"> | $Enums.PromptPurpose
+    templateBody?: StringWithAggregatesFilter<"PromptTemplate"> | string
+    version?: IntWithAggregatesFilter<"PromptTemplate"> | number
+    isActive?: BoolWithAggregatesFilter<"PromptTemplate"> | boolean
+    createdBy?: StringNullableWithAggregatesFilter<"PromptTemplate"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PromptTemplate"> | Date | string
   }
 
   export type AIUsageLogWhereInput = {
@@ -39282,6 +45640,8 @@ export namespace Prisma {
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateInput = {
@@ -39307,6 +45667,8 @@ export namespace Prisma {
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUpdateInput = {
@@ -39332,6 +45694,8 @@ export namespace Prisma {
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateInput = {
@@ -39357,6 +45721,8 @@ export namespace Prisma {
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionCreateManyInput = {
@@ -40562,6 +46928,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateInput = {
@@ -40595,6 +46963,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUpdateInput = {
@@ -40627,6 +46997,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateInput = {
@@ -40660,6 +47032,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionCreateManyInput = {
@@ -40813,6 +47187,511 @@ export namespace Prisma {
     insightSnapshot?: JsonNullValueInput | InputJsonValue
     orderIndex?: IntFieldUpdateOperationsInput | number
     linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingContentCreateInput = {
+    organizationId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    analysisSession: AnalysisSessionCreateNestedOneWithoutSeedingContentsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutSeedingContentsInput
+    versions?: ContentVersionCreateNestedManyWithoutContentInput
+    currentVersion?: ContentVersionCreateNestedOneWithoutCurrentForInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutContentInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentUpdateInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    versions?: ContentVersionUpdateManyWithoutContentNestedInput
+    currentVersion?: ContentVersionUpdateOneWithoutCurrentForNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    versions?: ContentVersionUncheckedUpdateManyWithoutContentNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentCreateManyInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+  }
+
+  export type SeedingContentUpdateManyMutationInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SeedingContentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ContentVersionCreateInput = {
+    id?: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    content: SeedingContentCreateNestedOneWithoutVersionsInput
+    currentFor?: SeedingContentCreateNestedOneWithoutCurrentVersionInput
+    aiGeneration?: AIGenerationCreateNestedOneWithoutVersionsInput
+  }
+
+  export type ContentVersionUncheckedCreateInput = {
+    id?: string
+    contentId: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    aiGenerationId?: string | null
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    currentFor?: SeedingContentUncheckedCreateNestedOneWithoutCurrentVersionInput
+  }
+
+  export type ContentVersionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: SeedingContentUpdateOneRequiredWithoutVersionsNestedInput
+    currentFor?: SeedingContentUpdateOneWithoutCurrentVersionNestedInput
+    aiGeneration?: AIGenerationUpdateOneWithoutVersionsNestedInput
+  }
+
+  export type ContentVersionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentId?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    aiGenerationId?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentFor?: SeedingContentUncheckedUpdateOneWithoutCurrentVersionNestedInput
+  }
+
+  export type ContentVersionCreateManyInput = {
+    id?: string
+    contentId: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    aiGenerationId?: string | null
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentVersionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentVersionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentId?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    aiGenerationId?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIGenerationCreateInput = {
+    id?: string
+    organizationId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    analysisSession: AnalysisSessionCreateNestedOneWithoutAiGenerationsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutAiGenerationsInput
+    promptTemplate: PromptTemplateCreateNestedOneWithoutGenerationsInput
+    content?: SeedingContentCreateNestedOneWithoutAiGenerationsInput
+    versions?: ContentVersionCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    promptTemplate?: PromptTemplateUpdateOneRequiredWithoutGenerationsNestedInput
+    content?: SeedingContentUpdateOneWithoutAiGenerationsNestedInput
+    versions?: ContentVersionUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: ContentVersionUncheckedUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationCreateManyInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AIGenerationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIGenerationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PromptTemplateCreateInput = {
+    id?: string
+    name: string
+    platform?: string | null
+    contentType: string
+    purpose: $Enums.PromptPurpose
+    templateBody: string
+    version: number
+    isActive?: boolean
+    createdBy?: string | null
+    createdAt?: Date | string
+    generations?: AIGenerationCreateNestedManyWithoutPromptTemplateInput
+  }
+
+  export type PromptTemplateUncheckedCreateInput = {
+    id?: string
+    name: string
+    platform?: string | null
+    contentType: string
+    purpose: $Enums.PromptPurpose
+    templateBody: string
+    version: number
+    isActive?: boolean
+    createdBy?: string | null
+    createdAt?: Date | string
+    generations?: AIGenerationUncheckedCreateNestedManyWithoutPromptTemplateInput
+  }
+
+  export type PromptTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumPromptPurposeFieldUpdateOperationsInput | $Enums.PromptPurpose
+    templateBody?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    generations?: AIGenerationUpdateManyWithoutPromptTemplateNestedInput
+  }
+
+  export type PromptTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumPromptPurposeFieldUpdateOperationsInput | $Enums.PromptPurpose
+    templateBody?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    generations?: AIGenerationUncheckedUpdateManyWithoutPromptTemplateNestedInput
+  }
+
+  export type PromptTemplateCreateManyInput = {
+    id?: string
+    name: string
+    platform?: string | null
+    contentType: string
+    purpose: $Enums.PromptPurpose
+    templateBody: string
+    version: number
+    isActive?: boolean
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PromptTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumPromptPurposeFieldUpdateOperationsInput | $Enums.PromptPurpose
+    templateBody?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PromptTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumPromptPurposeFieldUpdateOperationsInput | $Enums.PromptPurpose
+    templateBody?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AIUsageLogCreateInput = {
@@ -42297,6 +49176,18 @@ export namespace Prisma {
     none?: StrategyWhereInput
   }
 
+  export type SeedingContentListRelationFilter = {
+    every?: SeedingContentWhereInput
+    some?: SeedingContentWhereInput
+    none?: SeedingContentWhereInput
+  }
+
+  export type AIGenerationListRelationFilter = {
+    every?: AIGenerationWhereInput
+    some?: AIGenerationWhereInput
+    none?: AIGenerationWhereInput
+  }
+
   export type CustomerFeedbackOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -42310,6 +49201,14 @@ export namespace Prisma {
   }
 
   export type StrategyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingContentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AIGenerationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -43502,6 +50401,380 @@ export namespace Prisma {
     orderIndex?: SortOrder
   }
 
+  export type EnumContentOriginFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentOrigin | EnumContentOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentOriginFilter<$PrismaModel> | $Enums.ContentOrigin
+  }
+
+  export type EnumContentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentStatus | EnumContentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentStatusFilter<$PrismaModel> | $Enums.ContentStatus
+  }
+
+  export type ContentVersionListRelationFilter = {
+    every?: ContentVersionWhereInput
+    some?: ContentVersionWhereInput
+    none?: ContentVersionWhereInput
+  }
+
+  export type ContentVersionNullableScalarRelationFilter = {
+    is?: ContentVersionWhereInput | null
+    isNot?: ContentVersionWhereInput | null
+  }
+
+  export type ContentVersionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SeedingContentCurrentVersionIdIdCompoundUniqueInput = {
+    currentVersionId: string
+    id: string
+  }
+
+  export type SeedingContentIdOrganizationIdCompoundUniqueInput = {
+    id: string
+    organizationId: string
+  }
+
+  export type SeedingContentCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    origin?: SortOrder
+    status?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    title?: SortOrder
+    currentVersionId?: SortOrder
+    contentHash?: SortOrder
+    tags?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    archivedAt?: SortOrder
+  }
+
+  export type SeedingContentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    origin?: SortOrder
+    status?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    title?: SortOrder
+    currentVersionId?: SortOrder
+    contentHash?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    archivedAt?: SortOrder
+  }
+
+  export type SeedingContentMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    origin?: SortOrder
+    status?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    title?: SortOrder
+    currentVersionId?: SortOrder
+    contentHash?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    archivedAt?: SortOrder
+  }
+
+  export type EnumContentOriginWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentOrigin | EnumContentOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentOriginWithAggregatesFilter<$PrismaModel> | $Enums.ContentOrigin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumContentOriginFilter<$PrismaModel>
+    _max?: NestedEnumContentOriginFilter<$PrismaModel>
+  }
+
+  export type EnumContentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentStatus | EnumContentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentStatusWithAggregatesFilter<$PrismaModel> | $Enums.ContentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumContentStatusFilter<$PrismaModel>
+    _max?: NestedEnumContentStatusFilter<$PrismaModel>
+  }
+
+  export type EnumContentVersionSourceFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentVersionSource | EnumContentVersionSourceFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentVersionSourceFilter<$PrismaModel> | $Enums.ContentVersionSource
+  }
+
+  export type SeedingContentScalarRelationFilter = {
+    is?: SeedingContentWhereInput
+    isNot?: SeedingContentWhereInput
+  }
+
+  export type SeedingContentNullableScalarRelationFilter = {
+    is?: SeedingContentWhereInput | null
+    isNot?: SeedingContentWhereInput | null
+  }
+
+  export type AIGenerationNullableScalarRelationFilter = {
+    is?: AIGenerationWhereInput | null
+    isNot?: AIGenerationWhereInput | null
+  }
+
+  export type ContentVersionContentIdVersionNumberCompoundUniqueInput = {
+    contentId: string
+    versionNumber: number
+  }
+
+  export type ContentVersionIdContentIdCompoundUniqueInput = {
+    id: string
+    contentId: string
+  }
+
+  export type ContentVersionCountOrderByAggregateInput = {
+    id?: SortOrder
+    contentId?: SortOrder
+    versionNumber?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    contentTheme?: SortOrder
+    source?: SortOrder
+    aiGenerationId?: SortOrder
+    editReason?: SortOrder
+    editedBy?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    reviewComment?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ContentVersionAvgOrderByAggregateInput = {
+    versionNumber?: SortOrder
+  }
+
+  export type ContentVersionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    contentId?: SortOrder
+    versionNumber?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    contentTheme?: SortOrder
+    source?: SortOrder
+    aiGenerationId?: SortOrder
+    editReason?: SortOrder
+    editedBy?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    reviewComment?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ContentVersionMinOrderByAggregateInput = {
+    id?: SortOrder
+    contentId?: SortOrder
+    versionNumber?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    contentTheme?: SortOrder
+    source?: SortOrder
+    aiGenerationId?: SortOrder
+    editReason?: SortOrder
+    editedBy?: SortOrder
+    reviewedBy?: SortOrder
+    reviewedAt?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    reviewComment?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ContentVersionSumOrderByAggregateInput = {
+    versionNumber?: SortOrder
+  }
+
+  export type EnumContentVersionSourceWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentVersionSource | EnumContentVersionSourceFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentVersionSourceWithAggregatesFilter<$PrismaModel> | $Enums.ContentVersionSource
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumContentVersionSourceFilter<$PrismaModel>
+    _max?: NestedEnumContentVersionSourceFilter<$PrismaModel>
+  }
+
+  export type EnumAIGenerationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AIGenerationStatus | EnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAIGenerationStatusFilter<$PrismaModel> | $Enums.AIGenerationStatus
+  }
+
+  export type PromptTemplateScalarRelationFilter = {
+    is?: PromptTemplateWhereInput
+    isNot?: PromptTemplateWhereInput
+  }
+
+  export type AIGenerationIdOrganizationIdCompoundUniqueInput = {
+    id: string
+    organizationId: string
+  }
+
+  export type AIGenerationCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    contentId?: SortOrder
+    promptTemplateId?: SortOrder
+    promptRendered?: SortOrder
+    promptVersion?: SortOrder
+    aiProvider?: SortOrder
+    aiModel?: SortOrder
+    parameters?: SortOrder
+    candidates?: SortOrder
+    selectedCandidateIndex?: SortOrder
+    status?: SortOrder
+    rawResponse?: SortOrder
+    requestedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIGenerationAvgOrderByAggregateInput = {
+    selectedCandidateIndex?: SortOrder
+  }
+
+  export type AIGenerationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    contentId?: SortOrder
+    promptTemplateId?: SortOrder
+    promptRendered?: SortOrder
+    promptVersion?: SortOrder
+    aiProvider?: SortOrder
+    aiModel?: SortOrder
+    selectedCandidateIndex?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIGenerationMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    analysisSessionId?: SortOrder
+    strategyVersionId?: SortOrder
+    contentId?: SortOrder
+    promptTemplateId?: SortOrder
+    promptRendered?: SortOrder
+    promptVersion?: SortOrder
+    aiProvider?: SortOrder
+    aiModel?: SortOrder
+    selectedCandidateIndex?: SortOrder
+    status?: SortOrder
+    requestedBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIGenerationSumOrderByAggregateInput = {
+    selectedCandidateIndex?: SortOrder
+  }
+
+  export type EnumAIGenerationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AIGenerationStatus | EnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAIGenerationStatusWithAggregatesFilter<$PrismaModel> | $Enums.AIGenerationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAIGenerationStatusFilter<$PrismaModel>
+    _max?: NestedEnumAIGenerationStatusFilter<$PrismaModel>
+  }
+
+  export type EnumPromptPurposeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromptPurpose | EnumPromptPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromptPurposeFilter<$PrismaModel> | $Enums.PromptPurpose
+  }
+
+  export type PromptTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    purpose?: SortOrder
+    templateBody?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PromptTemplateAvgOrderByAggregateInput = {
+    version?: SortOrder
+  }
+
+  export type PromptTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    purpose?: SortOrder
+    templateBody?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PromptTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    platform?: SortOrder
+    contentType?: SortOrder
+    purpose?: SortOrder
+    templateBody?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PromptTemplateSumOrderByAggregateInput = {
+    version?: SortOrder
+  }
+
+  export type EnumPromptPurposeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromptPurpose | EnumPromptPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromptPurposeWithAggregatesFilter<$PrismaModel> | $Enums.PromptPurpose
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromptPurposeFilter<$PrismaModel>
+    _max?: NestedEnumPromptPurposeFilter<$PrismaModel>
+  }
+
   export type AIUsageLogCountOrderByAggregateInput = {
     id?: SortOrder
     analysisSessionId?: SortOrder
@@ -44610,6 +51883,20 @@ export namespace Prisma {
     connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
   }
 
+  export type SeedingContentCreateNestedManyWithoutAnalysisSessionInput = {
+    create?: XOR<SeedingContentCreateWithoutAnalysisSessionInput, SeedingContentUncheckedCreateWithoutAnalysisSessionInput> | SeedingContentCreateWithoutAnalysisSessionInput[] | SeedingContentUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutAnalysisSessionInput | SeedingContentCreateOrConnectWithoutAnalysisSessionInput[]
+    createMany?: SeedingContentCreateManyAnalysisSessionInputEnvelope
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+  }
+
+  export type AIGenerationCreateNestedManyWithoutAnalysisSessionInput = {
+    create?: XOR<AIGenerationCreateWithoutAnalysisSessionInput, AIGenerationUncheckedCreateWithoutAnalysisSessionInput> | AIGenerationCreateWithoutAnalysisSessionInput[] | AIGenerationUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutAnalysisSessionInput | AIGenerationCreateOrConnectWithoutAnalysisSessionInput[]
+    createMany?: AIGenerationCreateManyAnalysisSessionInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+  }
+
   export type DataSourceUncheckedCreateNestedManyWithoutAnalysisSessionInput = {
     create?: XOR<DataSourceCreateWithoutAnalysisSessionInput, DataSourceUncheckedCreateWithoutAnalysisSessionInput> | DataSourceCreateWithoutAnalysisSessionInput[] | DataSourceUncheckedCreateWithoutAnalysisSessionInput[]
     connectOrCreate?: DataSourceCreateOrConnectWithoutAnalysisSessionInput | DataSourceCreateOrConnectWithoutAnalysisSessionInput[]
@@ -44650,6 +51937,20 @@ export namespace Prisma {
     connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput | SeedingBotTaskCreateOrConnectWithoutAnalysisSessionInput[]
     createMany?: SeedingBotTaskCreateManyAnalysisSessionInputEnvelope
     connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
+  export type SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput = {
+    create?: XOR<SeedingContentCreateWithoutAnalysisSessionInput, SeedingContentUncheckedCreateWithoutAnalysisSessionInput> | SeedingContentCreateWithoutAnalysisSessionInput[] | SeedingContentUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutAnalysisSessionInput | SeedingContentCreateOrConnectWithoutAnalysisSessionInput[]
+    createMany?: SeedingContentCreateManyAnalysisSessionInputEnvelope
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+  }
+
+  export type AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput = {
+    create?: XOR<AIGenerationCreateWithoutAnalysisSessionInput, AIGenerationUncheckedCreateWithoutAnalysisSessionInput> | AIGenerationCreateWithoutAnalysisSessionInput[] | AIGenerationUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutAnalysisSessionInput | AIGenerationCreateOrConnectWithoutAnalysisSessionInput[]
+    createMany?: AIGenerationCreateManyAnalysisSessionInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
   }
 
   export type EnumAnalysisSessionStatusFieldUpdateOperationsInput = {
@@ -44756,6 +52057,34 @@ export namespace Prisma {
     deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
   }
 
+  export type SeedingContentUpdateManyWithoutAnalysisSessionNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutAnalysisSessionInput, SeedingContentUncheckedCreateWithoutAnalysisSessionInput> | SeedingContentCreateWithoutAnalysisSessionInput[] | SeedingContentUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutAnalysisSessionInput | SeedingContentCreateOrConnectWithoutAnalysisSessionInput[]
+    upsert?: SeedingContentUpsertWithWhereUniqueWithoutAnalysisSessionInput | SeedingContentUpsertWithWhereUniqueWithoutAnalysisSessionInput[]
+    createMany?: SeedingContentCreateManyAnalysisSessionInputEnvelope
+    set?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    disconnect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    delete?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    update?: SeedingContentUpdateWithWhereUniqueWithoutAnalysisSessionInput | SeedingContentUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
+    updateMany?: SeedingContentUpdateManyWithWhereWithoutAnalysisSessionInput | SeedingContentUpdateManyWithWhereWithoutAnalysisSessionInput[]
+    deleteMany?: SeedingContentScalarWhereInput | SeedingContentScalarWhereInput[]
+  }
+
+  export type AIGenerationUpdateManyWithoutAnalysisSessionNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutAnalysisSessionInput, AIGenerationUncheckedCreateWithoutAnalysisSessionInput> | AIGenerationCreateWithoutAnalysisSessionInput[] | AIGenerationUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutAnalysisSessionInput | AIGenerationCreateOrConnectWithoutAnalysisSessionInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutAnalysisSessionInput | AIGenerationUpsertWithWhereUniqueWithoutAnalysisSessionInput[]
+    createMany?: AIGenerationCreateManyAnalysisSessionInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutAnalysisSessionInput | AIGenerationUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutAnalysisSessionInput | AIGenerationUpdateManyWithWhereWithoutAnalysisSessionInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+  }
+
   export type DataSourceUncheckedUpdateManyWithoutAnalysisSessionNestedInput = {
     create?: XOR<DataSourceCreateWithoutAnalysisSessionInput, DataSourceUncheckedCreateWithoutAnalysisSessionInput> | DataSourceCreateWithoutAnalysisSessionInput[] | DataSourceUncheckedCreateWithoutAnalysisSessionInput[]
     connectOrCreate?: DataSourceCreateOrConnectWithoutAnalysisSessionInput | DataSourceCreateOrConnectWithoutAnalysisSessionInput[]
@@ -44838,6 +52167,34 @@ export namespace Prisma {
     update?: SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput | SeedingBotTaskUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
     updateMany?: SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput | SeedingBotTaskUpdateManyWithWhereWithoutAnalysisSessionInput[]
     deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
+  }
+
+  export type SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutAnalysisSessionInput, SeedingContentUncheckedCreateWithoutAnalysisSessionInput> | SeedingContentCreateWithoutAnalysisSessionInput[] | SeedingContentUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutAnalysisSessionInput | SeedingContentCreateOrConnectWithoutAnalysisSessionInput[]
+    upsert?: SeedingContentUpsertWithWhereUniqueWithoutAnalysisSessionInput | SeedingContentUpsertWithWhereUniqueWithoutAnalysisSessionInput[]
+    createMany?: SeedingContentCreateManyAnalysisSessionInputEnvelope
+    set?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    disconnect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    delete?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    update?: SeedingContentUpdateWithWhereUniqueWithoutAnalysisSessionInput | SeedingContentUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
+    updateMany?: SeedingContentUpdateManyWithWhereWithoutAnalysisSessionInput | SeedingContentUpdateManyWithWhereWithoutAnalysisSessionInput[]
+    deleteMany?: SeedingContentScalarWhereInput | SeedingContentScalarWhereInput[]
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutAnalysisSessionInput, AIGenerationUncheckedCreateWithoutAnalysisSessionInput> | AIGenerationCreateWithoutAnalysisSessionInput[] | AIGenerationUncheckedCreateWithoutAnalysisSessionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutAnalysisSessionInput | AIGenerationCreateOrConnectWithoutAnalysisSessionInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutAnalysisSessionInput | AIGenerationUpsertWithWhereUniqueWithoutAnalysisSessionInput[]
+    createMany?: AIGenerationCreateManyAnalysisSessionInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutAnalysisSessionInput | AIGenerationUpdateWithWhereUniqueWithoutAnalysisSessionInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutAnalysisSessionInput | AIGenerationUpdateManyWithWhereWithoutAnalysisSessionInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
   }
 
   export type AnalysisSessionCreateNestedOneWithoutDataSourcesInput = {
@@ -45676,6 +53033,20 @@ export namespace Prisma {
     connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
   }
 
+  export type SeedingContentCreateNestedManyWithoutStrategyVersionInput = {
+    create?: XOR<SeedingContentCreateWithoutStrategyVersionInput, SeedingContentUncheckedCreateWithoutStrategyVersionInput> | SeedingContentCreateWithoutStrategyVersionInput[] | SeedingContentUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutStrategyVersionInput | SeedingContentCreateOrConnectWithoutStrategyVersionInput[]
+    createMany?: SeedingContentCreateManyStrategyVersionInputEnvelope
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+  }
+
+  export type AIGenerationCreateNestedManyWithoutStrategyVersionInput = {
+    create?: XOR<AIGenerationCreateWithoutStrategyVersionInput, AIGenerationUncheckedCreateWithoutStrategyVersionInput> | AIGenerationCreateWithoutStrategyVersionInput[] | AIGenerationUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutStrategyVersionInput | AIGenerationCreateOrConnectWithoutStrategyVersionInput[]
+    createMany?: AIGenerationCreateManyStrategyVersionInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+  }
+
   export type StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput = {
     create?: XOR<StrategyCreateWithoutCurrentVersionInput, StrategyUncheckedCreateWithoutCurrentVersionInput>
     connectOrCreate?: StrategyCreateOrConnectWithoutCurrentVersionInput
@@ -45694,6 +53065,20 @@ export namespace Prisma {
     connectOrCreate?: SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput | SeedingBotTaskCreateOrConnectWithoutStrategyVersionInput[]
     createMany?: SeedingBotTaskCreateManyStrategyVersionInputEnvelope
     connect?: SeedingBotTaskWhereUniqueInput | SeedingBotTaskWhereUniqueInput[]
+  }
+
+  export type SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput = {
+    create?: XOR<SeedingContentCreateWithoutStrategyVersionInput, SeedingContentUncheckedCreateWithoutStrategyVersionInput> | SeedingContentCreateWithoutStrategyVersionInput[] | SeedingContentUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutStrategyVersionInput | SeedingContentCreateOrConnectWithoutStrategyVersionInput[]
+    createMany?: SeedingContentCreateManyStrategyVersionInputEnvelope
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+  }
+
+  export type AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput = {
+    create?: XOR<AIGenerationCreateWithoutStrategyVersionInput, AIGenerationUncheckedCreateWithoutStrategyVersionInput> | AIGenerationCreateWithoutStrategyVersionInput[] | AIGenerationUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutStrategyVersionInput | AIGenerationCreateOrConnectWithoutStrategyVersionInput[]
+    createMany?: AIGenerationCreateManyStrategyVersionInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
   }
 
   export type EnumStrategyVersionStatusFieldUpdateOperationsInput = {
@@ -45746,6 +53131,34 @@ export namespace Prisma {
     deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
   }
 
+  export type SeedingContentUpdateManyWithoutStrategyVersionNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutStrategyVersionInput, SeedingContentUncheckedCreateWithoutStrategyVersionInput> | SeedingContentCreateWithoutStrategyVersionInput[] | SeedingContentUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutStrategyVersionInput | SeedingContentCreateOrConnectWithoutStrategyVersionInput[]
+    upsert?: SeedingContentUpsertWithWhereUniqueWithoutStrategyVersionInput | SeedingContentUpsertWithWhereUniqueWithoutStrategyVersionInput[]
+    createMany?: SeedingContentCreateManyStrategyVersionInputEnvelope
+    set?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    disconnect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    delete?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    update?: SeedingContentUpdateWithWhereUniqueWithoutStrategyVersionInput | SeedingContentUpdateWithWhereUniqueWithoutStrategyVersionInput[]
+    updateMany?: SeedingContentUpdateManyWithWhereWithoutStrategyVersionInput | SeedingContentUpdateManyWithWhereWithoutStrategyVersionInput[]
+    deleteMany?: SeedingContentScalarWhereInput | SeedingContentScalarWhereInput[]
+  }
+
+  export type AIGenerationUpdateManyWithoutStrategyVersionNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutStrategyVersionInput, AIGenerationUncheckedCreateWithoutStrategyVersionInput> | AIGenerationCreateWithoutStrategyVersionInput[] | AIGenerationUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutStrategyVersionInput | AIGenerationCreateOrConnectWithoutStrategyVersionInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutStrategyVersionInput | AIGenerationUpsertWithWhereUniqueWithoutStrategyVersionInput[]
+    createMany?: AIGenerationCreateManyStrategyVersionInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutStrategyVersionInput | AIGenerationUpdateWithWhereUniqueWithoutStrategyVersionInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutStrategyVersionInput | AIGenerationUpdateManyWithWhereWithoutStrategyVersionInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+  }
+
   export type StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput = {
     create?: XOR<StrategyCreateWithoutCurrentVersionInput, StrategyUncheckedCreateWithoutCurrentVersionInput>
     connectOrCreate?: StrategyCreateOrConnectWithoutCurrentVersionInput
@@ -45784,6 +53197,34 @@ export namespace Prisma {
     deleteMany?: SeedingBotTaskScalarWhereInput | SeedingBotTaskScalarWhereInput[]
   }
 
+  export type SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutStrategyVersionInput, SeedingContentUncheckedCreateWithoutStrategyVersionInput> | SeedingContentCreateWithoutStrategyVersionInput[] | SeedingContentUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutStrategyVersionInput | SeedingContentCreateOrConnectWithoutStrategyVersionInput[]
+    upsert?: SeedingContentUpsertWithWhereUniqueWithoutStrategyVersionInput | SeedingContentUpsertWithWhereUniqueWithoutStrategyVersionInput[]
+    createMany?: SeedingContentCreateManyStrategyVersionInputEnvelope
+    set?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    disconnect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    delete?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    connect?: SeedingContentWhereUniqueInput | SeedingContentWhereUniqueInput[]
+    update?: SeedingContentUpdateWithWhereUniqueWithoutStrategyVersionInput | SeedingContentUpdateWithWhereUniqueWithoutStrategyVersionInput[]
+    updateMany?: SeedingContentUpdateManyWithWhereWithoutStrategyVersionInput | SeedingContentUpdateManyWithWhereWithoutStrategyVersionInput[]
+    deleteMany?: SeedingContentScalarWhereInput | SeedingContentScalarWhereInput[]
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutStrategyVersionInput, AIGenerationUncheckedCreateWithoutStrategyVersionInput> | AIGenerationCreateWithoutStrategyVersionInput[] | AIGenerationUncheckedCreateWithoutStrategyVersionInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutStrategyVersionInput | AIGenerationCreateOrConnectWithoutStrategyVersionInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutStrategyVersionInput | AIGenerationUpsertWithWhereUniqueWithoutStrategyVersionInput[]
+    createMany?: AIGenerationCreateManyStrategyVersionInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutStrategyVersionInput | AIGenerationUpdateWithWhereUniqueWithoutStrategyVersionInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutStrategyVersionInput | AIGenerationUpdateManyWithWhereWithoutStrategyVersionInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+  }
+
   export type StrategyVersionCreateNestedOneWithoutInsightsInput = {
     create?: XOR<StrategyVersionCreateWithoutInsightsInput, StrategyVersionUncheckedCreateWithoutInsightsInput>
     connectOrCreate?: StrategyVersionCreateOrConnectWithoutInsightsInput
@@ -45810,6 +53251,358 @@ export namespace Prisma {
     upsert?: InsightUpsertWithoutStrategyLinksInput
     connect?: InsightWhereUniqueInput
     update?: XOR<XOR<InsightUpdateToOneWithWhereWithoutStrategyLinksInput, InsightUpdateWithoutStrategyLinksInput>, InsightUncheckedUpdateWithoutStrategyLinksInput>
+  }
+
+  export type AnalysisSessionCreateNestedOneWithoutSeedingContentsInput = {
+    create?: XOR<AnalysisSessionCreateWithoutSeedingContentsInput, AnalysisSessionUncheckedCreateWithoutSeedingContentsInput>
+    connectOrCreate?: AnalysisSessionCreateOrConnectWithoutSeedingContentsInput
+    connect?: AnalysisSessionWhereUniqueInput
+  }
+
+  export type StrategyVersionCreateNestedOneWithoutSeedingContentsInput = {
+    create?: XOR<StrategyVersionCreateWithoutSeedingContentsInput, StrategyVersionUncheckedCreateWithoutSeedingContentsInput>
+    connectOrCreate?: StrategyVersionCreateOrConnectWithoutSeedingContentsInput
+    connect?: StrategyVersionWhereUniqueInput
+  }
+
+  export type ContentVersionCreateNestedManyWithoutContentInput = {
+    create?: XOR<ContentVersionCreateWithoutContentInput, ContentVersionUncheckedCreateWithoutContentInput> | ContentVersionCreateWithoutContentInput[] | ContentVersionUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutContentInput | ContentVersionCreateOrConnectWithoutContentInput[]
+    createMany?: ContentVersionCreateManyContentInputEnvelope
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+  }
+
+  export type ContentVersionCreateNestedOneWithoutCurrentForInput = {
+    create?: XOR<ContentVersionCreateWithoutCurrentForInput, ContentVersionUncheckedCreateWithoutCurrentForInput>
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutCurrentForInput
+    connect?: ContentVersionWhereUniqueInput
+  }
+
+  export type AIGenerationCreateNestedManyWithoutContentInput = {
+    create?: XOR<AIGenerationCreateWithoutContentInput, AIGenerationUncheckedCreateWithoutContentInput> | AIGenerationCreateWithoutContentInput[] | AIGenerationUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutContentInput | AIGenerationCreateOrConnectWithoutContentInput[]
+    createMany?: AIGenerationCreateManyContentInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+  }
+
+  export type ContentVersionUncheckedCreateNestedManyWithoutContentInput = {
+    create?: XOR<ContentVersionCreateWithoutContentInput, ContentVersionUncheckedCreateWithoutContentInput> | ContentVersionCreateWithoutContentInput[] | ContentVersionUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutContentInput | ContentVersionCreateOrConnectWithoutContentInput[]
+    createMany?: ContentVersionCreateManyContentInputEnvelope
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+  }
+
+  export type AIGenerationUncheckedCreateNestedManyWithoutContentInput = {
+    create?: XOR<AIGenerationCreateWithoutContentInput, AIGenerationUncheckedCreateWithoutContentInput> | AIGenerationCreateWithoutContentInput[] | AIGenerationUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutContentInput | AIGenerationCreateOrConnectWithoutContentInput[]
+    createMany?: AIGenerationCreateManyContentInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+  }
+
+  export type EnumContentOriginFieldUpdateOperationsInput = {
+    set?: $Enums.ContentOrigin
+  }
+
+  export type EnumContentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ContentStatus
+  }
+
+  export type AnalysisSessionUpdateOneRequiredWithoutSeedingContentsNestedInput = {
+    create?: XOR<AnalysisSessionCreateWithoutSeedingContentsInput, AnalysisSessionUncheckedCreateWithoutSeedingContentsInput>
+    connectOrCreate?: AnalysisSessionCreateOrConnectWithoutSeedingContentsInput
+    upsert?: AnalysisSessionUpsertWithoutSeedingContentsInput
+    connect?: AnalysisSessionWhereUniqueInput
+    update?: XOR<XOR<AnalysisSessionUpdateToOneWithWhereWithoutSeedingContentsInput, AnalysisSessionUpdateWithoutSeedingContentsInput>, AnalysisSessionUncheckedUpdateWithoutSeedingContentsInput>
+  }
+
+  export type StrategyVersionUpdateOneRequiredWithoutSeedingContentsNestedInput = {
+    create?: XOR<StrategyVersionCreateWithoutSeedingContentsInput, StrategyVersionUncheckedCreateWithoutSeedingContentsInput>
+    connectOrCreate?: StrategyVersionCreateOrConnectWithoutSeedingContentsInput
+    upsert?: StrategyVersionUpsertWithoutSeedingContentsInput
+    connect?: StrategyVersionWhereUniqueInput
+    update?: XOR<XOR<StrategyVersionUpdateToOneWithWhereWithoutSeedingContentsInput, StrategyVersionUpdateWithoutSeedingContentsInput>, StrategyVersionUncheckedUpdateWithoutSeedingContentsInput>
+  }
+
+  export type ContentVersionUpdateManyWithoutContentNestedInput = {
+    create?: XOR<ContentVersionCreateWithoutContentInput, ContentVersionUncheckedCreateWithoutContentInput> | ContentVersionCreateWithoutContentInput[] | ContentVersionUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutContentInput | ContentVersionCreateOrConnectWithoutContentInput[]
+    upsert?: ContentVersionUpsertWithWhereUniqueWithoutContentInput | ContentVersionUpsertWithWhereUniqueWithoutContentInput[]
+    createMany?: ContentVersionCreateManyContentInputEnvelope
+    set?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    disconnect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    delete?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    update?: ContentVersionUpdateWithWhereUniqueWithoutContentInput | ContentVersionUpdateWithWhereUniqueWithoutContentInput[]
+    updateMany?: ContentVersionUpdateManyWithWhereWithoutContentInput | ContentVersionUpdateManyWithWhereWithoutContentInput[]
+    deleteMany?: ContentVersionScalarWhereInput | ContentVersionScalarWhereInput[]
+  }
+
+  export type ContentVersionUpdateOneWithoutCurrentForNestedInput = {
+    create?: XOR<ContentVersionCreateWithoutCurrentForInput, ContentVersionUncheckedCreateWithoutCurrentForInput>
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutCurrentForInput
+    upsert?: ContentVersionUpsertWithoutCurrentForInput
+    disconnect?: ContentVersionWhereInput | boolean
+    delete?: ContentVersionWhereInput | boolean
+    connect?: ContentVersionWhereUniqueInput
+    update?: XOR<XOR<ContentVersionUpdateToOneWithWhereWithoutCurrentForInput, ContentVersionUpdateWithoutCurrentForInput>, ContentVersionUncheckedUpdateWithoutCurrentForInput>
+  }
+
+  export type AIGenerationUpdateManyWithoutContentNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutContentInput, AIGenerationUncheckedCreateWithoutContentInput> | AIGenerationCreateWithoutContentInput[] | AIGenerationUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutContentInput | AIGenerationCreateOrConnectWithoutContentInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutContentInput | AIGenerationUpsertWithWhereUniqueWithoutContentInput[]
+    createMany?: AIGenerationCreateManyContentInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutContentInput | AIGenerationUpdateWithWhereUniqueWithoutContentInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutContentInput | AIGenerationUpdateManyWithWhereWithoutContentInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+  }
+
+  export type ContentVersionUncheckedUpdateManyWithoutContentNestedInput = {
+    create?: XOR<ContentVersionCreateWithoutContentInput, ContentVersionUncheckedCreateWithoutContentInput> | ContentVersionCreateWithoutContentInput[] | ContentVersionUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutContentInput | ContentVersionCreateOrConnectWithoutContentInput[]
+    upsert?: ContentVersionUpsertWithWhereUniqueWithoutContentInput | ContentVersionUpsertWithWhereUniqueWithoutContentInput[]
+    createMany?: ContentVersionCreateManyContentInputEnvelope
+    set?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    disconnect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    delete?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    update?: ContentVersionUpdateWithWhereUniqueWithoutContentInput | ContentVersionUpdateWithWhereUniqueWithoutContentInput[]
+    updateMany?: ContentVersionUpdateManyWithWhereWithoutContentInput | ContentVersionUpdateManyWithWhereWithoutContentInput[]
+    deleteMany?: ContentVersionScalarWhereInput | ContentVersionScalarWhereInput[]
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutContentNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutContentInput, AIGenerationUncheckedCreateWithoutContentInput> | AIGenerationCreateWithoutContentInput[] | AIGenerationUncheckedCreateWithoutContentInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutContentInput | AIGenerationCreateOrConnectWithoutContentInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutContentInput | AIGenerationUpsertWithWhereUniqueWithoutContentInput[]
+    createMany?: AIGenerationCreateManyContentInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutContentInput | AIGenerationUpdateWithWhereUniqueWithoutContentInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutContentInput | AIGenerationUpdateManyWithWhereWithoutContentInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+  }
+
+  export type SeedingContentCreateNestedOneWithoutVersionsInput = {
+    create?: XOR<SeedingContentCreateWithoutVersionsInput, SeedingContentUncheckedCreateWithoutVersionsInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutVersionsInput
+    connect?: SeedingContentWhereUniqueInput
+  }
+
+  export type SeedingContentCreateNestedOneWithoutCurrentVersionInput = {
+    create?: XOR<SeedingContentCreateWithoutCurrentVersionInput, SeedingContentUncheckedCreateWithoutCurrentVersionInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutCurrentVersionInput
+    connect?: SeedingContentWhereUniqueInput
+  }
+
+  export type AIGenerationCreateNestedOneWithoutVersionsInput = {
+    create?: XOR<AIGenerationCreateWithoutVersionsInput, AIGenerationUncheckedCreateWithoutVersionsInput>
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutVersionsInput
+    connect?: AIGenerationWhereUniqueInput
+  }
+
+  export type SeedingContentUncheckedCreateNestedOneWithoutCurrentVersionInput = {
+    create?: XOR<SeedingContentCreateWithoutCurrentVersionInput, SeedingContentUncheckedCreateWithoutCurrentVersionInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutCurrentVersionInput
+    connect?: SeedingContentWhereUniqueInput
+  }
+
+  export type EnumContentVersionSourceFieldUpdateOperationsInput = {
+    set?: $Enums.ContentVersionSource
+  }
+
+  export type SeedingContentUpdateOneRequiredWithoutVersionsNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutVersionsInput, SeedingContentUncheckedCreateWithoutVersionsInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutVersionsInput
+    upsert?: SeedingContentUpsertWithoutVersionsInput
+    connect?: SeedingContentWhereUniqueInput
+    update?: XOR<XOR<SeedingContentUpdateToOneWithWhereWithoutVersionsInput, SeedingContentUpdateWithoutVersionsInput>, SeedingContentUncheckedUpdateWithoutVersionsInput>
+  }
+
+  export type SeedingContentUpdateOneWithoutCurrentVersionNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutCurrentVersionInput, SeedingContentUncheckedCreateWithoutCurrentVersionInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutCurrentVersionInput
+    upsert?: SeedingContentUpsertWithoutCurrentVersionInput
+    disconnect?: SeedingContentWhereInput | boolean
+    delete?: SeedingContentWhereInput | boolean
+    connect?: SeedingContentWhereUniqueInput
+    update?: XOR<XOR<SeedingContentUpdateToOneWithWhereWithoutCurrentVersionInput, SeedingContentUpdateWithoutCurrentVersionInput>, SeedingContentUncheckedUpdateWithoutCurrentVersionInput>
+  }
+
+  export type AIGenerationUpdateOneWithoutVersionsNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutVersionsInput, AIGenerationUncheckedCreateWithoutVersionsInput>
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutVersionsInput
+    upsert?: AIGenerationUpsertWithoutVersionsInput
+    disconnect?: AIGenerationWhereInput | boolean
+    delete?: AIGenerationWhereInput | boolean
+    connect?: AIGenerationWhereUniqueInput
+    update?: XOR<XOR<AIGenerationUpdateToOneWithWhereWithoutVersionsInput, AIGenerationUpdateWithoutVersionsInput>, AIGenerationUncheckedUpdateWithoutVersionsInput>
+  }
+
+  export type SeedingContentUncheckedUpdateOneWithoutCurrentVersionNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutCurrentVersionInput, SeedingContentUncheckedCreateWithoutCurrentVersionInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutCurrentVersionInput
+    upsert?: SeedingContentUpsertWithoutCurrentVersionInput
+    disconnect?: SeedingContentWhereInput | boolean
+    delete?: SeedingContentWhereInput | boolean
+    connect?: SeedingContentWhereUniqueInput
+    update?: XOR<XOR<SeedingContentUpdateToOneWithWhereWithoutCurrentVersionInput, SeedingContentUpdateWithoutCurrentVersionInput>, SeedingContentUncheckedUpdateWithoutCurrentVersionInput>
+  }
+
+  export type AnalysisSessionCreateNestedOneWithoutAiGenerationsInput = {
+    create?: XOR<AnalysisSessionCreateWithoutAiGenerationsInput, AnalysisSessionUncheckedCreateWithoutAiGenerationsInput>
+    connectOrCreate?: AnalysisSessionCreateOrConnectWithoutAiGenerationsInput
+    connect?: AnalysisSessionWhereUniqueInput
+  }
+
+  export type StrategyVersionCreateNestedOneWithoutAiGenerationsInput = {
+    create?: XOR<StrategyVersionCreateWithoutAiGenerationsInput, StrategyVersionUncheckedCreateWithoutAiGenerationsInput>
+    connectOrCreate?: StrategyVersionCreateOrConnectWithoutAiGenerationsInput
+    connect?: StrategyVersionWhereUniqueInput
+  }
+
+  export type PromptTemplateCreateNestedOneWithoutGenerationsInput = {
+    create?: XOR<PromptTemplateCreateWithoutGenerationsInput, PromptTemplateUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: PromptTemplateCreateOrConnectWithoutGenerationsInput
+    connect?: PromptTemplateWhereUniqueInput
+  }
+
+  export type SeedingContentCreateNestedOneWithoutAiGenerationsInput = {
+    create?: XOR<SeedingContentCreateWithoutAiGenerationsInput, SeedingContentUncheckedCreateWithoutAiGenerationsInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutAiGenerationsInput
+    connect?: SeedingContentWhereUniqueInput
+  }
+
+  export type ContentVersionCreateNestedManyWithoutAiGenerationInput = {
+    create?: XOR<ContentVersionCreateWithoutAiGenerationInput, ContentVersionUncheckedCreateWithoutAiGenerationInput> | ContentVersionCreateWithoutAiGenerationInput[] | ContentVersionUncheckedCreateWithoutAiGenerationInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutAiGenerationInput | ContentVersionCreateOrConnectWithoutAiGenerationInput[]
+    createMany?: ContentVersionCreateManyAiGenerationInputEnvelope
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+  }
+
+  export type ContentVersionUncheckedCreateNestedManyWithoutAiGenerationInput = {
+    create?: XOR<ContentVersionCreateWithoutAiGenerationInput, ContentVersionUncheckedCreateWithoutAiGenerationInput> | ContentVersionCreateWithoutAiGenerationInput[] | ContentVersionUncheckedCreateWithoutAiGenerationInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutAiGenerationInput | ContentVersionCreateOrConnectWithoutAiGenerationInput[]
+    createMany?: ContentVersionCreateManyAiGenerationInputEnvelope
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+  }
+
+  export type EnumAIGenerationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AIGenerationStatus
+  }
+
+  export type AnalysisSessionUpdateOneRequiredWithoutAiGenerationsNestedInput = {
+    create?: XOR<AnalysisSessionCreateWithoutAiGenerationsInput, AnalysisSessionUncheckedCreateWithoutAiGenerationsInput>
+    connectOrCreate?: AnalysisSessionCreateOrConnectWithoutAiGenerationsInput
+    upsert?: AnalysisSessionUpsertWithoutAiGenerationsInput
+    connect?: AnalysisSessionWhereUniqueInput
+    update?: XOR<XOR<AnalysisSessionUpdateToOneWithWhereWithoutAiGenerationsInput, AnalysisSessionUpdateWithoutAiGenerationsInput>, AnalysisSessionUncheckedUpdateWithoutAiGenerationsInput>
+  }
+
+  export type StrategyVersionUpdateOneRequiredWithoutAiGenerationsNestedInput = {
+    create?: XOR<StrategyVersionCreateWithoutAiGenerationsInput, StrategyVersionUncheckedCreateWithoutAiGenerationsInput>
+    connectOrCreate?: StrategyVersionCreateOrConnectWithoutAiGenerationsInput
+    upsert?: StrategyVersionUpsertWithoutAiGenerationsInput
+    connect?: StrategyVersionWhereUniqueInput
+    update?: XOR<XOR<StrategyVersionUpdateToOneWithWhereWithoutAiGenerationsInput, StrategyVersionUpdateWithoutAiGenerationsInput>, StrategyVersionUncheckedUpdateWithoutAiGenerationsInput>
+  }
+
+  export type PromptTemplateUpdateOneRequiredWithoutGenerationsNestedInput = {
+    create?: XOR<PromptTemplateCreateWithoutGenerationsInput, PromptTemplateUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: PromptTemplateCreateOrConnectWithoutGenerationsInput
+    upsert?: PromptTemplateUpsertWithoutGenerationsInput
+    connect?: PromptTemplateWhereUniqueInput
+    update?: XOR<XOR<PromptTemplateUpdateToOneWithWhereWithoutGenerationsInput, PromptTemplateUpdateWithoutGenerationsInput>, PromptTemplateUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type SeedingContentUpdateOneWithoutAiGenerationsNestedInput = {
+    create?: XOR<SeedingContentCreateWithoutAiGenerationsInput, SeedingContentUncheckedCreateWithoutAiGenerationsInput>
+    connectOrCreate?: SeedingContentCreateOrConnectWithoutAiGenerationsInput
+    upsert?: SeedingContentUpsertWithoutAiGenerationsInput
+    disconnect?: SeedingContentWhereInput | boolean
+    delete?: SeedingContentWhereInput | boolean
+    connect?: SeedingContentWhereUniqueInput
+    update?: XOR<XOR<SeedingContentUpdateToOneWithWhereWithoutAiGenerationsInput, SeedingContentUpdateWithoutAiGenerationsInput>, SeedingContentUncheckedUpdateWithoutAiGenerationsInput>
+  }
+
+  export type ContentVersionUpdateManyWithoutAiGenerationNestedInput = {
+    create?: XOR<ContentVersionCreateWithoutAiGenerationInput, ContentVersionUncheckedCreateWithoutAiGenerationInput> | ContentVersionCreateWithoutAiGenerationInput[] | ContentVersionUncheckedCreateWithoutAiGenerationInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutAiGenerationInput | ContentVersionCreateOrConnectWithoutAiGenerationInput[]
+    upsert?: ContentVersionUpsertWithWhereUniqueWithoutAiGenerationInput | ContentVersionUpsertWithWhereUniqueWithoutAiGenerationInput[]
+    createMany?: ContentVersionCreateManyAiGenerationInputEnvelope
+    set?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    disconnect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    delete?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    update?: ContentVersionUpdateWithWhereUniqueWithoutAiGenerationInput | ContentVersionUpdateWithWhereUniqueWithoutAiGenerationInput[]
+    updateMany?: ContentVersionUpdateManyWithWhereWithoutAiGenerationInput | ContentVersionUpdateManyWithWhereWithoutAiGenerationInput[]
+    deleteMany?: ContentVersionScalarWhereInput | ContentVersionScalarWhereInput[]
+  }
+
+  export type ContentVersionUncheckedUpdateManyWithoutAiGenerationNestedInput = {
+    create?: XOR<ContentVersionCreateWithoutAiGenerationInput, ContentVersionUncheckedCreateWithoutAiGenerationInput> | ContentVersionCreateWithoutAiGenerationInput[] | ContentVersionUncheckedCreateWithoutAiGenerationInput[]
+    connectOrCreate?: ContentVersionCreateOrConnectWithoutAiGenerationInput | ContentVersionCreateOrConnectWithoutAiGenerationInput[]
+    upsert?: ContentVersionUpsertWithWhereUniqueWithoutAiGenerationInput | ContentVersionUpsertWithWhereUniqueWithoutAiGenerationInput[]
+    createMany?: ContentVersionCreateManyAiGenerationInputEnvelope
+    set?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    disconnect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    delete?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    connect?: ContentVersionWhereUniqueInput | ContentVersionWhereUniqueInput[]
+    update?: ContentVersionUpdateWithWhereUniqueWithoutAiGenerationInput | ContentVersionUpdateWithWhereUniqueWithoutAiGenerationInput[]
+    updateMany?: ContentVersionUpdateManyWithWhereWithoutAiGenerationInput | ContentVersionUpdateManyWithWhereWithoutAiGenerationInput[]
+    deleteMany?: ContentVersionScalarWhereInput | ContentVersionScalarWhereInput[]
+  }
+
+  export type AIGenerationCreateNestedManyWithoutPromptTemplateInput = {
+    create?: XOR<AIGenerationCreateWithoutPromptTemplateInput, AIGenerationUncheckedCreateWithoutPromptTemplateInput> | AIGenerationCreateWithoutPromptTemplateInput[] | AIGenerationUncheckedCreateWithoutPromptTemplateInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutPromptTemplateInput | AIGenerationCreateOrConnectWithoutPromptTemplateInput[]
+    createMany?: AIGenerationCreateManyPromptTemplateInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+  }
+
+  export type AIGenerationUncheckedCreateNestedManyWithoutPromptTemplateInput = {
+    create?: XOR<AIGenerationCreateWithoutPromptTemplateInput, AIGenerationUncheckedCreateWithoutPromptTemplateInput> | AIGenerationCreateWithoutPromptTemplateInput[] | AIGenerationUncheckedCreateWithoutPromptTemplateInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutPromptTemplateInput | AIGenerationCreateOrConnectWithoutPromptTemplateInput[]
+    createMany?: AIGenerationCreateManyPromptTemplateInputEnvelope
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+  }
+
+  export type EnumPromptPurposeFieldUpdateOperationsInput = {
+    set?: $Enums.PromptPurpose
+  }
+
+  export type AIGenerationUpdateManyWithoutPromptTemplateNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutPromptTemplateInput, AIGenerationUncheckedCreateWithoutPromptTemplateInput> | AIGenerationCreateWithoutPromptTemplateInput[] | AIGenerationUncheckedCreateWithoutPromptTemplateInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutPromptTemplateInput | AIGenerationCreateOrConnectWithoutPromptTemplateInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutPromptTemplateInput | AIGenerationUpsertWithWhereUniqueWithoutPromptTemplateInput[]
+    createMany?: AIGenerationCreateManyPromptTemplateInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutPromptTemplateInput | AIGenerationUpdateWithWhereUniqueWithoutPromptTemplateInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutPromptTemplateInput | AIGenerationUpdateManyWithWhereWithoutPromptTemplateInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutPromptTemplateNestedInput = {
+    create?: XOR<AIGenerationCreateWithoutPromptTemplateInput, AIGenerationUncheckedCreateWithoutPromptTemplateInput> | AIGenerationCreateWithoutPromptTemplateInput[] | AIGenerationUncheckedCreateWithoutPromptTemplateInput[]
+    connectOrCreate?: AIGenerationCreateOrConnectWithoutPromptTemplateInput | AIGenerationCreateOrConnectWithoutPromptTemplateInput[]
+    upsert?: AIGenerationUpsertWithWhereUniqueWithoutPromptTemplateInput | AIGenerationUpsertWithWhereUniqueWithoutPromptTemplateInput[]
+    createMany?: AIGenerationCreateManyPromptTemplateInputEnvelope
+    set?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    disconnect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    delete?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    connect?: AIGenerationWhereUniqueInput | AIGenerationWhereUniqueInput[]
+    update?: AIGenerationUpdateWithWhereUniqueWithoutPromptTemplateInput | AIGenerationUpdateWithWhereUniqueWithoutPromptTemplateInput[]
+    updateMany?: AIGenerationUpdateManyWithWhereWithoutPromptTemplateInput | AIGenerationUpdateManyWithWhereWithoutPromptTemplateInput[]
+    deleteMany?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutSeedingBotsInput = {
@@ -46872,6 +54665,91 @@ export namespace Prisma {
     _max?: NestedEnumStrategyVersionStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumContentOriginFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentOrigin | EnumContentOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentOriginFilter<$PrismaModel> | $Enums.ContentOrigin
+  }
+
+  export type NestedEnumContentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentStatus | EnumContentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentStatusFilter<$PrismaModel> | $Enums.ContentStatus
+  }
+
+  export type NestedEnumContentOriginWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentOrigin | EnumContentOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentOrigin[] | ListEnumContentOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentOriginWithAggregatesFilter<$PrismaModel> | $Enums.ContentOrigin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumContentOriginFilter<$PrismaModel>
+    _max?: NestedEnumContentOriginFilter<$PrismaModel>
+  }
+
+  export type NestedEnumContentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentStatus | EnumContentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentStatus[] | ListEnumContentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentStatusWithAggregatesFilter<$PrismaModel> | $Enums.ContentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumContentStatusFilter<$PrismaModel>
+    _max?: NestedEnumContentStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumContentVersionSourceFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentVersionSource | EnumContentVersionSourceFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentVersionSourceFilter<$PrismaModel> | $Enums.ContentVersionSource
+  }
+
+  export type NestedEnumContentVersionSourceWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ContentVersionSource | EnumContentVersionSourceFieldRefInput<$PrismaModel>
+    in?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ContentVersionSource[] | ListEnumContentVersionSourceFieldRefInput<$PrismaModel>
+    not?: NestedEnumContentVersionSourceWithAggregatesFilter<$PrismaModel> | $Enums.ContentVersionSource
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumContentVersionSourceFilter<$PrismaModel>
+    _max?: NestedEnumContentVersionSourceFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAIGenerationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AIGenerationStatus | EnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAIGenerationStatusFilter<$PrismaModel> | $Enums.AIGenerationStatus
+  }
+
+  export type NestedEnumAIGenerationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AIGenerationStatus | EnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AIGenerationStatus[] | ListEnumAIGenerationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAIGenerationStatusWithAggregatesFilter<$PrismaModel> | $Enums.AIGenerationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAIGenerationStatusFilter<$PrismaModel>
+    _max?: NestedEnumAIGenerationStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPromptPurposeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromptPurpose | EnumPromptPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromptPurposeFilter<$PrismaModel> | $Enums.PromptPurpose
+  }
+
+  export type NestedEnumPromptPurposeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromptPurpose | EnumPromptPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromptPurpose[] | ListEnumPromptPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromptPurposeWithAggregatesFilter<$PrismaModel> | $Enums.PromptPurpose
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromptPurposeFilter<$PrismaModel>
+    _max?: NestedEnumPromptPurposeFilter<$PrismaModel>
+  }
+
   export type NestedEnumBotStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.BotStatus | EnumBotStatusFieldRefInput<$PrismaModel>
     in?: $Enums.BotStatus[] | ListEnumBotStatusFieldRefInput<$PrismaModel>
@@ -47180,6 +55058,8 @@ export namespace Prisma {
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutOrganizationInput = {
@@ -47204,6 +55084,8 @@ export namespace Prisma {
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutOrganizationInput = {
@@ -47723,6 +55605,8 @@ export namespace Prisma {
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutBusinessInput = {
@@ -47746,6 +55630,8 @@ export namespace Prisma {
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutBusinessInput = {
@@ -48600,6 +56486,105 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SeedingContentCreateWithoutAnalysisSessionInput = {
+    organizationId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    strategyVersion: StrategyVersionCreateNestedOneWithoutSeedingContentsInput
+    versions?: ContentVersionCreateNestedManyWithoutContentInput
+    currentVersion?: ContentVersionCreateNestedOneWithoutCurrentForInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentUncheckedCreateWithoutAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutContentInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentCreateOrConnectWithoutAnalysisSessionInput = {
+    where: SeedingContentWhereUniqueInput
+    create: XOR<SeedingContentCreateWithoutAnalysisSessionInput, SeedingContentUncheckedCreateWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingContentCreateManyAnalysisSessionInputEnvelope = {
+    data: SeedingContentCreateManyAnalysisSessionInput | SeedingContentCreateManyAnalysisSessionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AIGenerationCreateWithoutAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    strategyVersion: StrategyVersionCreateNestedOneWithoutAiGenerationsInput
+    promptTemplate: PromptTemplateCreateNestedOneWithoutGenerationsInput
+    content?: SeedingContentCreateNestedOneWithoutAiGenerationsInput
+    versions?: ContentVersionCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationUncheckedCreateWithoutAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationCreateOrConnectWithoutAnalysisSessionInput = {
+    where: AIGenerationWhereUniqueInput
+    create: XOR<AIGenerationCreateWithoutAnalysisSessionInput, AIGenerationUncheckedCreateWithoutAnalysisSessionInput>
+  }
+
+  export type AIGenerationCreateManyAnalysisSessionInputEnvelope = {
+    data: AIGenerationCreateManyAnalysisSessionInput | AIGenerationCreateManyAnalysisSessionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutAnalysisSessionsInput = {
     update: XOR<OrganizationUpdateWithoutAnalysisSessionsInput, OrganizationUncheckedUpdateWithoutAnalysisSessionsInput>
     create: XOR<OrganizationCreateWithoutAnalysisSessionsInput, OrganizationUncheckedCreateWithoutAnalysisSessionsInput>
@@ -48886,6 +56871,83 @@ export namespace Prisma {
     data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionInput>
   }
 
+  export type SeedingContentUpsertWithWhereUniqueWithoutAnalysisSessionInput = {
+    where: SeedingContentWhereUniqueInput
+    update: XOR<SeedingContentUpdateWithoutAnalysisSessionInput, SeedingContentUncheckedUpdateWithoutAnalysisSessionInput>
+    create: XOR<SeedingContentCreateWithoutAnalysisSessionInput, SeedingContentUncheckedCreateWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingContentUpdateWithWhereUniqueWithoutAnalysisSessionInput = {
+    where: SeedingContentWhereUniqueInput
+    data: XOR<SeedingContentUpdateWithoutAnalysisSessionInput, SeedingContentUncheckedUpdateWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingContentUpdateManyWithWhereWithoutAnalysisSessionInput = {
+    where: SeedingContentScalarWhereInput
+    data: XOR<SeedingContentUpdateManyMutationInput, SeedingContentUncheckedUpdateManyWithoutAnalysisSessionInput>
+  }
+
+  export type SeedingContentScalarWhereInput = {
+    AND?: SeedingContentScalarWhereInput | SeedingContentScalarWhereInput[]
+    OR?: SeedingContentScalarWhereInput[]
+    NOT?: SeedingContentScalarWhereInput | SeedingContentScalarWhereInput[]
+    id?: StringFilter<"SeedingContent"> | string
+    organizationId?: StringFilter<"SeedingContent"> | string
+    analysisSessionId?: StringFilter<"SeedingContent"> | string
+    strategyVersionId?: StringFilter<"SeedingContent"> | string
+    origin?: EnumContentOriginFilter<"SeedingContent"> | $Enums.ContentOrigin
+    status?: EnumContentStatusFilter<"SeedingContent"> | $Enums.ContentStatus
+    platform?: StringFilter<"SeedingContent"> | string
+    contentType?: StringFilter<"SeedingContent"> | string
+    title?: StringFilter<"SeedingContent"> | string
+    currentVersionId?: StringNullableFilter<"SeedingContent"> | string | null
+    contentHash?: StringNullableFilter<"SeedingContent"> | string | null
+    tags?: JsonFilter<"SeedingContent">
+    createdBy?: StringNullableFilter<"SeedingContent"> | string | null
+    createdAt?: DateTimeFilter<"SeedingContent"> | Date | string
+    updatedAt?: DateTimeFilter<"SeedingContent"> | Date | string
+    archivedAt?: DateTimeNullableFilter<"SeedingContent"> | Date | string | null
+  }
+
+  export type AIGenerationUpsertWithWhereUniqueWithoutAnalysisSessionInput = {
+    where: AIGenerationWhereUniqueInput
+    update: XOR<AIGenerationUpdateWithoutAnalysisSessionInput, AIGenerationUncheckedUpdateWithoutAnalysisSessionInput>
+    create: XOR<AIGenerationCreateWithoutAnalysisSessionInput, AIGenerationUncheckedCreateWithoutAnalysisSessionInput>
+  }
+
+  export type AIGenerationUpdateWithWhereUniqueWithoutAnalysisSessionInput = {
+    where: AIGenerationWhereUniqueInput
+    data: XOR<AIGenerationUpdateWithoutAnalysisSessionInput, AIGenerationUncheckedUpdateWithoutAnalysisSessionInput>
+  }
+
+  export type AIGenerationUpdateManyWithWhereWithoutAnalysisSessionInput = {
+    where: AIGenerationScalarWhereInput
+    data: XOR<AIGenerationUpdateManyMutationInput, AIGenerationUncheckedUpdateManyWithoutAnalysisSessionInput>
+  }
+
+  export type AIGenerationScalarWhereInput = {
+    AND?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+    OR?: AIGenerationScalarWhereInput[]
+    NOT?: AIGenerationScalarWhereInput | AIGenerationScalarWhereInput[]
+    id?: StringFilter<"AIGeneration"> | string
+    organizationId?: StringFilter<"AIGeneration"> | string
+    analysisSessionId?: StringFilter<"AIGeneration"> | string
+    strategyVersionId?: StringFilter<"AIGeneration"> | string
+    contentId?: StringNullableFilter<"AIGeneration"> | string | null
+    promptTemplateId?: StringFilter<"AIGeneration"> | string
+    promptRendered?: StringFilter<"AIGeneration"> | string
+    promptVersion?: StringNullableFilter<"AIGeneration"> | string | null
+    aiProvider?: StringFilter<"AIGeneration"> | string
+    aiModel?: StringFilter<"AIGeneration"> | string
+    parameters?: JsonFilter<"AIGeneration">
+    candidates?: JsonFilter<"AIGeneration">
+    selectedCandidateIndex?: IntNullableFilter<"AIGeneration"> | number | null
+    status?: EnumAIGenerationStatusFilter<"AIGeneration"> | $Enums.AIGenerationStatus
+    rawResponse?: JsonNullableFilter<"AIGeneration">
+    requestedBy?: StringNullableFilter<"AIGeneration"> | string | null
+    createdAt?: DateTimeFilter<"AIGeneration"> | Date | string
+  }
+
   export type AnalysisSessionCreateWithoutDataSourcesInput = {
     id?: string
     name: string
@@ -48908,6 +56970,8 @@ export namespace Prisma {
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutDataSourcesInput = {
@@ -48932,6 +56996,8 @@ export namespace Prisma {
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutDataSourcesInput = {
@@ -49176,6 +57242,8 @@ export namespace Prisma {
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutDataSourcesInput = {
@@ -49200,6 +57268,8 @@ export namespace Prisma {
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type BusinessLocationUpsertWithoutDataSourcesInput = {
@@ -49352,6 +57422,8 @@ export namespace Prisma {
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutFeedbacksInput = {
@@ -49376,6 +57448,8 @@ export namespace Prisma {
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutFeedbacksInput = {
@@ -49636,6 +57710,8 @@ export namespace Prisma {
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutFeedbacksInput = {
@@ -49660,6 +57736,8 @@ export namespace Prisma {
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type DataSourceUpsertWithoutFeedbacksInput = {
@@ -49975,6 +58053,8 @@ export namespace Prisma {
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutProcessingJobsInput = {
@@ -49999,6 +58079,8 @@ export namespace Prisma {
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutProcessingJobsInput = {
@@ -50126,6 +58208,8 @@ export namespace Prisma {
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutProcessingJobsInput = {
@@ -50150,6 +58234,8 @@ export namespace Prisma {
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type DataSourceUpsertWithoutProcessingJobsInput = {
@@ -50424,6 +58510,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutInsightsInput = {
@@ -50448,6 +58536,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutInsightsInput = {
@@ -50689,6 +58779,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutInsightsInput = {
@@ -50713,6 +58805,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type InsightUpsertWithoutChildrenInput = {
@@ -51228,6 +59322,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutStrategiesInput = {
@@ -51252,6 +59348,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutStrategiesInput = {
@@ -51288,6 +59386,8 @@ export namespace Prisma {
     strategy: StrategyCreateNestedOneWithoutVersionsInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutActiveForStrategyInput = {
@@ -51320,6 +59420,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutActiveForStrategyInput = {
@@ -51356,6 +59458,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutStrategyInput = {
@@ -51387,6 +59491,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutStrategyInput = {
@@ -51432,6 +59538,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutStrategiesInput = {
@@ -51456,6 +59564,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type StrategyVersionUpsertWithoutActiveForStrategyInput = {
@@ -51498,6 +59608,8 @@ export namespace Prisma {
     strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutActiveForStrategyInput = {
@@ -51530,6 +59642,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUpsertWithWhereUniqueWithoutStrategyInput = {
@@ -51716,6 +59830,105 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SeedingContentCreateWithoutStrategyVersionInput = {
+    organizationId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    analysisSession: AnalysisSessionCreateNestedOneWithoutSeedingContentsInput
+    versions?: ContentVersionCreateNestedManyWithoutContentInput
+    currentVersion?: ContentVersionCreateNestedOneWithoutCurrentForInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentUncheckedCreateWithoutStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutContentInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentCreateOrConnectWithoutStrategyVersionInput = {
+    where: SeedingContentWhereUniqueInput
+    create: XOR<SeedingContentCreateWithoutStrategyVersionInput, SeedingContentUncheckedCreateWithoutStrategyVersionInput>
+  }
+
+  export type SeedingContentCreateManyStrategyVersionInputEnvelope = {
+    data: SeedingContentCreateManyStrategyVersionInput | SeedingContentCreateManyStrategyVersionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AIGenerationCreateWithoutStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    analysisSession: AnalysisSessionCreateNestedOneWithoutAiGenerationsInput
+    promptTemplate: PromptTemplateCreateNestedOneWithoutGenerationsInput
+    content?: SeedingContentCreateNestedOneWithoutAiGenerationsInput
+    versions?: ContentVersionCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationUncheckedCreateWithoutStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationCreateOrConnectWithoutStrategyVersionInput = {
+    where: AIGenerationWhereUniqueInput
+    create: XOR<AIGenerationCreateWithoutStrategyVersionInput, AIGenerationUncheckedCreateWithoutStrategyVersionInput>
+  }
+
+  export type AIGenerationCreateManyStrategyVersionInputEnvelope = {
+    data: AIGenerationCreateManyStrategyVersionInput | AIGenerationCreateManyStrategyVersionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StrategyUpsertWithoutVersionsInput = {
     update: XOR<StrategyUpdateWithoutVersionsInput, StrategyUncheckedUpdateWithoutVersionsInput>
     create: XOR<StrategyCreateWithoutVersionsInput, StrategyUncheckedCreateWithoutVersionsInput>
@@ -51811,6 +60024,38 @@ export namespace Prisma {
     data: XOR<SeedingBotTaskUpdateManyMutationInput, SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionInput>
   }
 
+  export type SeedingContentUpsertWithWhereUniqueWithoutStrategyVersionInput = {
+    where: SeedingContentWhereUniqueInput
+    update: XOR<SeedingContentUpdateWithoutStrategyVersionInput, SeedingContentUncheckedUpdateWithoutStrategyVersionInput>
+    create: XOR<SeedingContentCreateWithoutStrategyVersionInput, SeedingContentUncheckedCreateWithoutStrategyVersionInput>
+  }
+
+  export type SeedingContentUpdateWithWhereUniqueWithoutStrategyVersionInput = {
+    where: SeedingContentWhereUniqueInput
+    data: XOR<SeedingContentUpdateWithoutStrategyVersionInput, SeedingContentUncheckedUpdateWithoutStrategyVersionInput>
+  }
+
+  export type SeedingContentUpdateManyWithWhereWithoutStrategyVersionInput = {
+    where: SeedingContentScalarWhereInput
+    data: XOR<SeedingContentUpdateManyMutationInput, SeedingContentUncheckedUpdateManyWithoutStrategyVersionInput>
+  }
+
+  export type AIGenerationUpsertWithWhereUniqueWithoutStrategyVersionInput = {
+    where: AIGenerationWhereUniqueInput
+    update: XOR<AIGenerationUpdateWithoutStrategyVersionInput, AIGenerationUncheckedUpdateWithoutStrategyVersionInput>
+    create: XOR<AIGenerationCreateWithoutStrategyVersionInput, AIGenerationUncheckedCreateWithoutStrategyVersionInput>
+  }
+
+  export type AIGenerationUpdateWithWhereUniqueWithoutStrategyVersionInput = {
+    where: AIGenerationWhereUniqueInput
+    data: XOR<AIGenerationUpdateWithoutStrategyVersionInput, AIGenerationUncheckedUpdateWithoutStrategyVersionInput>
+  }
+
+  export type AIGenerationUpdateManyWithWhereWithoutStrategyVersionInput = {
+    where: AIGenerationScalarWhereInput
+    data: XOR<AIGenerationUpdateManyMutationInput, AIGenerationUncheckedUpdateManyWithoutStrategyVersionInput>
+  }
+
   export type StrategyVersionCreateWithoutInsightsInput = {
     id?: string
     versionNo: number
@@ -51840,6 +60085,8 @@ export namespace Prisma {
     strategy: StrategyCreateNestedOneWithoutVersionsInput
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
     botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutInsightsInput = {
@@ -51872,6 +60119,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
     botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutInsightsInput = {
@@ -51974,6 +60223,8 @@ export namespace Prisma {
     strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutInsightsInput = {
@@ -52006,6 +60257,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type InsightUpsertWithoutStrategyLinksInput = {
@@ -52067,6 +60320,1364 @@ export namespace Prisma {
     children?: InsightUncheckedUpdateManyWithoutParentNestedInput
     evidences?: InsightEvidenceUncheckedUpdateManyWithoutInsightNestedInput
     reviewLogs?: InsightReviewLogUncheckedUpdateManyWithoutInsightNestedInput
+  }
+
+  export type AnalysisSessionCreateWithoutSeedingContentsInput = {
+    id?: string
+    name: string
+    objective?: string | null
+    focusProduct?: string | null
+    dateFrom?: Date | string | null
+    dateTo?: Date | string | null
+    status?: $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: Date | string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    completedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutAnalysisSessionsInput
+    business: BusinessCreateNestedOneWithoutAnalysisSessionsInput
+    dataSources?: DataSourceCreateNestedManyWithoutAnalysisSessionInput
+    feedbacks?: CustomerFeedbackCreateNestedManyWithoutAnalysisSessionInput
+    processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
+    insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
+    strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
+  }
+
+  export type AnalysisSessionUncheckedCreateWithoutSeedingContentsInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    name: string
+    objective?: string | null
+    focusProduct?: string | null
+    dateFrom?: Date | string | null
+    dateTo?: Date | string | null
+    status?: $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: Date | string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    completedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    dataSources?: DataSourceUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    feedbacks?: CustomerFeedbackUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
+  }
+
+  export type AnalysisSessionCreateOrConnectWithoutSeedingContentsInput = {
+    where: AnalysisSessionWhereUniqueInput
+    create: XOR<AnalysisSessionCreateWithoutSeedingContentsInput, AnalysisSessionUncheckedCreateWithoutSeedingContentsInput>
+  }
+
+  export type StrategyVersionCreateWithoutSeedingContentsInput = {
+    id?: string
+    versionNo: number
+    status?: $Enums.StrategyVersionStatus
+    context?: string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: string | null
+    aiModel?: string | null
+    promptVersion?: string | null
+    editedBy?: string | null
+    editReason?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    strategy: StrategyCreateNestedOneWithoutVersionsInput
+    activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
+    insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutStrategyVersionInput
+  }
+
+  export type StrategyVersionUncheckedCreateWithoutSeedingContentsInput = {
+    id?: string
+    strategyId: string
+    analysisSessionId: string
+    versionNo: number
+    status?: $Enums.StrategyVersionStatus
+    context?: string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: string | null
+    aiModel?: string | null
+    promptVersion?: string | null
+    editedBy?: string | null
+    editReason?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
+    insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput
+  }
+
+  export type StrategyVersionCreateOrConnectWithoutSeedingContentsInput = {
+    where: StrategyVersionWhereUniqueInput
+    create: XOR<StrategyVersionCreateWithoutSeedingContentsInput, StrategyVersionUncheckedCreateWithoutSeedingContentsInput>
+  }
+
+  export type ContentVersionCreateWithoutContentInput = {
+    id?: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    currentFor?: SeedingContentCreateNestedOneWithoutCurrentVersionInput
+    aiGeneration?: AIGenerationCreateNestedOneWithoutVersionsInput
+  }
+
+  export type ContentVersionUncheckedCreateWithoutContentInput = {
+    id?: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    aiGenerationId?: string | null
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    currentFor?: SeedingContentUncheckedCreateNestedOneWithoutCurrentVersionInput
+  }
+
+  export type ContentVersionCreateOrConnectWithoutContentInput = {
+    where: ContentVersionWhereUniqueInput
+    create: XOR<ContentVersionCreateWithoutContentInput, ContentVersionUncheckedCreateWithoutContentInput>
+  }
+
+  export type ContentVersionCreateManyContentInputEnvelope = {
+    data: ContentVersionCreateManyContentInput | ContentVersionCreateManyContentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ContentVersionCreateWithoutCurrentForInput = {
+    id?: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    content: SeedingContentCreateNestedOneWithoutVersionsInput
+    aiGeneration?: AIGenerationCreateNestedOneWithoutVersionsInput
+  }
+
+  export type ContentVersionUncheckedCreateWithoutCurrentForInput = {
+    id?: string
+    contentId: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    aiGenerationId?: string | null
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentVersionCreateOrConnectWithoutCurrentForInput = {
+    where: ContentVersionWhereUniqueInput
+    create: XOR<ContentVersionCreateWithoutCurrentForInput, ContentVersionUncheckedCreateWithoutCurrentForInput>
+  }
+
+  export type AIGenerationCreateWithoutContentInput = {
+    id?: string
+    organizationId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    analysisSession: AnalysisSessionCreateNestedOneWithoutAiGenerationsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutAiGenerationsInput
+    promptTemplate: PromptTemplateCreateNestedOneWithoutGenerationsInput
+    versions?: ContentVersionCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationUncheckedCreateWithoutContentInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationCreateOrConnectWithoutContentInput = {
+    where: AIGenerationWhereUniqueInput
+    create: XOR<AIGenerationCreateWithoutContentInput, AIGenerationUncheckedCreateWithoutContentInput>
+  }
+
+  export type AIGenerationCreateManyContentInputEnvelope = {
+    data: AIGenerationCreateManyContentInput | AIGenerationCreateManyContentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AnalysisSessionUpsertWithoutSeedingContentsInput = {
+    update: XOR<AnalysisSessionUpdateWithoutSeedingContentsInput, AnalysisSessionUncheckedUpdateWithoutSeedingContentsInput>
+    create: XOR<AnalysisSessionCreateWithoutSeedingContentsInput, AnalysisSessionUncheckedCreateWithoutSeedingContentsInput>
+    where?: AnalysisSessionWhereInput
+  }
+
+  export type AnalysisSessionUpdateToOneWithWhereWithoutSeedingContentsInput = {
+    where?: AnalysisSessionWhereInput
+    data: XOR<AnalysisSessionUpdateWithoutSeedingContentsInput, AnalysisSessionUncheckedUpdateWithoutSeedingContentsInput>
+  }
+
+  export type AnalysisSessionUpdateWithoutSeedingContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    focusProduct?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAnalysisSessionStatusFieldUpdateOperationsInput | $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutAnalysisSessionsNestedInput
+    business?: BusinessUpdateOneRequiredWithoutAnalysisSessionsNestedInput
+    dataSources?: DataSourceUpdateManyWithoutAnalysisSessionNestedInput
+    feedbacks?: CustomerFeedbackUpdateManyWithoutAnalysisSessionNestedInput
+    processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
+    insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
+    strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
+  }
+
+  export type AnalysisSessionUncheckedUpdateWithoutSeedingContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    focusProduct?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAnalysisSessionStatusFieldUpdateOperationsInput | $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dataSources?: DataSourceUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    feedbacks?: CustomerFeedbackUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+  }
+
+  export type StrategyVersionUpsertWithoutSeedingContentsInput = {
+    update: XOR<StrategyVersionUpdateWithoutSeedingContentsInput, StrategyVersionUncheckedUpdateWithoutSeedingContentsInput>
+    create: XOR<StrategyVersionCreateWithoutSeedingContentsInput, StrategyVersionUncheckedCreateWithoutSeedingContentsInput>
+    where?: StrategyVersionWhereInput
+  }
+
+  export type StrategyVersionUpdateToOneWithWhereWithoutSeedingContentsInput = {
+    where?: StrategyVersionWhereInput
+    data: XOR<StrategyVersionUpdateWithoutSeedingContentsInput, StrategyVersionUncheckedUpdateWithoutSeedingContentsInput>
+  }
+
+  export type StrategyVersionUpdateWithoutSeedingContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNo?: IntFieldUpdateOperationsInput | number
+    status?: EnumStrategyVersionStatusFieldUpdateOperationsInput | $Enums.StrategyVersionStatus
+    context?: NullableStringFieldUpdateOperationsInput | string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModel?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
+    activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
+    insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutStrategyVersionNestedInput
+  }
+
+  export type StrategyVersionUncheckedUpdateWithoutSeedingContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    strategyId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    versionNo?: IntFieldUpdateOperationsInput | number
+    status?: EnumStrategyVersionStatusFieldUpdateOperationsInput | $Enums.StrategyVersionStatus
+    context?: NullableStringFieldUpdateOperationsInput | string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModel?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
+    insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput
+  }
+
+  export type ContentVersionUpsertWithWhereUniqueWithoutContentInput = {
+    where: ContentVersionWhereUniqueInput
+    update: XOR<ContentVersionUpdateWithoutContentInput, ContentVersionUncheckedUpdateWithoutContentInput>
+    create: XOR<ContentVersionCreateWithoutContentInput, ContentVersionUncheckedCreateWithoutContentInput>
+  }
+
+  export type ContentVersionUpdateWithWhereUniqueWithoutContentInput = {
+    where: ContentVersionWhereUniqueInput
+    data: XOR<ContentVersionUpdateWithoutContentInput, ContentVersionUncheckedUpdateWithoutContentInput>
+  }
+
+  export type ContentVersionUpdateManyWithWhereWithoutContentInput = {
+    where: ContentVersionScalarWhereInput
+    data: XOR<ContentVersionUpdateManyMutationInput, ContentVersionUncheckedUpdateManyWithoutContentInput>
+  }
+
+  export type ContentVersionScalarWhereInput = {
+    AND?: ContentVersionScalarWhereInput | ContentVersionScalarWhereInput[]
+    OR?: ContentVersionScalarWhereInput[]
+    NOT?: ContentVersionScalarWhereInput | ContentVersionScalarWhereInput[]
+    id?: StringFilter<"ContentVersion"> | string
+    contentId?: StringFilter<"ContentVersion"> | string
+    versionNumber?: IntFilter<"ContentVersion"> | number
+    title?: StringFilter<"ContentVersion"> | string
+    body?: StringFilter<"ContentVersion"> | string
+    contentTheme?: StringNullableFilter<"ContentVersion"> | string | null
+    source?: EnumContentVersionSourceFilter<"ContentVersion"> | $Enums.ContentVersionSource
+    aiGenerationId?: StringNullableFilter<"ContentVersion"> | string | null
+    editReason?: StringNullableFilter<"ContentVersion"> | string | null
+    editedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    reviewedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"ContentVersion"> | Date | string | null
+    approvedBy?: StringNullableFilter<"ContentVersion"> | string | null
+    approvedAt?: DateTimeNullableFilter<"ContentVersion"> | Date | string | null
+    reviewComment?: StringNullableFilter<"ContentVersion"> | string | null
+    createdAt?: DateTimeFilter<"ContentVersion"> | Date | string
+  }
+
+  export type ContentVersionUpsertWithoutCurrentForInput = {
+    update: XOR<ContentVersionUpdateWithoutCurrentForInput, ContentVersionUncheckedUpdateWithoutCurrentForInput>
+    create: XOR<ContentVersionCreateWithoutCurrentForInput, ContentVersionUncheckedCreateWithoutCurrentForInput>
+    where?: ContentVersionWhereInput
+  }
+
+  export type ContentVersionUpdateToOneWithWhereWithoutCurrentForInput = {
+    where?: ContentVersionWhereInput
+    data: XOR<ContentVersionUpdateWithoutCurrentForInput, ContentVersionUncheckedUpdateWithoutCurrentForInput>
+  }
+
+  export type ContentVersionUpdateWithoutCurrentForInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: SeedingContentUpdateOneRequiredWithoutVersionsNestedInput
+    aiGeneration?: AIGenerationUpdateOneWithoutVersionsNestedInput
+  }
+
+  export type ContentVersionUncheckedUpdateWithoutCurrentForInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentId?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    aiGenerationId?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIGenerationUpsertWithWhereUniqueWithoutContentInput = {
+    where: AIGenerationWhereUniqueInput
+    update: XOR<AIGenerationUpdateWithoutContentInput, AIGenerationUncheckedUpdateWithoutContentInput>
+    create: XOR<AIGenerationCreateWithoutContentInput, AIGenerationUncheckedCreateWithoutContentInput>
+  }
+
+  export type AIGenerationUpdateWithWhereUniqueWithoutContentInput = {
+    where: AIGenerationWhereUniqueInput
+    data: XOR<AIGenerationUpdateWithoutContentInput, AIGenerationUncheckedUpdateWithoutContentInput>
+  }
+
+  export type AIGenerationUpdateManyWithWhereWithoutContentInput = {
+    where: AIGenerationScalarWhereInput
+    data: XOR<AIGenerationUpdateManyMutationInput, AIGenerationUncheckedUpdateManyWithoutContentInput>
+  }
+
+  export type SeedingContentCreateWithoutVersionsInput = {
+    organizationId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    analysisSession: AnalysisSessionCreateNestedOneWithoutSeedingContentsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutSeedingContentsInput
+    currentVersion?: ContentVersionCreateNestedOneWithoutCurrentForInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentUncheckedCreateWithoutVersionsInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentCreateOrConnectWithoutVersionsInput = {
+    where: SeedingContentWhereUniqueInput
+    create: XOR<SeedingContentCreateWithoutVersionsInput, SeedingContentUncheckedCreateWithoutVersionsInput>
+  }
+
+  export type SeedingContentCreateWithoutCurrentVersionInput = {
+    organizationId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    analysisSession: AnalysisSessionCreateNestedOneWithoutSeedingContentsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutSeedingContentsInput
+    versions?: ContentVersionCreateNestedManyWithoutContentInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentUncheckedCreateWithoutCurrentVersionInput = {
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutContentInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentCreateOrConnectWithoutCurrentVersionInput = {
+    where: SeedingContentWhereUniqueInput
+    create: XOR<SeedingContentCreateWithoutCurrentVersionInput, SeedingContentUncheckedCreateWithoutCurrentVersionInput>
+  }
+
+  export type AIGenerationCreateWithoutVersionsInput = {
+    id?: string
+    organizationId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    analysisSession: AnalysisSessionCreateNestedOneWithoutAiGenerationsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutAiGenerationsInput
+    promptTemplate: PromptTemplateCreateNestedOneWithoutGenerationsInput
+    content?: SeedingContentCreateNestedOneWithoutAiGenerationsInput
+  }
+
+  export type AIGenerationUncheckedCreateWithoutVersionsInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AIGenerationCreateOrConnectWithoutVersionsInput = {
+    where: AIGenerationWhereUniqueInput
+    create: XOR<AIGenerationCreateWithoutVersionsInput, AIGenerationUncheckedCreateWithoutVersionsInput>
+  }
+
+  export type SeedingContentUpsertWithoutVersionsInput = {
+    update: XOR<SeedingContentUpdateWithoutVersionsInput, SeedingContentUncheckedUpdateWithoutVersionsInput>
+    create: XOR<SeedingContentCreateWithoutVersionsInput, SeedingContentUncheckedCreateWithoutVersionsInput>
+    where?: SeedingContentWhereInput
+  }
+
+  export type SeedingContentUpdateToOneWithWhereWithoutVersionsInput = {
+    where?: SeedingContentWhereInput
+    data: XOR<SeedingContentUpdateWithoutVersionsInput, SeedingContentUncheckedUpdateWithoutVersionsInput>
+  }
+
+  export type SeedingContentUpdateWithoutVersionsInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    currentVersion?: ContentVersionUpdateOneWithoutCurrentForNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateWithoutVersionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUpsertWithoutCurrentVersionInput = {
+    update: XOR<SeedingContentUpdateWithoutCurrentVersionInput, SeedingContentUncheckedUpdateWithoutCurrentVersionInput>
+    create: XOR<SeedingContentCreateWithoutCurrentVersionInput, SeedingContentUncheckedCreateWithoutCurrentVersionInput>
+    where?: SeedingContentWhereInput
+  }
+
+  export type SeedingContentUpdateToOneWithWhereWithoutCurrentVersionInput = {
+    where?: SeedingContentWhereInput
+    data: XOR<SeedingContentUpdateWithoutCurrentVersionInput, SeedingContentUncheckedUpdateWithoutCurrentVersionInput>
+  }
+
+  export type SeedingContentUpdateWithoutCurrentVersionInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    versions?: ContentVersionUpdateManyWithoutContentNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateWithoutCurrentVersionInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    versions?: ContentVersionUncheckedUpdateManyWithoutContentNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutContentNestedInput
+  }
+
+  export type AIGenerationUpsertWithoutVersionsInput = {
+    update: XOR<AIGenerationUpdateWithoutVersionsInput, AIGenerationUncheckedUpdateWithoutVersionsInput>
+    create: XOR<AIGenerationCreateWithoutVersionsInput, AIGenerationUncheckedCreateWithoutVersionsInput>
+    where?: AIGenerationWhereInput
+  }
+
+  export type AIGenerationUpdateToOneWithWhereWithoutVersionsInput = {
+    where?: AIGenerationWhereInput
+    data: XOR<AIGenerationUpdateWithoutVersionsInput, AIGenerationUncheckedUpdateWithoutVersionsInput>
+  }
+
+  export type AIGenerationUpdateWithoutVersionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    promptTemplate?: PromptTemplateUpdateOneRequiredWithoutGenerationsNestedInput
+    content?: SeedingContentUpdateOneWithoutAiGenerationsNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateWithoutVersionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AnalysisSessionCreateWithoutAiGenerationsInput = {
+    id?: string
+    name: string
+    objective?: string | null
+    focusProduct?: string | null
+    dateFrom?: Date | string | null
+    dateTo?: Date | string | null
+    status?: $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: Date | string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    completedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutAnalysisSessionsInput
+    business: BusinessCreateNestedOneWithoutAnalysisSessionsInput
+    dataSources?: DataSourceCreateNestedManyWithoutAnalysisSessionInput
+    feedbacks?: CustomerFeedbackCreateNestedManyWithoutAnalysisSessionInput
+    processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
+    insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
+    strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+  }
+
+  export type AnalysisSessionUncheckedCreateWithoutAiGenerationsInput = {
+    id?: string
+    organizationId: string
+    businessId: string
+    name: string
+    objective?: string | null
+    focusProduct?: string | null
+    dateFrom?: Date | string | null
+    dateTo?: Date | string | null
+    status?: $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: Date | string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    completedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    dataSources?: DataSourceUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    feedbacks?: CustomerFeedbackUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+  }
+
+  export type AnalysisSessionCreateOrConnectWithoutAiGenerationsInput = {
+    where: AnalysisSessionWhereUniqueInput
+    create: XOR<AnalysisSessionCreateWithoutAiGenerationsInput, AnalysisSessionUncheckedCreateWithoutAiGenerationsInput>
+  }
+
+  export type StrategyVersionCreateWithoutAiGenerationsInput = {
+    id?: string
+    versionNo: number
+    status?: $Enums.StrategyVersionStatus
+    context?: string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: string | null
+    aiModel?: string | null
+    promptVersion?: string | null
+    editedBy?: string | null
+    editReason?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    strategy: StrategyCreateNestedOneWithoutVersionsInput
+    activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
+    insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutStrategyVersionInput
+  }
+
+  export type StrategyVersionUncheckedCreateWithoutAiGenerationsInput = {
+    id?: string
+    strategyId: string
+    analysisSessionId: string
+    versionNo: number
+    status?: $Enums.StrategyVersionStatus
+    context?: string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: string | null
+    aiModel?: string | null
+    promptVersion?: string | null
+    editedBy?: string | null
+    editReason?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
+    insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+    botTasks?: SeedingBotTaskUncheckedCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput
+  }
+
+  export type StrategyVersionCreateOrConnectWithoutAiGenerationsInput = {
+    where: StrategyVersionWhereUniqueInput
+    create: XOR<StrategyVersionCreateWithoutAiGenerationsInput, StrategyVersionUncheckedCreateWithoutAiGenerationsInput>
+  }
+
+  export type PromptTemplateCreateWithoutGenerationsInput = {
+    id?: string
+    name: string
+    platform?: string | null
+    contentType: string
+    purpose: $Enums.PromptPurpose
+    templateBody: string
+    version: number
+    isActive?: boolean
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PromptTemplateUncheckedCreateWithoutGenerationsInput = {
+    id?: string
+    name: string
+    platform?: string | null
+    contentType: string
+    purpose: $Enums.PromptPurpose
+    templateBody: string
+    version: number
+    isActive?: boolean
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PromptTemplateCreateOrConnectWithoutGenerationsInput = {
+    where: PromptTemplateWhereUniqueInput
+    create: XOR<PromptTemplateCreateWithoutGenerationsInput, PromptTemplateUncheckedCreateWithoutGenerationsInput>
+  }
+
+  export type SeedingContentCreateWithoutAiGenerationsInput = {
+    organizationId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    analysisSession: AnalysisSessionCreateNestedOneWithoutSeedingContentsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutSeedingContentsInput
+    versions?: ContentVersionCreateNestedManyWithoutContentInput
+    currentVersion?: ContentVersionCreateNestedOneWithoutCurrentForInput
+  }
+
+  export type SeedingContentUncheckedCreateWithoutAiGenerationsInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutContentInput
+  }
+
+  export type SeedingContentCreateOrConnectWithoutAiGenerationsInput = {
+    where: SeedingContentWhereUniqueInput
+    create: XOR<SeedingContentCreateWithoutAiGenerationsInput, SeedingContentUncheckedCreateWithoutAiGenerationsInput>
+  }
+
+  export type ContentVersionCreateWithoutAiGenerationInput = {
+    id?: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    content: SeedingContentCreateNestedOneWithoutVersionsInput
+    currentFor?: SeedingContentCreateNestedOneWithoutCurrentVersionInput
+  }
+
+  export type ContentVersionUncheckedCreateWithoutAiGenerationInput = {
+    id?: string
+    contentId: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+    currentFor?: SeedingContentUncheckedCreateNestedOneWithoutCurrentVersionInput
+  }
+
+  export type ContentVersionCreateOrConnectWithoutAiGenerationInput = {
+    where: ContentVersionWhereUniqueInput
+    create: XOR<ContentVersionCreateWithoutAiGenerationInput, ContentVersionUncheckedCreateWithoutAiGenerationInput>
+  }
+
+  export type ContentVersionCreateManyAiGenerationInputEnvelope = {
+    data: ContentVersionCreateManyAiGenerationInput | ContentVersionCreateManyAiGenerationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AnalysisSessionUpsertWithoutAiGenerationsInput = {
+    update: XOR<AnalysisSessionUpdateWithoutAiGenerationsInput, AnalysisSessionUncheckedUpdateWithoutAiGenerationsInput>
+    create: XOR<AnalysisSessionCreateWithoutAiGenerationsInput, AnalysisSessionUncheckedCreateWithoutAiGenerationsInput>
+    where?: AnalysisSessionWhereInput
+  }
+
+  export type AnalysisSessionUpdateToOneWithWhereWithoutAiGenerationsInput = {
+    where?: AnalysisSessionWhereInput
+    data: XOR<AnalysisSessionUpdateWithoutAiGenerationsInput, AnalysisSessionUncheckedUpdateWithoutAiGenerationsInput>
+  }
+
+  export type AnalysisSessionUpdateWithoutAiGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    focusProduct?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAnalysisSessionStatusFieldUpdateOperationsInput | $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutAnalysisSessionsNestedInput
+    business?: BusinessUpdateOneRequiredWithoutAnalysisSessionsNestedInput
+    dataSources?: DataSourceUpdateManyWithoutAnalysisSessionNestedInput
+    feedbacks?: CustomerFeedbackUpdateManyWithoutAnalysisSessionNestedInput
+    processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
+    insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
+    strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+  }
+
+  export type AnalysisSessionUncheckedUpdateWithoutAiGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    businessId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    objective?: NullableStringFieldUpdateOperationsInput | string | null
+    focusProduct?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dateTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumAnalysisSessionStatusFieldUpdateOperationsInput | $Enums.AnalysisSessionStatus
+    businessSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    businessSnapshotAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dataSources?: DataSourceUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    feedbacks?: CustomerFeedbackUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+  }
+
+  export type StrategyVersionUpsertWithoutAiGenerationsInput = {
+    update: XOR<StrategyVersionUpdateWithoutAiGenerationsInput, StrategyVersionUncheckedUpdateWithoutAiGenerationsInput>
+    create: XOR<StrategyVersionCreateWithoutAiGenerationsInput, StrategyVersionUncheckedCreateWithoutAiGenerationsInput>
+    where?: StrategyVersionWhereInput
+  }
+
+  export type StrategyVersionUpdateToOneWithWhereWithoutAiGenerationsInput = {
+    where?: StrategyVersionWhereInput
+    data: XOR<StrategyVersionUpdateWithoutAiGenerationsInput, StrategyVersionUncheckedUpdateWithoutAiGenerationsInput>
+  }
+
+  export type StrategyVersionUpdateWithoutAiGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNo?: IntFieldUpdateOperationsInput | number
+    status?: EnumStrategyVersionStatusFieldUpdateOperationsInput | $Enums.StrategyVersionStatus
+    context?: NullableStringFieldUpdateOperationsInput | string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModel?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
+    activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
+    insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutStrategyVersionNestedInput
+  }
+
+  export type StrategyVersionUncheckedUpdateWithoutAiGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    strategyId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    versionNo?: IntFieldUpdateOperationsInput | number
+    status?: EnumStrategyVersionStatusFieldUpdateOperationsInput | $Enums.StrategyVersionStatus
+    context?: NullableStringFieldUpdateOperationsInput | string | null
+    objectives?: JsonNullValueInput | InputJsonValue
+    targetSegments?: JsonNullValueInput | InputJsonValue
+    priorityProblems?: JsonNullValueInput | InputJsonValue
+    mainMessages?: JsonNullValueInput | InputJsonValue
+    responsePrinciples?: JsonNullValueInput | InputJsonValue
+    contentThemes?: JsonNullValueInput | InputJsonValue
+    risks?: JsonNullValueInput | InputJsonValue
+    kpis?: JsonNullValueInput | InputJsonValue
+    additionalNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModel?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
+    insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput
+  }
+
+  export type PromptTemplateUpsertWithoutGenerationsInput = {
+    update: XOR<PromptTemplateUpdateWithoutGenerationsInput, PromptTemplateUncheckedUpdateWithoutGenerationsInput>
+    create: XOR<PromptTemplateCreateWithoutGenerationsInput, PromptTemplateUncheckedCreateWithoutGenerationsInput>
+    where?: PromptTemplateWhereInput
+  }
+
+  export type PromptTemplateUpdateToOneWithWhereWithoutGenerationsInput = {
+    where?: PromptTemplateWhereInput
+    data: XOR<PromptTemplateUpdateWithoutGenerationsInput, PromptTemplateUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type PromptTemplateUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumPromptPurposeFieldUpdateOperationsInput | $Enums.PromptPurpose
+    templateBody?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PromptTemplateUncheckedUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumPromptPurposeFieldUpdateOperationsInput | $Enums.PromptPurpose
+    templateBody?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingContentUpsertWithoutAiGenerationsInput = {
+    update: XOR<SeedingContentUpdateWithoutAiGenerationsInput, SeedingContentUncheckedUpdateWithoutAiGenerationsInput>
+    create: XOR<SeedingContentCreateWithoutAiGenerationsInput, SeedingContentUncheckedCreateWithoutAiGenerationsInput>
+    where?: SeedingContentWhereInput
+  }
+
+  export type SeedingContentUpdateToOneWithWhereWithoutAiGenerationsInput = {
+    where?: SeedingContentWhereInput
+    data: XOR<SeedingContentUpdateWithoutAiGenerationsInput, SeedingContentUncheckedUpdateWithoutAiGenerationsInput>
+  }
+
+  export type SeedingContentUpdateWithoutAiGenerationsInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    versions?: ContentVersionUpdateManyWithoutContentNestedInput
+    currentVersion?: ContentVersionUpdateOneWithoutCurrentForNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateWithoutAiGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    versions?: ContentVersionUncheckedUpdateManyWithoutContentNestedInput
+  }
+
+  export type ContentVersionUpsertWithWhereUniqueWithoutAiGenerationInput = {
+    where: ContentVersionWhereUniqueInput
+    update: XOR<ContentVersionUpdateWithoutAiGenerationInput, ContentVersionUncheckedUpdateWithoutAiGenerationInput>
+    create: XOR<ContentVersionCreateWithoutAiGenerationInput, ContentVersionUncheckedCreateWithoutAiGenerationInput>
+  }
+
+  export type ContentVersionUpdateWithWhereUniqueWithoutAiGenerationInput = {
+    where: ContentVersionWhereUniqueInput
+    data: XOR<ContentVersionUpdateWithoutAiGenerationInput, ContentVersionUncheckedUpdateWithoutAiGenerationInput>
+  }
+
+  export type ContentVersionUpdateManyWithWhereWithoutAiGenerationInput = {
+    where: ContentVersionScalarWhereInput
+    data: XOR<ContentVersionUpdateManyMutationInput, ContentVersionUncheckedUpdateManyWithoutAiGenerationInput>
+  }
+
+  export type AIGenerationCreateWithoutPromptTemplateInput = {
+    id?: string
+    organizationId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    analysisSession: AnalysisSessionCreateNestedOneWithoutAiGenerationsInput
+    strategyVersion: StrategyVersionCreateNestedOneWithoutAiGenerationsInput
+    content?: SeedingContentCreateNestedOneWithoutAiGenerationsInput
+    versions?: ContentVersionCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationUncheckedCreateWithoutPromptTemplateInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+    versions?: ContentVersionUncheckedCreateNestedManyWithoutAiGenerationInput
+  }
+
+  export type AIGenerationCreateOrConnectWithoutPromptTemplateInput = {
+    where: AIGenerationWhereUniqueInput
+    create: XOR<AIGenerationCreateWithoutPromptTemplateInput, AIGenerationUncheckedCreateWithoutPromptTemplateInput>
+  }
+
+  export type AIGenerationCreateManyPromptTemplateInputEnvelope = {
+    data: AIGenerationCreateManyPromptTemplateInput | AIGenerationCreateManyPromptTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AIGenerationUpsertWithWhereUniqueWithoutPromptTemplateInput = {
+    where: AIGenerationWhereUniqueInput
+    update: XOR<AIGenerationUpdateWithoutPromptTemplateInput, AIGenerationUncheckedUpdateWithoutPromptTemplateInput>
+    create: XOR<AIGenerationCreateWithoutPromptTemplateInput, AIGenerationUncheckedCreateWithoutPromptTemplateInput>
+  }
+
+  export type AIGenerationUpdateWithWhereUniqueWithoutPromptTemplateInput = {
+    where: AIGenerationWhereUniqueInput
+    data: XOR<AIGenerationUpdateWithoutPromptTemplateInput, AIGenerationUncheckedUpdateWithoutPromptTemplateInput>
+  }
+
+  export type AIGenerationUpdateManyWithWhereWithoutPromptTemplateInput = {
+    where: AIGenerationScalarWhereInput
+    data: XOR<AIGenerationUpdateManyMutationInput, AIGenerationUncheckedUpdateManyWithoutPromptTemplateInput>
   }
 
   export type OrganizationCreateWithoutSeedingBotsInput = {
@@ -52951,6 +62562,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionUncheckedCreateWithoutBotTasksInput = {
@@ -52975,6 +62588,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedCreateNestedManyWithoutAnalysisSessionInput
     insights?: InsightUncheckedCreateNestedManyWithoutAnalysisSessionInput
     strategies?: StrategyUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutAnalysisSessionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutAnalysisSessionInput
   }
 
   export type AnalysisSessionCreateOrConnectWithoutBotTasksInput = {
@@ -53011,6 +62626,8 @@ export namespace Prisma {
     strategy: StrategyCreateNestedOneWithoutVersionsInput
     activeForStrategy?: StrategyCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionUncheckedCreateWithoutBotTasksInput = {
@@ -53043,6 +62660,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     activeForStrategy?: StrategyUncheckedCreateNestedOneWithoutCurrentVersionInput
     insights?: StrategyInsightUncheckedCreateNestedManyWithoutStrategyVersionInput
+    seedingContents?: SeedingContentUncheckedCreateNestedManyWithoutStrategyVersionInput
+    aiGenerations?: AIGenerationUncheckedCreateNestedManyWithoutStrategyVersionInput
   }
 
   export type StrategyVersionCreateOrConnectWithoutBotTasksInput = {
@@ -53260,6 +62879,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutBotTasksInput = {
@@ -53284,6 +62905,8 @@ export namespace Prisma {
     processingJobs?: ProcessingJobUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type StrategyVersionUpsertWithoutBotTasksInput = {
@@ -53326,6 +62949,8 @@ export namespace Prisma {
     strategy?: StrategyUpdateOneRequiredWithoutVersionsNestedInput
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutBotTasksInput = {
@@ -53358,6 +62983,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type SeedingBotActivityLogUpsertWithWhereUniqueWithoutTaskInput = {
@@ -53917,6 +63544,8 @@ export namespace Prisma {
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutOrganizationInput = {
@@ -53941,6 +63570,8 @@ export namespace Prisma {
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateManyWithoutOrganizationInput = {
@@ -54135,6 +63766,8 @@ export namespace Prisma {
     insights?: InsightUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateWithoutBusinessInput = {
@@ -54158,6 +63791,8 @@ export namespace Prisma {
     insights?: InsightUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     strategies?: StrategyUncheckedUpdateManyWithoutAnalysisSessionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutAnalysisSessionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutAnalysisSessionNestedInput
   }
 
   export type AnalysisSessionUncheckedUpdateManyWithoutBusinessInput = {
@@ -54469,6 +64104,43 @@ export namespace Prisma {
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type SeedingContentCreateManyAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    strategyVersionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+  }
+
+  export type AIGenerationCreateManyAnalysisSessionInput = {
+    id?: string
+    organizationId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
   }
 
   export type DataSourceUpdateWithoutAnalysisSessionInput = {
@@ -54813,6 +64485,122 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingContentUpdateWithoutAnalysisSessionInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    versions?: ContentVersionUpdateManyWithoutContentNestedInput
+    currentVersion?: ContentVersionUpdateOneWithoutCurrentForNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    versions?: ContentVersionUncheckedUpdateManyWithoutContentNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateManyWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AIGenerationUpdateWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    promptTemplate?: PromptTemplateUpdateOneRequiredWithoutGenerationsNestedInput
+    content?: SeedingContentUpdateOneWithoutAiGenerationsNestedInput
+    versions?: ContentVersionUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: ContentVersionUncheckedUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutAnalysisSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CustomerFeedbackCreateManyDataSourceInput = {
@@ -55586,6 +65374,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUpdateManyWithoutStrategyVersionNestedInput
     botTasks?: SeedingBotTaskUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateWithoutStrategyInput = {
@@ -55617,6 +65407,8 @@ export namespace Prisma {
     activeForStrategy?: StrategyUncheckedUpdateOneWithoutCurrentVersionNestedInput
     insights?: StrategyInsightUncheckedUpdateManyWithoutStrategyVersionNestedInput
     botTasks?: SeedingBotTaskUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    seedingContents?: SeedingContentUncheckedUpdateManyWithoutStrategyVersionNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutStrategyVersionNestedInput
   }
 
   export type StrategyVersionUncheckedUpdateManyWithoutStrategyInput = {
@@ -55676,6 +65468,43 @@ export namespace Prisma {
     createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type SeedingContentCreateManyStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    origin?: $Enums.ContentOrigin
+    status?: $Enums.ContentStatus
+    platform?: string
+    contentType?: string
+    title: string
+    currentVersionId?: string | null
+    contentHash?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+  }
+
+  export type AIGenerationCreateManyStrategyVersionInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    contentId?: string | null
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
   }
 
   export type StrategyInsightUpdateWithoutStrategyVersionInput = {
@@ -55771,6 +65600,426 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SeedingContentUpdateWithoutStrategyVersionInput = {
+    organizationId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutSeedingContentsNestedInput
+    versions?: ContentVersionUpdateManyWithoutContentNestedInput
+    currentVersion?: ContentVersionUpdateOneWithoutCurrentForNestedInput
+    aiGenerations?: AIGenerationUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    versions?: ContentVersionUncheckedUpdateManyWithoutContentNestedInput
+    aiGenerations?: AIGenerationUncheckedUpdateManyWithoutContentNestedInput
+  }
+
+  export type SeedingContentUncheckedUpdateManyWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    origin?: EnumContentOriginFieldUpdateOperationsInput | $Enums.ContentOrigin
+    status?: EnumContentStatusFieldUpdateOperationsInput | $Enums.ContentStatus
+    platform?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    currentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AIGenerationUpdateWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    promptTemplate?: PromptTemplateUpdateOneRequiredWithoutGenerationsNestedInput
+    content?: SeedingContentUpdateOneWithoutAiGenerationsNestedInput
+    versions?: ContentVersionUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: ContentVersionUncheckedUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutStrategyVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentVersionCreateManyContentInput = {
+    id?: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    aiGenerationId?: string | null
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AIGenerationCreateManyContentInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    promptTemplateId: string
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentVersionUpdateWithoutContentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentFor?: SeedingContentUpdateOneWithoutCurrentVersionNestedInput
+    aiGeneration?: AIGenerationUpdateOneWithoutVersionsNestedInput
+  }
+
+  export type ContentVersionUncheckedUpdateWithoutContentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    aiGenerationId?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentFor?: SeedingContentUncheckedUpdateOneWithoutCurrentVersionNestedInput
+  }
+
+  export type ContentVersionUncheckedUpdateManyWithoutContentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    aiGenerationId?: NullableStringFieldUpdateOperationsInput | string | null
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIGenerationUpdateWithoutContentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    promptTemplate?: PromptTemplateUpdateOneRequiredWithoutGenerationsNestedInput
+    versions?: ContentVersionUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateWithoutContentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: ContentVersionUncheckedUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutContentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    promptTemplateId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentVersionCreateManyAiGenerationInput = {
+    id?: string
+    contentId: string
+    versionNumber: number
+    title: string
+    body: string
+    contentTheme?: string | null
+    source: $Enums.ContentVersionSource
+    editReason?: string | null
+    editedBy?: string | null
+    reviewedBy?: string | null
+    reviewedAt?: Date | string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    reviewComment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ContentVersionUpdateWithoutAiGenerationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: SeedingContentUpdateOneRequiredWithoutVersionsNestedInput
+    currentFor?: SeedingContentUpdateOneWithoutCurrentVersionNestedInput
+  }
+
+  export type ContentVersionUncheckedUpdateWithoutAiGenerationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentId?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentFor?: SeedingContentUncheckedUpdateOneWithoutCurrentVersionNestedInput
+  }
+
+  export type ContentVersionUncheckedUpdateManyWithoutAiGenerationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentId?: StringFieldUpdateOperationsInput | string
+    versionNumber?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    contentTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumContentVersionSourceFieldUpdateOperationsInput | $Enums.ContentVersionSource
+    editReason?: NullableStringFieldUpdateOperationsInput | string | null
+    editedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewComment?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIGenerationCreateManyPromptTemplateInput = {
+    id?: string
+    organizationId: string
+    analysisSessionId: string
+    strategyVersionId: string
+    contentId?: string | null
+    promptRendered: string
+    promptVersion?: string | null
+    aiProvider: string
+    aiModel: string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: number | null
+    status?: $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AIGenerationUpdateWithoutPromptTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysisSession?: AnalysisSessionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    strategyVersion?: StrategyVersionUpdateOneRequiredWithoutAiGenerationsNestedInput
+    content?: SeedingContentUpdateOneWithoutAiGenerationsNestedInput
+    versions?: ContentVersionUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateWithoutPromptTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: ContentVersionUncheckedUpdateManyWithoutAiGenerationNestedInput
+  }
+
+  export type AIGenerationUncheckedUpdateManyWithoutPromptTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    analysisSessionId?: StringFieldUpdateOperationsInput | string
+    strategyVersionId?: StringFieldUpdateOperationsInput | string
+    contentId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptRendered?: StringFieldUpdateOperationsInput | string
+    promptVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    aiProvider?: StringFieldUpdateOperationsInput | string
+    aiModel?: StringFieldUpdateOperationsInput | string
+    parameters?: JsonNullValueInput | InputJsonValue
+    candidates?: JsonNullValueInput | InputJsonValue
+    selectedCandidateIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAIGenerationStatusFieldUpdateOperationsInput | $Enums.AIGenerationStatus
+    rawResponse?: NullableJsonNullValueInput | InputJsonValue
+    requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SeedingBotAccountCreateManyBotInput = {

@@ -25,7 +25,7 @@ const STAGE_ACTIONS: Record<
   ANALYZING: { label: "Tạo insights", handler: "onGenerateInsights", stageLabel: "Giai đoạn 4/6" },
   INSIGHT_REVIEW: { label: "Tạo chiến lược", handler: "onGenerateStrategy", stageLabel: "Giai đoạn 5/6" },
   STRATEGY_BUILDING: { label: "Hoàn tất đợt phân tích", handler: "onComplete", stageLabel: "Giai đoạn 6/6" },
-  COMPLETED: { label: "Lưu trữ", handler: "onArchive", stageLabel: "Hoàn tất" },
+  COMPLETED: null,
   ARCHIVED: null,
 };
 
@@ -44,6 +44,16 @@ export function SessionActions({
     return (
       <div className="text-sm text-muted-foreground">
         Đợt phân tích đã lưu trữ, không còn thao tác
+      </div>
+    );
+  }
+
+  if (status === "COMPLETED") {
+    return (
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
+        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+          Đã hoàn thành tất cả các bước phân tích.
+        </p>
       </div>
     );
   }

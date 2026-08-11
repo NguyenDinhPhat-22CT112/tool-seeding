@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -42,6 +42,13 @@ export function useFetchSessions(options?: {
   });
 }
 
+const ACTIVE_SESSION_STATUSES = new Set([
+  "DATA_COLLECTION",
+  "PROCESSING",
+  "ANALYZING",
+  "STRATEGY_BUILDING",
+]);
+
 export function useFetchSession(sessionId?: string) {
   const { auth } = useAuth();
   const orgId = auth?.organizationId;
@@ -56,6 +63,10 @@ export function useFetchSession(sessionId?: string) {
     },
     enabled: !!orgId && !!sessionId,
     staleTime: 5 * 60 * 1000,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status && ACTIVE_SESSION_STATUSES.has(status) ? 3000 : false;
+    },
   });
 }
 

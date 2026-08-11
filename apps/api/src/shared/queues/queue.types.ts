@@ -10,6 +10,7 @@ export interface ProcessingQueuePayload {
   pipelineId?: string | null;
   triggeredBy?: string | null;
   sampleLimit?: number | null;
+  aiGenerationId?: string | null;
 }
 
 export interface EnqueueJobInput {
@@ -20,4 +21,5 @@ export interface EnqueueJobInput {
   pipelineId?: string | null;
   triggeredBy?: string | null;
   sampleLimit?: number | null;
+  aiGenerationId?: string | null;
 }

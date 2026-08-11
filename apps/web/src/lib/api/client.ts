@@ -25,10 +25,35 @@ class ApiClient {
       "Content-Type": "application/json",
     };
 
-    if (!skipAuth && this.authContext) {
-      headers["x-organization-id"] = this.authContext.organizationId;
-      headers["x-user-id"] = this.authContext.userId;
-      headers["x-user-role"] = this.authContext.role;
+    let auth = this.authContext;
+    if (!auth && typeof window !== "undefined") {
+      try {
+        const storedState = localStorage.getItem("auth-store");
+        if (storedState) {
+          const parsed = JSON.parse(storedState) as { state?: { auth?: AuthContext } };
+          if (parsed?.state?.auth) {
+            auth = parsed.state.auth;
+            this.authContext = auth;
+          }
+        }
+      } catch {
+        // Ignore JSON parse error
+      }
+    }
+
+    // Mặc định cho môi trường phát triển nếu chưa có auth context
+    if (!auth) {
+      auth = {
+        organizationId: "org-1",
+        userId: "user-1",
+        role: "ORG_ADMIN",
+      };
+    }
+
+    if (!skipAuth && auth) {
+      headers["x-organization-id"] = auth.organizationId;
+      headers["x-user-id"] = auth.userId;
+      headers["x-user-role"] = auth.role;
     }
 
     return headers;

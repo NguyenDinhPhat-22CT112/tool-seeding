@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
-import {
-  useFetchInsights,
+import { useParams, useRouter } from "next/navigation";
+import { useFetchInsights,
   useArchiveInsight,
   useDeleteInsight,
 } from "@/hooks/use-insights";
 import { useFetchSession } from "@/hooks/use-sessions";
+import { useAuth } from "@/hooks/use-auth";
 import { InsightCard } from "@/components/insights/insight-card";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/common/empty-state";
 import { Skeleton } from "@/components/common/skeleton";
 import { DeleteConfirmDialog } from "@/components/business/delete-dialogs";
-import { Lightbulb, Search } from "lucide-react";
+import { Lightbulb, Search, ArrowLeft } from "lucide-react";
 import { InsightStatus } from "@/lib/types";
 
 const ARCHIVABLE_SESSION_STATUSES = ["INSIGHT_REVIEW", "STRATEGY_BUILDING"];
@@ -36,6 +37,7 @@ const ORIGIN_OPTIONS = [
 
 export default function InsightsPage() {
   const params = useParams();
+  const router = useRouter();
   const sessionId = params.id as string;
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<InsightStatus | "">("");
@@ -44,6 +46,7 @@ export default function InsightsPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const { data: sessionData } = useFetchSession(sessionId);
+  const { auth } = useAuth();
   const { data, isLoading } = useFetchInsights(sessionId, {
     status: statusFilter || undefined,
     origin: originFilter || undefined,
@@ -54,6 +57,7 @@ export default function InsightsPage() {
   const canManageInsights = ARCHIVABLE_SESSION_STATUSES.includes(
     sessionData?.status || "",
   );
+  const canDeleteInsights = auth?.role === "ORG_ADMIN";
 
   const insights = data?.items || [];
   const archiveTargetInsight = insights.find((i) => i.id === archiveTarget);
@@ -71,9 +75,18 @@ export default function InsightsPage() {
   if (insights.length === 0 && !isLoading && !searchTerm && !statusFilter && !originFilter) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Insights</h1>
-          <p className="text-sm text-muted-foreground mt-1">Các insight được tạo từ đợt phân tích</p>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => router.push(`/dashboard/sessions/${sessionId}?tab=insights`)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Insights</h1>
+            <p className="text-sm text-muted-foreground mt-1">Các insight được tạo từ đợt phân tích</p>
+          </div>
         </div>
 
         <EmptyState
@@ -87,9 +100,18 @@ export default function InsightsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Insights</h1>
-        <p className="text-sm text-muted-foreground mt-1">Các insight được tạo từ đợt phân tích</p>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => router.push(`/dashboard/sessions/${sessionId}?tab=insights`)}
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Insights</h1>
+          <p className="text-sm text-muted-foreground mt-1">Các insight được tạo từ đợt phân tích</p>
+        </div>
       </div>
 
       {!canManageInsights && (
@@ -97,6 +119,7 @@ export default function InsightsPage() {
           <p className="text-sm text-amber-700 dark:text-amber-400">
             Đợt phân tích đang ở trạng thái hiện tại, không thể lưu trữ insight.
             Chỉ lưu trữ được khi đợt ở giai đoạn &quot;Duyệt insight&quot; hoặc &quot;Xây dựng chiến lược&quot;.
+            {canDeleteInsights && <> (Org Admin vẫn xóa vĩnh viễn được insight).</>}
           </p>
         </div>
       )}
@@ -160,6 +183,7 @@ export default function InsightsPage() {
                 isArchivingId={archiveMutation.isPending ? archiveTarget || undefined : undefined}
                 isDeletingId={deleteMutation.isPending ? deleteTarget || undefined : undefined}
                 canManage={canManageInsights}
+                canDelete={canDeleteInsights}
               />
             ))}
       </div>

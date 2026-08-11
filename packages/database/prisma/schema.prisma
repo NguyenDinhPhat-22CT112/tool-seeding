@@ -144,6 +144,7 @@ enum JobType {
   REVIEW_CRAWLING
   INSIGHT_GENERATION
   STRATEGY_GENERATION
+  CONTENT_GENERATION
 }
 
 enum JobStatus {
@@ -178,6 +179,38 @@ enum BotTaskStatus {
   PENDING
   COMPLETED
   CANCELLED
+}
+
+enum ContentOrigin {
+  AI_GENERATED
+  HUMAN_WRITTEN
+}
+
+enum ContentStatus {
+  DRAFT
+  WAITING_APPROVAL
+  NEEDS_REVISION
+  APPROVED
+  LOCKED
+  ARCHIVED
+}
+
+enum ContentVersionSource {
+  HUMAN_EDIT
+  AI_GENERATE
+  AI_REWRITE
+}
+
+enum AIGenerationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  DISCARDED
+}
+
+enum PromptPurpose {
+  GENERATE
+  REWRITE
 }
 
 // =============================================================================
@@ -383,6 +416,8 @@ model AnalysisSession {
   insights       Insight[]
   strategies     Strategy[]
   botTasks       SeedingBotTask[]
+  seedingContents SeedingContent[]
+  aiGenerations  AIGeneration[]
 
   @@unique([id, businessId])
   @@index([organizationId])
@@ -708,6 +743,8 @@ model StrategyVersion {
   activeForStrategy Strategy?         @relation("CurrentStrategyVersion")
   insights          StrategyInsight[]
   botTasks          SeedingBotTask[]
+  seedingContents   SeedingContent[]
+  aiGenerations     AIGeneration[]
 
   @@unique([strategyId, versionNo])
   @@unique([id, strategyId])
@@ -735,6 +772,137 @@ model StrategyInsight {
   @@index([analysisSessionId])
   @@index([strategyVersionId])
   @@map("strategy_insights")
+}
+
+// =============================================================================
+// NHÓM 7A: CONTENT SEEDING
+// =============================================================================
+
+/// Nội dung seeding — sinh từ AI (candidate → Save) hoặc viết thủ công từ chiến lược.
+/// Session-first: luôn thuộc một AnalysisSession + StrategyVersion.
+model SeedingContent {
+  id                 String        @id @default(cuid())
+  organizationId     String
+  analysisSessionId  String
+  strategyVersionId  String // nguồn chiến lược
+  origin             ContentOrigin @default(AI_GENERATED)
+  status             ContentStatus @default(DRAFT)
+  platform           String        @default("google_maps") // google_maps | facebook | tiktok | website | other
+  contentType        String        @default("review_reply")
+  title              String
+  currentVersionId   String?       @unique // con trỏ tới version hiện tại (pattern Strategy ↔ StrategyVersion)
+  contentHash        String? // hash nội dung version hiện tại, chống trùng lặp
+  tags               Json          @default("[]") // string[] — JSONB
+  createdBy          String?       @default("SYSTEM")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  archivedAt         DateTime?
+
+  // Relations
+  analysisSession  AnalysisSession  @relation(fields: [analysisSessionId], references: [id], onDelete: Restrict)
+  strategyVersion  StrategyVersion  @relation(fields: [strategyVersionId], references: [id], onDelete: Restrict)
+  versions          ContentVersion[] // quan hệ mặc định qua contentId
+  currentVersion    ContentVersion?  @relation("ContentCurrentVersion", fields: [currentVersionId, id], references: [id, contentId])
+  aiGenerations     AIGeneration[]
+
+  @@unique([currentVersionId, id])
+  @@unique([id, organizationId])
+  @@index([organizationId])
+  @@index([contentHash])
+  @@index([analysisSessionId, status])
+  @@index([strategyVersionId])
+  @@index([origin])
+  @@map("seeding_contents")
+}
+
+/// Lịch sử chỉnh sửa + snapshot review của một nội dung.
+/// Chỉ tạo version mới khi body/title thực sự thay đổi.
+model ContentVersion {
+  id              String               @id @default(cuid())
+  contentId       String
+  versionNumber   Int
+  title           String
+  body            String // nội dung thực tế
+  contentTheme    String? // tên theme gốc AI dựa vào
+  source          ContentVersionSource
+  aiGenerationId  String?
+  editReason      String?
+  editedBy        String? // user hoặc "AI"
+  // Review/approval snapshot — không tách bảng riêng
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  approvedBy      String?
+  approvedAt      DateTime?
+  reviewComment   String?
+  createdAt       DateTime              @default(now())
+
+  // Relations
+  content         SeedingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  currentFor      SeedingContent? @relation("ContentCurrentVersion") // vế còn lại của composite FK
+  aiGeneration    AIGeneration?  @relation(fields: [aiGenerationId], references: [id], onDelete: SetNull)
+
+  @@unique([contentId, versionNumber])
+  @@unique([id, contentId])
+  @@index([contentId])
+  @@index([aiGenerationId])
+  @@map("content_versions")
+}
+
+/// Candidate AI — nhiều phương án cho 1 request; KHÔNG tạo Content cho tới khi user Save.
+model AIGeneration {
+  id                     String             @id @default(cuid())
+  organizationId         String
+  analysisSessionId      String
+  strategyVersionId      String
+  contentId              String? // nullable: chỉ có khi Rewrite trên content đã tồn tại
+  promptTemplateId       String
+  promptRendered         String // prompt thực tế đã render — để tái tạo (reproducibility)
+  promptVersion          String? // version của prompt template đã dùng
+  aiProvider             String
+  aiModel                String
+  parameters             Json               @default("{}") // temperature, max_tokens...
+  candidates             Json               @default("[]") // [{variant_index, title, body}]
+  selectedCandidateIndex Int?
+  status                 AIGenerationStatus @default(PENDING)
+  rawResponse            Json?
+  requestedBy            String?            @default("SYSTEM")
+  createdAt              DateTime           @default(now())
+
+  // Relations
+  analysisSession  AnalysisSession  @relation(fields: [analysisSessionId], references: [id], onDelete: Restrict)
+  strategyVersion  StrategyVersion  @relation(fields: [strategyVersionId], references: [id], onDelete: Restrict)
+  promptTemplate   PromptTemplate   @relation(fields: [promptTemplateId], references: [id], onDelete: Restrict)
+  content          SeedingContent?  @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  versions         ContentVersion[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId])
+  @@index([analysisSessionId])
+  @@index([strategyVersionId])
+  @@index([promptTemplateId])
+  @@index([status])
+  @@map("ai_generations")
+}
+
+/// Prompt library — dùng chung toàn hệ thống, có version để tái tạo kết quả AI.
+model PromptTemplate {
+  id           String       @id @default(cuid())
+  name         String
+  platform     String? // null = áp dụng mọi nền tảng
+  contentType  String
+  purpose      PromptPurpose
+  templateBody String // có placeholder: {{business_profile}}, {{insight}}, {{tone}}...
+  version      Int
+  isActive     Boolean      @default(true)
+  createdBy    String?      @default("SYSTEM")
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  generations AIGeneration[]
+
+  @@index([platform, contentType, purpose])
+  @@index([isActive])
+  @@map("prompt_templates")
 }
 
 // =============================================================================

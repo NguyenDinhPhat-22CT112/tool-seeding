@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   useFetchSession,
@@ -29,7 +29,7 @@ import { Skeleton } from "@/components/common/skeleton";
 import { DeleteConfirmDialog } from "@/components/business/delete-dialogs";
 import { apiClient } from "@/lib/api/client";
 import { BusinessLocationResponse } from "@/lib/types";
-import { ArrowLeft, Lightbulb, Target, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Lightbulb, Target, Pencil, Trash2, FileText, Archive } from "lucide-react";
 import Link from "next/link";
 
 const TABS = [
@@ -40,6 +40,7 @@ const TABS = [
   { id: "jobs", label: "Công việc" },
   { id: "insights", label: "Insights" },
   { id: "strategy", label: "Chiến lược" },
+  { id: "contents", label: "Nội dung" },
 ];
 
 export default function SessionDetailPage() {
@@ -49,6 +50,17 @@ export default function SessionDetailPage() {
 
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditingMetadata, setIsEditingMetadata] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tab = searchParams.get("tab");
+      const validTabs = ["overview", "data-sources", "feedback", "imports", "jobs", "insights", "strategy", "contents"];
+      if (tab && validTabs.includes(tab)) {
+        setActiveTab(tab);
+      }
+    }
+  }, []);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [metadata, setMetadata] = useState({ name: "", objective: "", focusProduct: "" });
@@ -168,6 +180,19 @@ export default function SessionDetailPage() {
           </p>
         </div>
         <StatusBadge status={session.status} />
+        {session.status !== "ARCHIVED" && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setShowArchiveDialog(true)}
+            disabled={archiveMutation.isPending}
+            className="text-muted-foreground hover:text-foreground"
+            title="Lưu trữ đợt phân tích"
+            aria-label="Lưu trữ đợt phân tích"
+          >
+            <Archive className="w-4 h-4" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon-sm"
@@ -366,6 +391,16 @@ export default function SessionDetailPage() {
               <p className="text-muted-foreground mb-4">Xem và quản lý các phiên bản chiến lược</p>
               <Link href={`/dashboard/sessions/${sessionId}/strategy`}>
                 <Button>Xem chiến lược</Button>
+              </Link>
+            </div>
+          )}
+
+          {activeTab === "contents" && (
+            <div className="text-center py-8">
+              <FileText className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-muted-foreground mb-4">Tạo nội dung seeding từ chiến lược (AI hoặc thủ công)</p>
+              <Link href={`/dashboard/sessions/${sessionId}/contents`}>
+                <Button>Xem nội dung</Button>
               </Link>
             </div>
           )}

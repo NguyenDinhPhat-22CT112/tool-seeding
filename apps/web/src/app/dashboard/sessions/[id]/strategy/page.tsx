@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useFetchStrategy, useFetchStrategyVersions, useArchiveStrategyVersion } from "@/hooks/use-strategy";
 import { StrategyVersionCard } from "@/components/insights/strategy-card";
 import { EmptyState } from "@/components/common/empty-state";
 import { Skeleton } from "@/components/common/skeleton";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmDialog } from "@/components/business/delete-dialogs";
-import { Target, Plus } from "lucide-react";
+import { Target, Plus, ArrowLeft } from "lucide-react";
 
 export default function StrategyPage() {
   const params = useParams();
+  const router = useRouter();
   const sessionId = params.id as string;
   const [archiveTargetId, setArchiveTargetId] = useState<string | null>(null);
 
@@ -31,9 +32,18 @@ export default function StrategyPage() {
   if (versions.length === 0 && !isLoading) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Chiến lược</h1>
-          <p className="text-sm text-muted-foreground mt-1">Các phiên bản chiến lược của đợt phân tích</p>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => router.push(`/dashboard/sessions/${sessionId}?tab=strategy`)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Chiến lược</h1>
+            <p className="text-sm text-muted-foreground mt-1">Các phiên bản chiến lược của đợt phân tích</p>
+          </div>
         </div>
 
         <EmptyState
@@ -48,9 +58,18 @@ export default function StrategyPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Chiến lược</h1>
-          <p className="text-sm text-muted-foreground mt-1">Các phiên bản chiến lược của đợt phân tích</p>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => router.push(`/dashboard/sessions/${sessionId}?tab=strategy`)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Chiến lược</h1>
+            <p className="text-sm text-muted-foreground mt-1">Các phiên bản chiến lược của đợt phân tích</p>
+          </div>
         </div>
         {strategy?.currentVersionId == null && versions.length === 0 && (
           <Button disabled>

@@ -12,6 +12,7 @@ const JOB_TYPE_TO_NAME: Record<string, string> = {
   REVIEW_CRAWLING: JOB_NAMES.REVIEW_CRAWLING,
   INSIGHT_GENERATION: JOB_NAMES.INSIGHT_GENERATION,
   STRATEGY_GENERATION: JOB_NAMES.STRATEGY_GENERATION,
+  CONTENT_GENERATION: JOB_NAMES.CONTENT_GENERATION,
 };
 
 @Injectable()
@@ -36,6 +37,7 @@ export class ProcessingQueuePublisher {
       pipelineId: input.pipelineId ?? null,
       triggeredBy: input.triggeredBy ?? null,
       sampleLimit: input.sampleLimit ?? null,
+      aiGenerationId: input.aiGenerationId ?? null,
     };
 
     const job = await this.queue.add(jobName, payload, {

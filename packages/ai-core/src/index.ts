@@ -10,6 +10,8 @@ export type {
   GenerateInsightsResult,
   GenerateStrategyInput,
   GenerateStrategyResult,
+  GenerateContentInput,
+  GenerateContentResult,
 } from "./ai-provider.interface";
 
 export { AIRetryPolicy, executeWithRetry } from "./retry-policy";
@@ -31,6 +33,7 @@ export { INSIGHT_GENERATION_V3 } from "./prompts/insight-generation/v3";
 export { STRATEGY_GENERATION_V1 } from "./prompts/strategy-generation/v1";
 export { STRATEGY_GENERATION_V2 } from "./prompts/strategy-generation/v2";
 export { STRATEGY_GENERATION_V3 } from "./prompts/strategy-generation/v3";
+export { CONTENT_GENERATION_V1 } from "./prompts/content-generation/v1";
 export { DEFAULT_PROMPTS, registerDefaultPrompts } from "./prompts";
 
 export {
@@ -54,6 +57,15 @@ export {
 } from "./schemas/strategy-generation.schema";
 export type { StrategyGenerationOutput } from "./schemas/strategy-generation.schema";
 
+export {
+  contentGenerationOutputSchema,
+  contentCandidateSchema,
+} from "./schemas/content-generation.schema";
+export type {
+  ContentGenerationOutput,
+  ContentCandidateOutput,
+} from "./schemas/content-generation.schema";
+
 export { createGeminiProvider } from "./providers/gemini-provider";
 export type { GeminiProviderConfig } from "./providers/gemini-provider";
 
@@ -61,9 +73,6 @@ export { createFailoverProvider } from "./providers/failover-provider";
 
 export { createGroqProvider } from "./providers/groq-provider";
 export type { GroqProviderConfig } from "./providers/groq-provider";
-
-export { createDeepSeekProvider } from "./providers/deepseek-provider";
-export type { DeepSeekProviderConfig } from "./providers/deepseek-provider";
 
 export { createOpenRouterProvider } from "./providers/openrouter-provider";
 export type { OpenRouterProviderConfig } from "./providers/openrouter-provider";

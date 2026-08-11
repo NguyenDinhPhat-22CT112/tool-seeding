@@ -91,7 +91,7 @@ export function getNextAction(status: AnalysisSessionStatus): string {
     ANALYZING: "Tạo insights",
     INSIGHT_REVIEW: "Tạo chiến lược",
     STRATEGY_BUILDING: "Hoàn tất đợt phân tích",
-    COMPLETED: "Lưu trữ đợt phân tích",
+    COMPLETED: "Đã hoàn thành phân tích",
     ARCHIVED: "Không còn thao tác",
   };
   return actions[status] || "Không xác định";

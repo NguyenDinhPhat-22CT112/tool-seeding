@@ -403,6 +403,58 @@ export class JobRepositoryService {
     return versionId;
   }
 
+  // ── Content Generation ──
+
+  /** Load session + chiến lược version + hồ sơ doanh nghiệp để render prompt content. */
+  async findContentGenerationContext(aiGenerationId: string) {
+    return this.prisma.aIGeneration.findUnique({
+      where: { id: aiGenerationId },
+      include: {
+        promptTemplate: true,
+        strategyVersion: true,
+        content: {
+          include: { currentVersion: true },
+        },
+        analysisSession: {
+          include: {
+            business: true,
+          },
+        },
+      },
+    });
+  }
+
+  /** Ghi kết quả AI candidates vào AIGeneration (COMPLETED) + lưu promptRendered/model. */
+  async completeAIGeneration(data: {
+    aiGenerationId: string;
+    promptRendered: string;
+    aiProvider: string;
+    aiModel: string;
+    promptVersion: string;
+    candidates: Array<{ variantIndex: number; title: string; body: string }>;
+    rawResponse: unknown;
+  }): Promise<void> {
+    await this.prisma.aIGeneration.update({
+      where: { id: data.aiGenerationId },
+      data: {
+        status: "COMPLETED",
+        promptRendered: data.promptRendered,
+        aiProvider: data.aiProvider,
+        aiModel: data.aiModel,
+        promptVersion: data.promptVersion,
+        candidates: data.candidates,
+        rawResponse: data.rawResponse as object,
+      },
+    });
+  }
+
+  async markAIGenerationFailed(aiGenerationId: string): Promise<void> {
+    await this.prisma.aIGeneration.update({
+      where: { id: aiGenerationId },
+      data: { status: "FAILED" },
+    });
+  }
+
   // ── Usage Logging ──
 
   async createUsageLog(data: {

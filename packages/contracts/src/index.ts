@@ -66,6 +66,18 @@ export type ErrorCode =
   | "STRATEGY_NO_APPROVED_INSIGHTS"
   | "STRATEGY_LOCKED_IMMUTABLE"
   | "STRATEGY_REVISION_NEEDS_COMMENT"
+  | "CONTENT_NOT_FOUND"
+  | "CONTENT_VERSION_NOT_FOUND"
+  | "CONTENT_WRONG_STATE"
+  | "CONTENT_GENERATION_CONCURRENT"
+  | "CONTENT_STRATEGY_NOT_APPROVED"
+  | "CONTENT_REVISION_NEEDS_COMMENT"
+  | "CONTENT_UNLOCK_NEEDS_COMMENT"
+  | "CONTENT_EMPTY"
+  | "CONTENT_LOCKED_IMMUTABLE"
+  | "AI_GENERATION_NOT_FOUND"
+  | "AI_GENERATION_NOT_SAVABLE"
+  | "PROMPT_TEMPLATE_NOT_FOUND"
   | "DATA_SOURCE_IN_USE"
   | "FORBIDDEN";
 
@@ -796,4 +808,168 @@ export interface IamMeResponse {
     fullName: string;
     avatarUrl: string | null;
   } | null;
+}
+
+// ── Content Seeding ──
+
+export type ContentOrigin = "AI_GENERATED" | "HUMAN_WRITTEN";
+
+export type ContentStatus =
+  | "DRAFT"
+  | "WAITING_APPROVAL"
+  | "NEEDS_REVISION"
+  | "APPROVED"
+  | "LOCKED"
+  | "ARCHIVED";
+
+export type ContentVersionSource = "HUMAN_EDIT" | "AI_GENERATE" | "AI_REWRITE";
+
+export type AIGenerationStatus = "PENDING" | "COMPLETED" | "FAILED" | "DISCARDED";
+
+export type PromptPurpose = "GENERATE" | "REWRITE";
+
+export interface ContentCandidate {
+  variantIndex: number;
+  title: string;
+  body: string;
+}
+
+export interface ContentVersionResponse {
+  id: string;
+  contentId: string;
+  versionNumber: number;
+  title: string;
+  body: string;
+  contentTheme: string | null;
+  source: ContentVersionSource;
+  aiGenerationId: string | null;
+  editReason: string | null;
+  editedBy: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  reviewComment: string | null;
+  createdAt: string;
+}
+
+export interface SeedingContentSummary {
+  id: string;
+  analysisSessionId: string;
+  strategyVersionId: string;
+  origin: ContentOrigin;
+  status: ContentStatus;
+  platform: string;
+  contentType: string;
+  title: string;
+  tags: string[];
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface SeedingContentDetail extends SeedingContentSummary {
+  contentHash: string | null;
+  currentVersionId: string | null;
+  currentVersion: ContentVersionResponse | null;
+  archivedAt: string | null;
+}
+
+export type SeedingContentListResponse =
+  PaginatedResponse<SeedingContentSummary>;
+
+export interface GenerateContentsRequest {
+  strategyVersionId: string;
+  promptTemplateId: string;
+  variantCount?: number;
+}
+
+export interface GenerateContentsResponse {
+  aiGenerationId: string;
+  jobId: string;
+}
+
+export interface SaveAIGenerationRequest {
+  selectedCandidateIndex: number;
+}
+
+export interface CreateManualContentRequest {
+  strategyVersionId: string;
+  title: string;
+  body: string;
+  platform?: string;
+  contentType?: string;
+  tags?: string[];
+}
+
+export interface UpdateContentRequest {
+  title?: string;
+  body?: string;
+  editReason?: string | null;
+}
+
+export interface ReviewContentRequest {
+  comment?: string | null;
+}
+
+export interface AIGenerationResponse {
+  id: string;
+  analysisSessionId: string;
+  strategyVersionId: string;
+  contentId: string | null;
+  promptTemplateId: string;
+  promptRendered: string;
+  aiProvider: string;
+  aiModel: string;
+  parameters: Record<string, unknown>;
+  candidates: ContentCandidate[];
+  selectedCandidateIndex: number | null;
+  status: AIGenerationStatus;
+  rawResponse: unknown;
+  createdAt: string;
+}
+
+export interface PromptTemplateResponse {
+  id: string;
+  name: string;
+  platform: string | null;
+  contentType: string;
+  purpose: PromptPurpose;
+  templateBody: string;
+  version: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface ListPromptTemplatesQuery {
+  platform?: string;
+  contentType?: string;
+  purpose?: PromptPurpose;
+}
+
+export interface CreatePromptTemplateRequest {
+  name: string;
+  platform?: string | null;
+  contentType: string;
+  purpose: PromptPurpose;
+  templateBody: string;
+}
+
+export interface ListContentsQuery {
+  status?: ContentStatus;
+  origin?: ContentOrigin;
+  platform?: string;
+  contentType?: string;
+  q?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface ContentLibraryQuery {
+  platform?: string;
+  contentType?: string;
+  tag?: string;
+  q?: string;
+  analysisSessionId?: string;
+  page?: number;
+  pageSize?: number;
 }

@@ -2,6 +2,8 @@ import type {
   AIProvider,
   AnalyzeFeedbackInput,
   AnalyzeFeedbackResult,
+  GenerateContentInput,
+  GenerateContentResult,
   GenerateInsightsInput,
   GenerateInsightsResult,
   GenerateStrategyInput,
@@ -9,7 +11,7 @@ import type {
 } from "../ai-provider.interface";
 import { AIProviderError } from "../ai-provider.interface";
 
-type MethodName = "analyzeFeedback" | "generateInsights" | "generateStrategy";
+type MethodName = "analyzeFeedback" | "generateInsights" | "generateStrategy" | "generateContent";
 
 /**
  * Wrap nhiều provider (VD nhiều Gemini API key) — khi provider hiện tại gặp
@@ -67,6 +69,9 @@ export function createFailoverProvider(providers: AIProvider[]): AIProvider {
     },
     generateStrategy(input: GenerateStrategyInput) {
       return run<GenerateStrategyResult>("generateStrategy", input);
+    },
+    generateContent(input: GenerateContentInput) {
+      return run<GenerateContentResult>("generateContent", input);
     },
   };
 }

@@ -438,6 +438,77 @@ exports.Prisma.StrategyInsightScalarFieldEnum = {
   linkedAt: 'linkedAt'
 };
 
+exports.Prisma.SeedingContentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  analysisSessionId: 'analysisSessionId',
+  strategyVersionId: 'strategyVersionId',
+  origin: 'origin',
+  status: 'status',
+  platform: 'platform',
+  contentType: 'contentType',
+  title: 'title',
+  currentVersionId: 'currentVersionId',
+  contentHash: 'contentHash',
+  tags: 'tags',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  archivedAt: 'archivedAt'
+};
+
+exports.Prisma.ContentVersionScalarFieldEnum = {
+  id: 'id',
+  contentId: 'contentId',
+  versionNumber: 'versionNumber',
+  title: 'title',
+  body: 'body',
+  contentTheme: 'contentTheme',
+  source: 'source',
+  aiGenerationId: 'aiGenerationId',
+  editReason: 'editReason',
+  editedBy: 'editedBy',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  reviewComment: 'reviewComment',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AIGenerationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  analysisSessionId: 'analysisSessionId',
+  strategyVersionId: 'strategyVersionId',
+  contentId: 'contentId',
+  promptTemplateId: 'promptTemplateId',
+  promptRendered: 'promptRendered',
+  promptVersion: 'promptVersion',
+  aiProvider: 'aiProvider',
+  aiModel: 'aiModel',
+  parameters: 'parameters',
+  candidates: 'candidates',
+  selectedCandidateIndex: 'selectedCandidateIndex',
+  status: 'status',
+  rawResponse: 'rawResponse',
+  requestedBy: 'requestedBy',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PromptTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  platform: 'platform',
+  contentType: 'contentType',
+  purpose: 'purpose',
+  templateBody: 'templateBody',
+  version: 'version',
+  isActive: 'isActive',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AIUsageLogScalarFieldEnum = {
   id: 'id',
   analysisSessionId: 'analysisSessionId',
@@ -634,7 +705,8 @@ exports.JobType = exports.$Enums.JobType = {
   AI_FEEDBACK_ANALYSIS: 'AI_FEEDBACK_ANALYSIS',
   REVIEW_CRAWLING: 'REVIEW_CRAWLING',
   INSIGHT_GENERATION: 'INSIGHT_GENERATION',
-  STRATEGY_GENERATION: 'STRATEGY_GENERATION'
+  STRATEGY_GENERATION: 'STRATEGY_GENERATION',
+  CONTENT_GENERATION: 'CONTENT_GENERATION'
 };
 
 exports.JobStatus = exports.$Enums.JobStatus = {
@@ -691,6 +763,38 @@ exports.StrategyVersionStatus = exports.$Enums.StrategyVersionStatus = {
   ARCHIVED: 'ARCHIVED'
 };
 
+exports.ContentOrigin = exports.$Enums.ContentOrigin = {
+  AI_GENERATED: 'AI_GENERATED',
+  HUMAN_WRITTEN: 'HUMAN_WRITTEN'
+};
+
+exports.ContentStatus = exports.$Enums.ContentStatus = {
+  DRAFT: 'DRAFT',
+  WAITING_APPROVAL: 'WAITING_APPROVAL',
+  NEEDS_REVISION: 'NEEDS_REVISION',
+  APPROVED: 'APPROVED',
+  LOCKED: 'LOCKED',
+  ARCHIVED: 'ARCHIVED'
+};
+
+exports.ContentVersionSource = exports.$Enums.ContentVersionSource = {
+  HUMAN_EDIT: 'HUMAN_EDIT',
+  AI_GENERATE: 'AI_GENERATE',
+  AI_REWRITE: 'AI_REWRITE'
+};
+
+exports.AIGenerationStatus = exports.$Enums.AIGenerationStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  DISCARDED: 'DISCARDED'
+};
+
+exports.PromptPurpose = exports.$Enums.PromptPurpose = {
+  GENERATE: 'GENERATE',
+  REWRITE: 'REWRITE'
+};
+
 exports.BotStatus = exports.$Enums.BotStatus = {
   ACTIVE: 'ACTIVE',
   PAUSED: 'PAUSED',
@@ -737,6 +841,10 @@ exports.Prisma.ModelName = {
   Strategy: 'Strategy',
   StrategyVersion: 'StrategyVersion',
   StrategyInsight: 'StrategyInsight',
+  SeedingContent: 'SeedingContent',
+  ContentVersion: 'ContentVersion',
+  AIGeneration: 'AIGeneration',
+  PromptTemplate: 'PromptTemplate',
   AIUsageLog: 'AIUsageLog',
   SeedingBot: 'SeedingBot',
   SeedingBotAccount: 'SeedingBotAccount',

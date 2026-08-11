@@ -168,6 +168,50 @@ export const ERROR_CODES = {
     message: "Yêu cầu sửa phải có nhận xét",
   },
 
+  // ── Content ──
+  CONTENT_NOT_FOUND: { status: 404, message: "Nội dung không tồn tại" },
+  CONTENT_VERSION_NOT_FOUND: {
+    status: 404,
+    message: "Phiên bản nội dung không tồn tại",
+  },
+  CONTENT_WRONG_STATE: {
+    status: 409,
+    message: "Nội dung không ở trạng thái cho phép thao tác này",
+  },
+  CONTENT_GENERATION_CONCURRENT: {
+    status: 409,
+    message: "Đã có job tạo nội dung đang chạy cho phiên này",
+  },
+  CONTENT_STRATEGY_NOT_APPROVED: {
+    status: 422,
+    message: "Chiến lược phải ở trạng thái APPROVED hoặc LOCKED mới tạo nội dung",
+  },
+  CONTENT_REVISION_NEEDS_COMMENT: {
+    status: 400,
+    message: "Yêu cầu sửa nội dung phải có nhận xét",
+  },
+  CONTENT_UNLOCK_NEEDS_COMMENT: {
+    status: 400,
+    message: "Mở khóa nội dung phải có lý do",
+  },
+  CONTENT_EMPTY: { status: 400, message: "Nội dung không được trống" },
+  CONTENT_LOCKED_IMMUTABLE: {
+    status: 409,
+    message: "Nội dung đã khóa — cần mở khóa để chỉnh sửa",
+  },
+  AI_GENERATION_NOT_FOUND: {
+    status: 404,
+    message: "Phiên sinh nội dung AI không tồn tại",
+  },
+  AI_GENERATION_NOT_SAVABLE: {
+    status: 409,
+    message: "Phiên sinh nội dung chưa sẵn sàng để lưu",
+  },
+  PROMPT_TEMPLATE_NOT_FOUND: {
+    status: 404,
+    message: "Prompt template không tồn tại",
+  },
+
   // ── Permission ──
   FORBIDDEN: { status: 403, message: "Bạn không có quyền thực hiện thao tác này" },
 } as const;

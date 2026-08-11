@@ -2,6 +2,8 @@ import type {
   AIProvider,
   AnalyzeFeedbackInput,
   AnalyzeFeedbackResult,
+  GenerateContentInput,
+  GenerateContentResult,
   GenerateInsightsInput,
   GenerateInsightsResult,
   GenerateStrategyInput,
@@ -12,6 +14,7 @@ import { TokenBucketLimiter } from "../rate-limiter";
 import { feedbackAnalysisOutputSchema } from "../schemas/feedback-analysis.schema";
 import { insightGenerationOutputSchema } from "../schemas/insight-generation.schema";
 import { strategyGenerationOutputSchema } from "../schemas/strategy-generation.schema";
+import { contentGenerationOutputSchema } from "../schemas/content-generation.schema";
 import { analyzeFeedbackWithProvider, generateStructuredWithProvider } from "./shared";
 import type { ProviderHandler } from "./shared";
 
@@ -51,7 +54,7 @@ function stubFeedback(input: AnalyzeFeedbackInput, model: string, promptVersion:
 
 export function createOpenRouterProvider(config?: OpenRouterProviderConfig): AIProvider {
   const apiKey = config?.apiKey;
-  const model = config?.model ?? "deepseek/deepseek-r1";
+  const model = config?.model ?? "google/gemini-2.0-flash-exp:free";
   const baseUrl = (config?.baseUrl ?? OPENROUTER_API).replace(/\/+$/, "");
   const retryPolicy = new AIRetryPolicy();
   // Free-tier OpenRouter: ~20 req/phút per model per key. Giữ 20 RPM + concurrency 1.
@@ -128,6 +131,27 @@ export function createOpenRouterProvider(config?: OpenRouterProviderConfig): AIP
           insights: JSON.stringify(input.insights),
         },
         schema: strategyGenerationOutputSchema,
+        retryPolicy,
+        limiter,
+      });
+    },
+    async generateContent(input: GenerateContentInput): Promise<GenerateContentResult> {
+      return generateStructuredWithProvider({
+        handler: providerHandler,
+        apiKey,
+        promptId: "content-generation",
+        promptVersion: input.promptVersion ?? "v1",
+        variables: {
+          platform: input.platform,
+          contentType: input.contentType,
+          variantCount: String(input.variantCount),
+          brandVoice: input.brandVoice ?? "Tự nhiên, chân thật",
+          allowedTopics: input.allowedTopics.join(", "),
+          bannedTopics: input.bannedTopics.join(", "),
+          strategyContent: input.strategyContent,
+          businessProfile: input.businessProfile,
+        },
+        schema: contentGenerationOutputSchema,
         retryPolicy,
         limiter,
       });

@@ -1,6 +1,23 @@
 # Changelog: AI Model Assignments
 
-## 🔄 Latest Change (2026-08-06)
+## 🔄 Latest Change (2026-08-10)
+
+### Gỡ bỏ DeepSeek hoàn toàn — chỉ dùng provider free tier
+
+**Lý do thay đổi**:
+- DeepSeek API không có free tier ổn định cho dự án
+- Chuyển sang 100% provider có API key free: **Groq**, **Gemini**, **OpenRouter**
+- Xóa file `deepseek-provider.ts`, config `DEEPSEEK_*`, và khỏi factory/worker
+
+**Thay đổi**:
+- Provider hỗ trợ: `groq`, `gemini`, `openrouter`
+- OpenRouter default model: `google/gemini-2.0-flash-exp:free`
+- Insight generation default: OpenRouter (`AI_INSIGHT_PROVIDER`)
+- Strategy generation default: Gemini (`AI_STRATEGY_PROVIDER`)
+
+---
+
+## 🔄 Previous Change (2026-08-06)
 
 ### Chuyển Insight & Strategy Generation sang Gemini
 
@@ -9,8 +26,6 @@
 - Tốt hơn với tiếng Việt
 - Context window lớn hơn (1M tokens)
 - Performance ổn định hơn với tasks phức tạp
-
----
 
 ## 📊 Cấu hình MỚI (Current)
 
@@ -310,10 +325,10 @@ Total: ~$0.032
 - ✅ Large context needed
 - ✅ Quality > Speed
 
-**Use DeepSeek**:
-- ✅ Budget is very tight
+**Use OpenRouter Free Models**:
+- ✅ Budget is very tight / need free API keys
 - ✅ Still need good quality
-- ✅ Not time-sensitive
+- ✅ Not time-sensitive (free tier RPM thấp hơn)
 
 ---
 

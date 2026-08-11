@@ -504,7 +504,7 @@ curl -X POST http://localhost:4000/api/analysis-sessions/session_xyz123/insight-
 
 **State transition:** `ANALYZING` → `INSIGHT_REVIEW` (sau khi job hoàn thành)
 
-**Thời gian:** 2-5 phút (DeepSeek API)
+**Thời gian:** 2-5 phút (Gemini/OpenRouter free)
 
 ---
 
@@ -642,7 +642,7 @@ curl -X POST http://localhost:4000/api/analysis-sessions/session_xyz123/strategy
 
 **State transition:** `INSIGHT_REVIEW` → `STRATEGY_BUILDING` (sau khi job hoàn thành)
 
-**Thời gian:** 2-5 phút (DeepSeek API)
+**Thời gian:** 2-5 phút (Gemini/OpenRouter free)
 
 ---
 
@@ -826,7 +826,7 @@ curl -X POST http://localhost:4000/api/processing-jobs/job_abc123/cancel \
 | **Feedback Analysis** | **10-20 phút** | **Groq (llama-3.3-70b)** |
 | **Insight Generation** | **2-5 phút** | **Groq (llama-3.3-70b)** |
 | Review Insights | Manual | User |
-| **Strategy Generation** | **2-5 phút** | **DeepSeek API** |
+| **Strategy Generation** | **2-5 phút** | **Gemini/OpenRouter free** |
 | **TOTAL** | **~20-40 phút** | |
 
 ---

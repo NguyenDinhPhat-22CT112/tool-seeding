@@ -7,6 +7,7 @@ import { FeedbackAnalysisProcessor } from "./feedback-analysis.processor";
 import { ReviewsCrawlProcessor } from "./reviews-crawl.processor";
 import { InsightGenerationProcessor } from "./insight-generation.processor";
 import { StrategyGenerationProcessor } from "./strategy-generation.processor";
+import { ContentGenerationProcessor } from "./content-generation.processor";
 
 const DATA_PROCESSING_QUEUE = "data-processing";
 
@@ -28,6 +29,7 @@ export class DataProcessingDispatcher extends WorkerHost {
     private readonly reviewsCrawl: ReviewsCrawlProcessor,
     private readonly insightGeneration: InsightGenerationProcessor,
     private readonly strategyGeneration: StrategyGenerationProcessor,
+    private readonly contentGeneration: ContentGenerationProcessor,
   ) {
     super();
   }
@@ -48,6 +50,8 @@ export class DataProcessingDispatcher extends WorkerHost {
         return this.insightGeneration.process(job);
       case "STRATEGY_GENERATION":
         return this.strategyGeneration.process(job);
+      case "CONTENT_GENERATION":
+        return this.contentGeneration.process(job);
       default:
         this.logger.error(
           {
